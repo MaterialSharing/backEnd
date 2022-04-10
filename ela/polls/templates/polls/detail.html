@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta
+        http-equiv="X-UA-Compatible"
+        content="IE=edge"
+    >
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- 静态展示选举投票(poll)的问题以及该问题下对应的选项. -->
+    <!-- <h1>{{ question.question_text }}</h1>
+    <h2>show the choice of the quesiton.</h2>
+    <ul>
+        {% for choice in question.choice_set.all %}
+        <li>{{ choice.choice_text }}</li>
+        {% endfor %}
+    </ul> -->
+    <hr>
+    <!-- 本表单的载入者是detail(question detial(question_text &choices are contained)) -->
+    <!-- 将表单form 提交到vote(view 中对应的函数处理);并且使用post方法来提交数据(提交给action路由指定的views.method(handler)处理)
+    
+    变量question 是由detail相关视图将上下文context字典传递进来的key
+question.id仅是一种对question变量的使用(关于question的表达式)
+并且,注意到我们展现的detail页面包含问题和选项,这些选项作为表单,收集用户填写的信息,这些信息被进一步传送到指定的页面中让后端处理(本模板中会将用户提交的信息传递到polls应用下的vote视图函数进行处理(是一个数据库更新操作
+此外,注意到,question.id 是detail 视图提供的,而不是用户选则后提交的信息
+question.id在此处的作用是参与生成完整的url(参数部分),传递给polls app 中的view.vote进行处理))
+我们应当在vote中捕获到这个question.id,当然还包括用户提交的信息-->
+    <form
+        action="{% url 'polls:vote' question.id %}"
+        method="post"
+    >
+        <!-- 带上csrf令牌(变量),解除post封锁 -->
+        {% csrf_token %}
+        <fieldset>
+            <legend>
+                <!-- 标题为问题详情描述 -->
+                <h1>{{ question.question_text }}</h1>
+            </legend>
+            {% if error_message %}
+            <p><strong>{{ error_message }}</strong></p>
+            {% endif %}
+            <!-- 问题对象获取成功,则渲染相关的投票选项 -->
+            {% for choice in question.choice_set.all %}
+            <!-- property of input(form)
+            name:Name of the form control. Submitted with the form as part of a name/value pair.
+            value:the value of the name,they will be a pair data and will be send to the backend
+        -->
+            <input
+                type="radio"
+                name="choice"
+                value="{{ choice.id }}"
+                id="choice{{ forloop.counter }}"
+            >
+            <label for="choice{{ forloop.counter }}">
+                {{ choice.choice_text }}
+            </label><br>
+            {% endfor %}
+        </fieldset>
+        <input
+            type="submit"
+            value="Vote"
+        >
+    </form>
+</body>
+
+</html>
+<!-- {{ question }} -->

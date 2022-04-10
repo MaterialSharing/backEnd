@@ -1,7 +1,6 @@
-from doctest import Example
-from pyexpat import model
 from django.db import models
 
+import random as rand
 # Create your models here.
 
 class User(models.Model):

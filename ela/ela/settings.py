@@ -32,8 +32,19 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     # 提供点式路径
-    'polls.apps.PollsConfig',
+    # 以下点式路径由各自app目录下的apps.py中的class 提供
+    #在着就是注意各行必须以`,`结尾!
+    # class UserConfig(AppConfig):
+    #     default_auto_field = 'django.db.models.BigAutoField'
+    #     name = 'user'
+    #--------add your app to active (register) them!----------
+    'main.apps.MainConfig',
+    'scoreImprover.apps.ScoreimproverConfig',
+    'words.apps.WordsConfig',
+    'user.apps.UserConfig',
     'django.contrib.admin',
+    'blog.apps.BlogConfig',
+    'polls.apps.PollsConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',

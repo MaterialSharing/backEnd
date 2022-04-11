@@ -47,11 +47,17 @@ question.id在此处的作用是参与生成完整的url(参数部分),传递给
             {% if error_message %}
             <p><strong>{{ error_message }}</strong></p>
             {% endif %}
-            <!-- 问题对象获取成功,则渲染相关的投票选项 -->
+            <!-- 问题对象获取成功,则渲染相关的投票选项 
+            利用question实例执行反向查询,获得与该实例相关的choices
+        并且将这些choices 渲染成表单的内容:-->
             {% for choice in question.choice_set.all %}
             <!-- property of input(form)
-            name:Name of the form control. Submitted with the form as part of a name/value pair.
-            value:the value of the name,they will be a pair data and will be send to the backend
+            name:Name of the form control. Submitted with the form as part of a name/value pair;
+
+            value:the value of the name,they will be a pair data and will be send to the backend;
+
+            An id on an <input> tag assigns an identifier to the input control.The identifier must be unique across the page.
+            id可以是字符串或者其他
         -->
             <input
                 type="radio"
@@ -59,6 +65,9 @@ question.id在此处的作用是参与生成完整的url(参数部分),传递给
                 value="{{ choice.id }}"
                 id="choice{{ forloop.counter }}"
             >
+            <!-- 可见,每个选项都由一个不同的id来标识它们
+            这些选项choice的内容是从数据库中查询出来的
+        查询操作发生在模板渲染中 -->
             <label for="choice{{ forloop.counter }}">
                 {{ choice.choice_text }}
             </label><br>

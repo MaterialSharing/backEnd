@@ -40,11 +40,12 @@ INSTALLED_APPS = [
     #--------add your app to active (register) them!----------
     'main.apps.MainConfig',
     'scoreImprover.apps.ScoreimproverConfig',
-    'words.apps.WordsConfig',
+    'word.apps.WordConfig',
     'user.apps.UserConfig',
     'django.contrib.admin',
     'blog.apps.BlogConfig',
     'polls.apps.PollsConfig',
+
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -107,7 +108,7 @@ WSGI_APPLICATION = 'ela.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE':'django.db.backends.mysql',
-        'NAME':'ela',
+        'NAME':'ela4',
         'USER':'ela',
         'PASSWORD':'1',
         'HOST':'123.56.72.67',

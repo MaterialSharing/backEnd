@@ -20,7 +20,7 @@ urlpatterns = [
     path('',include('index.urls')),
     path('admin/', admin.site.urls),
     path('polls/',include('polls.urls')),
-    path('words/',include('words.urls')),
+    path('word/',include('word.urls')),
     path('scoreImprover/',include('scoreImprover.urls')),
     path('main/',include('main.urls')),
     # 注意slash(`/`不要漏掉)

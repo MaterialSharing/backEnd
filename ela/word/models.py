@@ -14,7 +14,7 @@ class Word(models.Model):
     explains = models.TextField(blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'words'
 
 
@@ -54,5 +54,5 @@ class WordNotes(models.Model):
     difficulty_rate = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'word_notes'

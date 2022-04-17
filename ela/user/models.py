@@ -13,7 +13,7 @@ class User(models.Model):
     signupdate = models.DateField(db_column='signUpDate')  # Field name made lowercase.
 
     class Meta:
-        managed = False
+        managed=True
         db_table = 'user'
 
 class WordSearchHistory(models.Model):
@@ -21,7 +21,7 @@ class WordSearchHistory(models.Model):
     spelling = models.IntegerField()
 
     class Meta:
-        managed = False
+        managed=True
         db_table = 'word_search_history'
         unique_together = (('uid', 'spelling'),)
 
@@ -31,7 +31,7 @@ class WordStar(models.Model):
     spelling = models.IntegerField()
 
     class Meta:
-        managed = False
+        managed=True
         db_table = 'word_star'
         unique_together = (('uid', 'spelling'),)
 class FeedBack(models.Model):
@@ -40,5 +40,5 @@ class FeedBack(models.Model):
     date = models.DateTimeField()
 
     class Meta:
-        managed = False
+        managed=True
         db_table = 'feed_back'

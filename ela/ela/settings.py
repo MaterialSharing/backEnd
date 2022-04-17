@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'word.apps.WordConfig',
     'user.apps.UserConfig',
     'django.contrib.admin',
-    'blog.apps.BlogConfig',
+    # 'blog.apps.BlogConfig',
     'polls.apps.PollsConfig',
 
     'django.contrib.auth',

@@ -25,5 +25,5 @@ urlpatterns = [
     path('main/',include('main.urls')),
     # 注意slash(`/`不要漏掉)
     path('user/',include('user.urls')),
-    # path('blog/',include('blog.urls')),
+    path('blog/',include('blog.urls')),
 ]

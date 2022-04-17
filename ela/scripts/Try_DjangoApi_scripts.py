@@ -1,8 +1,8 @@
 # Import the model classes we just wrote.
 from polls.models import Choice, Question  
-Question.objects.all()
-
 from django.utils import timezone
+
+Question.objects.all()
 q=Question(question_text="what is new content?",pub_date=timezone.now())
 q.save()
 # auto fileds:id

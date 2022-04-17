@@ -111,11 +111,21 @@ DATABASES = {
         'NAME':'ela4',
         'USER':'ela',
         'PASSWORD':'1',
-        'HOST':'123.56.72.67',
+        'HOST':'127.0.0.1',
         'PORT':'3306'
         # NAME:默认值 BASE_DIR / 'db.sqlite3' 将把数据库文件储存在项目的根目录(目录/数据库文件名)
         # 'NAME': BASE_DIR / 'db.sqlite3',
     }
+    # 'default': {
+    #     'ENGINE':'django.db.backends.mysql',
+    #     'NAME':'ela4',
+    #     'USER':'ela',
+    #     'PASSWORD':'1',
+    #     'HOST':'123.56.72.67',
+    #     'PORT':'3306'
+    #     # NAME:默认值 BASE_DIR / 'db.sqlite3' 将把数据库文件储存在项目的根目录(目录/数据库文件名)
+    #     # 'NAME': BASE_DIR / 'db.sqlite3',
+    # }
 }
 
 

@@ -6,6 +6,7 @@ class Question(models.Model):
     # 问题内容+发布日期
     question_text = models.CharField(max_length=200)
     pub_date = models.DateTimeField('date published')
+    test=models.IntegerField(default=222,null=True)
     # 创建模型函数
     def __str__(self):
         return self.question_text

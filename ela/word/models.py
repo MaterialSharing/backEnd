@@ -16,6 +16,18 @@ class Word(models.Model):
     class Meta:
         managed = True
         db_table = 'words'
+    def __str__(self):
+        s=self
+        return str([
+            s.spelling,
+            s.phonetic,
+            s.plurality,
+            s.thirdpp,
+            s.present_participle,
+            s.past_tense,
+            s.past_participle,
+            s.explains
+        ])
 
 
 class Cet4WordsReq(models.Model):

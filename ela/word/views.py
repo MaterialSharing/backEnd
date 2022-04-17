@@ -18,7 +18,7 @@ def index(request):
 
 
 class WordAPIView(View):
-    def get(self, request, word):
+    def get(self, request, word="apply"):
         # query_set= Word.objects.all()[:10]
 
         # word_list=[]

@@ -24,6 +24,6 @@ urlpatterns = [
     path('scoreImprover/',include('scoreImprover.urls')),
     path('main/',include('main.urls')),
     # 注意slash(`/`不要漏掉)
-    path('user/',include('user.urls')),
+    path('user/',include('user.urls'))
     # path('blog/',include('blog.urls')),
 ]

@@ -38,12 +38,14 @@ INSTALLED_APPS = [
     #     default_auto_field = 'django.db.models.BigAutoField'
     #     name = 'user'
     #--------add your app to active (register) them!----------
+    'rest_framework',#DRF
     'main.apps.MainConfig',
     'scoreImprover.apps.ScoreimproverConfig',
     'word.apps.WordConfig',
     'user.apps.UserConfig',
     'django.contrib.admin',
     # 'blog.apps.BlogConfig',
+
     'polls.apps.PollsConfig',
 
     'django.contrib.auth',

@@ -5,22 +5,34 @@ import django.http
 from django.http import JsonResponse
 from django.http import HttpResponse
 from django.views import View
+from rest_framework.viewsets import ModelViewSet
 
 from user.models import User
-
+from rest_framework import serializers
+from user.serializer import UserSerializer
 # from django.urls
 # Create your views here.
-ob = User.objects
+uob = User.objects
+
+
+class UserApiViewSet(ModelViewSet):
+    # query_set = uob.all()
+    # 要求用queryset这个视图类的字段名称)
+    queryset = uob.all()
+    serializer_class = UserSerializer
 
 
 class UserApiView(View):
-    def get(self, reqeust,pk=-1):
+    def get(self, reqeust, pk=-1):
+        print("@pk", pk)
         # 查询所有用户
-        query_set = User.objects.all()
-        if(pk==-1):
+        uob = User.objects
+        query_set = uob.all()
+        if (pk == -1):
             pass
         else:
-            query_set=query_set[pk]
+            # query_set = uob.get(pk=pk)
+            query_set = uob.filter(pk=pk)
         user_list = []
         for user in query_set:
             user_list.append(
@@ -53,10 +65,46 @@ class UserApiView(View):
         )
         # 返回插入操作的结果(由于参数是字典,而不是数组,不用参数save=False)
         return JsonResponse({
-            "uid":user.uid,
-            "name":user.name,
-            "signupdate ":user.signupdate
+            "uid": user.uid,
+            "name": user.name,
+            "signupdate ": user.signupdate
         })
+
+    def put(self, request, pk):
+        print("@get put request!")
+        uob = User.objects
+        try:
+            user = uob.get(pk=pk)
+        except User.DoesNotExist:
+            return HttpResponse("the user does not exist yet!")
+        json_bytes = request.body
+        json_str = json_bytes.decode()
+        user_dict = json.loads(json_str)
+        print(user_dict.get("name"))
+        # update the table
+        user.name = user_dict.get("name")
+        # confirm the operation to execute
+        user.save()
+
+        return JsonResponse(
+            {
+                "name": user.name,
+                "signupdate": user.signupdate
+            }
+        )
+
+    def delete(self, request, pk):
+        print("@delete request captured!")
+        uob = User.objects
+        try:
+            user = uob.get(pk=pk)
+        except User.DoesNotExist:
+            return HttpResponse("the user does not exist yet!")
+        # update the table
+        print(user)
+        user.delete()
+        # deleted successful,then just return HttpResponse status code (rather than json)
+        return HttpResponse(status=204)
 
 
 def index(request):

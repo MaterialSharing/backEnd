@@ -83,6 +83,7 @@ class UserApiView(View):
         print(user_dict.get("name"))
         # update the table
         user.name = user_dict.get("name")
+        user.id=user_dict.get("uid")
         # confirm the operation to execute
         user.save()
 

@@ -16,9 +16,9 @@ urlpatterns = [
     # re_path(r'^(?P<pk>\d+)/$', views.UserApiView.as_view()),
 ]
 
-# router = DefaultRouter()
+router = DefaultRouter()
+# router=SimpleRouter()
 # 简单路由
-router=SimpleRouter()
 #
 router.register(r"user", views.UserApiViewSet)
 # 将DRF框架生成的连接插入到urlpatterns中

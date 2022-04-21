@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path,include
 # route 是一个匹配 URL 的准则（类似正则表达式）。当 Django 响应一个请求时，它会从 urlpatterns 的第一项开始，按顺序依次匹配列表中的项，直到找到匹配的项。
 urlpatterns = [
-    path('',include('index.urls')),
+    path('',include('user.urls')),
     path('admin/', admin.site.urls),
     path('polls/',include('polls.urls')),
     path('word/',include('word.urls')),

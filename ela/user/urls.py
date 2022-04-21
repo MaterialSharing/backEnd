@@ -14,15 +14,16 @@ urlpatterns = [
     # path('userCheck/<str:name>', views.userCheck, name='userCheck'),
 
     # re_path(r'^(?P<pk>\d+)/$', views.UserApiView.as_view()),
+    re_path(r'^user/$',views.ListView.as_view()),
 ]
 
 router = DefaultRouter()
 # router=SimpleRouter()
 # 简单路由
 #
-router.register(r"user", views.UserApiViewSet)
-# 将DRF框架生成的连接插入到urlpatterns中
-urlpatterns += router.urls
+# router.register(r"user", views.UserApiViewSet)
+# # 将DRF框架生成的连接插入到urlpatterns中
+# urlpatterns += router.urls
 # 通过启动项目,可以看到终端会打印出一系列的urlpatterns(routers.urls生成的)
 # [
 # <URLPattern '^user/$' [name='user-list']>,

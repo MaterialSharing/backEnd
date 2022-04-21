@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
@@ -26,6 +25,28 @@ SECRET_KEY = 'django-insecure-4@f$7t9t#zigdv1#5(&hd^oa!vetbizq*%#!%g@h71a_ir39@-
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+#不可以再本文件(settings.py)中导入多余的包,容易造成某些配置无法正常工作!
+# from  rest_framework.pagination import PageNumberPagination as PNP
+# from django_filters.rest_framework import DjangoFilterBackend
+# dpc="DEFAULT_PAGENATION_CLASS"
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',  # 使用基本认证
+        'rest_framework.authentication.SessionAuthentication',  # session认证
+    ),
+    # 'DEFAULT_PERMISSON_CLASSES': (
+    #     'rest_framework.permissions.AllowAny',
+    # )
+
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
+    # 配置分野参数
+    # http://127.0.0.1:8000/user/?page=2
+    #  "next": "http://127.0.0.1:8000/user/?page=3",
+    #  "previous": "http://127.0.0.1:8000/user/",
+    'DEFAULT_PAGINATION_CLASS':'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE':3, #each page content size
+    # dpc:(PNP)
+}
 
 
 # Application definition
@@ -33,12 +54,13 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     # 提供点式路径
     # 以下点式路径由各自app目录下的apps.py中的class 提供
-    #在着就是注意各行必须以`,`结尾!
+    # 在着就是注意各行必须以`,`结尾!
     # class UserConfig(AppConfig):
     #     default_auto_field = 'django.db.models.BigAutoField'
     #     name = 'user'
-    #--------add your app to active (register) them!----------
-    'rest_framework',#DRF
+    # --------add your app to active (register) them!----------
+    'rest_framework',  # DRF
+    'django_filters',
     'main.apps.MainConfig',
     'scoreImprover.apps.ScoreimproverConfig',
     'word.apps.WordConfig',
@@ -95,7 +117,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ela.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
@@ -109,12 +130,12 @@ WSGI_APPLICATION = 'ela.wsgi.application'
 # }
 DATABASES = {
     'default': {
-        'ENGINE':'django.db.backends.mysql',
-        'NAME':'ela4',
-        'USER':'ela',
-        'PASSWORD':'1',
-        'HOST':'127.0.0.1',
-        'PORT':'3306'
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'ela4',
+        'USER': 'ela',
+        'PASSWORD': '1',
+        'HOST': '127.0.0.1',
+        'PORT': '3306'
         # NAME:默认值 BASE_DIR / 'db.sqlite3' 将把数据库文件储存在项目的根目录(目录/数据库文件名)
         # 'NAME': BASE_DIR / 'db.sqlite3',
     }
@@ -129,7 +150,6 @@ DATABASES = {
     #     # 'NAME': BASE_DIR / 'db.sqlite3',
     # }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -149,7 +169,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
@@ -160,7 +179,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/

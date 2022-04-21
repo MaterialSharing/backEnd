@@ -21,7 +21,6 @@ class User(models.Model):
     def __str__(self):
         s=self
         return str([s.uid,s.name,s.signin,s.examdate,s.examtype,s.signupdate])
-
 # class UserInfo(models.Model):
 #     # 使用默认值会优于可空值(如果能够找到合适的more值的话!)
 #     # 默认值是尽在django中体现的吗?(估计是)

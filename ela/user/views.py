@@ -5,23 +5,36 @@ import django.http
 from django.http import JsonResponse
 from django.http import HttpResponse
 from django.views import View
+from rest_framework.filters import OrderingFilter
+from rest_framework.generics import GenericAPIView, ListAPIView
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.mixins import ListModelMixin
 
 from user.models import User
 from rest_framework import serializers
 from user.serializer import UserSerializer
+
 # from django.urls
 # Create your views here.
 uob = User.objects
 
 
+# 使用DRF ViewSet视图集的方式来开发
 class UserApiViewSet(ModelViewSet):
     # query_set = uob.all()
     # 要求用queryset这个视图类的字段名称)
     queryset = uob.all()
     serializer_class = UserSerializer
+    requeryset = uob.all()
+    serializer_class = UserSerializer
+
+    def get(self, request):
+        return self.list(request)
 
 
+# 使用Django原生的方式开发Restful api
 class UserApiView(View):
     def get(self, reqeust, pk=-1):
         print("@pk", pk)
@@ -83,7 +96,7 @@ class UserApiView(View):
         print(user_dict.get("name"))
         # update the table
         user.name = user_dict.get("name")
-        user.id=user_dict.get("uid")
+        user.id = user_dict.get("uid")
         # confirm the operation to execute
         user.save()
 
@@ -106,6 +119,51 @@ class UserApiView(View):
         user.delete()
         # deleted successful,then just return HttpResponse status code (rather than json)
         return HttpResponse(status=204)
+
+
+# 初始的版本
+class ListViewRaw(ListModelMixin, GenericAPIView):
+    # 定义queryset,该属性字段将有DRF框架内来(使用)
+    # print("try to invoke authentication ")
+    queryset = uob.all()
+    # 定义serializer_class,指定对应的模型类序列化器,同样有DRF来使用.
+    serializer_class = UserSerializer
+
+    def get(self, request):
+        return self.list(request)
+
+
+class DIYPagination(PageNumberPagination):
+    #     自定义分页器配置
+    page_query_param = 'pager'  # 默认是page
+    page_size = 4  # 每一页可以显示的条数
+    max_page_size = 50  # 前端最多可以请求到第50页
+
+
+class ListView(ListAPIView):
+    # 简化继承后的版本(ListAPIView
+    print("@@try to invoke authentication ")
+    permission_classes = [IsAuthenticated]
+    queryset = uob.all()
+    serializer_class = UserSerializer
+    filter_fields = ('name', 'signupdate')
+    filter_backends = [OrderingFilter]
+    # http://127.0.0.1:8000/user/?ordering=uid
+    # http://127.0.0.1:8000/user/?ordering=-signin
+    ordering_fileds = ("uid", "name", "signupdate", "signin")
+    # query过滤式子:
+    # /user/?name=cxxu_testSer
+    # http://127.0.0.1:8000/user/?signupdate=1970-01-01
+    # 分页pagination
+    # 再settings中配置分页后,可以结合排序一起使用
+    # http://127.0.0.1:8000/user/?page=2&ordering=uid
+    # 关闭全局分页的配置:
+    # pagination_class = None
+    # 自定义分页器规则类
+    pagination_class = DIYPagination
+
+    ###
+    # def get()等就不用再写了.
 
 
 def index(request):

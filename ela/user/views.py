@@ -143,7 +143,7 @@ class DIYPagination(PageNumberPagination):
 class ListView(ListAPIView):
     # 简化继承后的版本(ListAPIView
     print("@@try to invoke authentication ")
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     queryset = uob.all()
     serializer_class = UserSerializer
     filter_fields = ('name', 'signupdate')

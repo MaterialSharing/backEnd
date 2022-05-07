@@ -1,0 +1,15 @@
+name: actionDemo
+on: [push]
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    services:
+      nginx:
+        image: nginx
+        ports:
+          - 8080:80
+    steps:
+    - uses: actions/checkout@v1
+    - run: | 
+       echo ${{ secrets.TEST_SECRET1}}
+      

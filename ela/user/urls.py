@@ -3,21 +3,60 @@ from rest_framework.routers import DefaultRouter, SimpleRouter
 
 from . import views
 
+'''
+低级错误检测
 # 注意大小写要区分,不要过分依赖于补全!
-urlpatterns = [
+# as_view()注意小写V
+'''
+# 原生开发api(不采用通用视图,只采用函数直接定义路由到视图函数)
+'''
+urlpatterns=[
     # path('',views.index,name='index'),
-    # as_view()注意小写V
-    # path('', views.UserApiView.as_view(), name='userPost'),
-    # path(r'^(?P<pk>)$',views.UserApiView.as_view(),name='userCheck'),
-    # path(r'^user/$',views.UserApiView.as_view(),name='userCheck'),
-    # path('userAdd/<str:name>', views.userAdd, name='userAdd'),
-    # path('userCheck/<str:name>', views.userCheck, name='userCheck'),
-
-    # re_path(r'^(?P<pk>\d+)/$', views.UserApiView.as_view()),
-    re_path(r'^user/$',views.ListView.as_view()),
+    # path('user/', views.userAdd, name='userAdd'),#post a new user entry to the database
+    # path('user/', views.userAdd, name='userAdd'),#get all user entry to the database
+    # path('user/<str:name>', views.userCheck, name='userCheck'),# get a user entry from database 
 ]
+ 
+'''
+# 原生开发api(基于通用视图集)所配置的路由:
+urlpatterns = [
+    path('', views.UserApiView.as_view(), name='userPost'),
+    # regex array without regexp
+    # re_path(r'^(?P<pk>)$',views.UserApiView.as_view(),name='userCheck'),
+    re_path(r'^user/$', views.UserApiView.as_view(), name='userCheck'),
+    re_path(r'^(?P<pk>\d+)/$', views.UserApiView.as_view(), name='userCheck'),
+
+]
+# 废弃原生开发
+urlpatterns = []
+
+# 采用drf方式配置路由
+# urlpatterns = [
+#     re_path(r'^user/$',views.ListView.as_view()),
+# ]
 
 router = DefaultRouter()
+# router.register("user", views.UserApiViewSet, basename="user"),
+'''
+def register(self,
+
+             prefix: Any,
+             viewset: Any,
+             basename: Any = None
+             ) -> None
+ '''
+# 最终版本路由(预览)
+router.register("user_d", views.UserApiViewSet, basename="user_drf"),
+urlpatterns = [] + router.urls
+# 暂时关闭
+urlpatterns=[]
+# 使用drf逐级改造
+urlpatterns=[
+    # user应用内的子路由配置
+    # 这里的user表示'资源'(总路由中的user表示应用名)
+    path('user/',views.UserSerView.as_view()),
+]
+
 # router=SimpleRouter()
 # 简单路由
 #

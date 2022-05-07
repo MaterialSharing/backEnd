@@ -14,16 +14,21 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path,include
+from django.urls import path, include
+
 # route 是一个匹配 URL 的准则（类似正则表达式）。当 Django 响应一个请求时，它会从 urlpatterns 的第一项开始，按顺序依次匹配列表中的项，直到找到匹配的项。
 urlpatterns = [
-    path('',include('user.urls')),
+    # 此处的path函数的第一个参数的含义是应用名,第二个参数(include()指出应用下的子路由配置对象),来匹配并路由后续的任务
+    path('', include('user.urls')),
     path('admin/', admin.site.urls),
-    path('polls/',include('polls.urls')),
-    path('word/',include('word.urls')),
-    path('scoreImprover/',include('scoreImprover.urls')),
-    path('main/',include('main.urls')),
+    path('polls/', include('polls.urls')),
+    path('word/', include('word.urls')),
+    path('scoreImprover/', include('scoreImprover.urls')),
+    path('main/', include('main.urls')),
     # 注意slash(`/`不要漏掉)
-    path('user/',include('user.urls'))
+    path('user/', include('user.urls')),
     # path('blog/',include('blog.urls')),
+    #     采用DRF风格的路由
+    # path('api/', include("user_raw.urls")),
+    path('api/', include("user.urls")),
 ]

@@ -8,7 +8,7 @@ import random as rand
 class User(models.Model):
     uid = models.AutoField(primary_key=True)
     name = models.CharField(max_length=20,default='name_id')
-    signin = models.IntegerField(db_column='signIn',default=0)  # Field name made lowercase.
+    signin = models.IntegerField(db_column='signIn',default=0,help_text="the sign in days >=0")  # Field name made lowercase.
     examtype = models.CharField(db_column='examType', max_length=1,default="4")  # Field name made lowercase.
     examdate = models.DateField(db_column='examDate',default='1970-01-01')  # Field name made lowercase.
     signupdate = models.DateField(db_column='signUpDate',default='1970-01-01')  # Field name made lowercase.

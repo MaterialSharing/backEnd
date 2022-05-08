@@ -6,7 +6,8 @@ from django.http import JsonResponse
 from django.http import HttpResponse
 from django.views import View
 from rest_framework.filters import OrderingFilter
-from rest_framework.generics import GenericAPIView, ListAPIView
+from rest_framework.generics import GenericAPIView, ListAPIView, CreateAPIView, ListCreateAPIView, RetrieveAPIView, \
+    UpdateAPIView, RetrieveUpdateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -134,9 +135,10 @@ authentication_classes列表或元组，身份认证类
 # 另一个负责不需要带参数的(譬如查询所有/添加一条记录(id自增)
 # 此时的简化还是有限的,无法更加通用(可以通过genericAPIView进一步优化
 class UserAPIView(APIView):
-    def get(self, request):
+    def get(self, req):
         # print(f"drf.request={request}")
-        # print(f"django.reqeust={request._request}")  # WSGIHttpRequest
+        print(f"django.reqeust={req._request}")  # WSGIHttpRequest
+        print(f"@@!Meta={req._request.META.get('Accept')}")
         # print(f"reqeust.query_parames={request.query_params}")
         # return Response({"msg":"ookk"})
         # 有些参数会引起apifox提示header token error!
@@ -151,6 +153,9 @@ class UserAPIView(APIView):
         # print(f"req.data={req.data}")
         # print(req.data.get("name"))
         # print(f"req.query_params={req.query_params}")
+        print(f"django.reqeust={req._request}")  # WSGIHttpRequest
+        print(f"@@@Meta={req._request.META.get('Accept')}")
+
         user_ser = UserModelSerializer(data=req.data)
         # 依然是实例化序列化器并验证数据
         user_ser.is_valid(raise_exception=True)
@@ -272,12 +277,34 @@ class UserInfoGenericAPIView(GenericAPIView):
 
 # 版本(多继承版本): ListModelMixin,GenericApiView
 # 基于GenericApiView,我们再继承一个类,该类提供了通用的某个CRED的操作.
+# 作用:
+# 提供了几种后端视图(对数据资源进行增删改查)处理流程的实现，如果需要编写的视图属于这五种，则视图可以通过继承相应的扩展类来复用代码，减少自己编写的代码量。
+# 这五个扩展类需要搭配GenericAPIView通用视图基类，因为五个扩展类的实现需要调用GenericAPIView提供的序列化器与数据库查询的方法。
+
 # 使用drf内置的模型扩展类[混入类]结合GenericAPIView实现通用视图方法的简写操作
 # from rest_framework.mixins import ListModelMixin获取多条数据，返回响应结果  # list _
 # from rest_framework.mixins import CreateModelMixin添加一条数据，返回响应结果  # create
 # from rest_framework.mixins import RetrieveModelMixin 获取一条数据，返回响应结果  # retrie
 # from rest_framework.mixins import UpdateModelMixin 更新一条数据，返回响应结果  # update
 # from rest_framework.mixins import DestroyModelMixin 删除一条数据，返回响应结果  # destro
+
+"""更进一步:
+
+上面的接口代码还可以继续更加的精简，drf在使用GenericAPIView和Mixins进行组合以后，还提供了`视图子类`。
+`视图子类`是`通用视图类和模型扩展类的子类`，提供了各种的`视图方法调用mixins操作`
+ListAPIView = GenericAPIView + ListModelMixin 获取多条数据的视图方法
+CreateAPIView = GenericAPIView + CreateModelMixin 添加一条数据的视图方法
+RetrieveAPIView = GenericAPIView + RetrieveModelMixin 获取一条数据的视图方法
+UpdateAPIView = GenericAPIView + UpdateModelMixin 更新一条数据的视图方法
+DestroyAPIView = GenericAPIView + DestroyModelMixin 删除一条数据的视图方法组合视图子类
+组合视图的子类:
+ListCreateAPIView = ListAPIView + CreateAPIView
+DestroyAPIView = RetrieveAPIView + DestroyAPIView
+RetrieveUpdateAPIView = RetrieveAPIView + UpdateAPIViewRetrieve
+RetrieveUpdateDestroyAPIView = RetrieveAPIView + UpdateAPIView + DestroyAPIView
+
+"""
+# 使用混入类
 """Mixin提供的api界面进一步完善,可以自动完成分页显示等效果"""
 
 
@@ -306,8 +333,22 @@ class UserInfoGenericMixin(GenericAPIView, UpdateModelMixin, DestroyModelMixin, 
         return self.update(req, pk=pk)
 
     def delete(self, req, pk):
-        return self.destroy( req, pk=pk)
+        return self.destroy(req, pk=pk)
 
+
+# 使用视图子类,根据接口功能来继承视图类
+# class UserListCreateAPIView(ListAPIView,CreateAPIView):
+class UserListCreateAPIView(ListCreateAPIView):
+    queryset = uob.all()
+    serializer_class = UserModelSerializer
+# class UserRetrieveUpdateAPIView(RetrieveAPIView,UpdateAPIView):
+class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
+    queryset = uob.all()
+    serializer_class = UserModelSerializer
+
+class UserRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
+    queryset = uob.all()
+    serializer_class = UserModelSerializer
 
 class UserSer0View(View):
     """

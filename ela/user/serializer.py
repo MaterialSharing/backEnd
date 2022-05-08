@@ -90,15 +90,15 @@ class UserModelSerializer(serializers.ModelSerializer):
     # 可以编写数据模型之外的子字段在此处:
     # 也可以放置在read_only数组中
     # 注意这里的字段要只读,一般数据库是没有相应字段,在在这里声明,只用于查询数据的时候展示,不写入
-    # nickname = serializers.CharField(default="testNickname", read_only=True)
+    nickname = serializers.CharField(default="testNickname", read_only=True)
 
     class Meta:
         # ModelSerialzier内部会使用到Meta内类中的model字段来获取模型进行分析
         model = User
         # fields = "__all__"
         # 如果需要包含模型之外的字段,在上方单独定义字段
-        fields = ["uid", "name", "signin", "signin", ]  # "nickname"
-        # read_only_fields = ["sex", "birthday"]  # 因为是只读,所以旨在序列化(将数据库读出的数据对象转换为指定格式(json...)
+        fields = ["uid", "name", "signin", "signin","nickname", ]  # "nickname"
+        read_only_fields = ["sex", "birthday"]  # 因为是只读,所以旨在序列化(将数据库读出的数据对象转换为指定格式(json...)
         extra_kwargs = {
             "signin": {
                 "min_value": 0,

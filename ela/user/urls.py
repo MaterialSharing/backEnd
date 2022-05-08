@@ -61,6 +61,10 @@ urlpatterns = [
     re_path('^user_generic/$', views.UserGenericAPIView.as_view()),
     re_path('^user_genericMixin/$', views.UserGenericMixin.as_view()),
     re_path('^user_genericMixin/(?P<pk>\d+)$', views.UserInfoGenericMixin.as_view()),
+    re_path('user_ListCreate/', views.UserListCreateAPIView.as_view()),
+    re_path('^user_RetrieveUpdate/(?P<pk>\d+)$', views.UserRetrieveUpdateAPIView.as_view()),
+    re_path('^user_RetrieveUpdateDestroy/(?P<pk>\d+)$', views.UserRetrieveUpdateDestroyAPIView.as_view()),
+
 ]
 
 # router=SimpleRouter()

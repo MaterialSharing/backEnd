@@ -5,6 +5,7 @@ import django.http
 from django.http import JsonResponse
 from django.http import HttpResponse
 from django.views import View
+from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import GenericAPIView, ListAPIView, CreateAPIView, ListCreateAPIView, RetrieveAPIView, \
     UpdateAPIView, RetrieveUpdateAPIView, RetrieveUpdateDestroyAPIView
@@ -12,7 +13,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, ViewSet, GenericViewSet, ReadOnlyModelViewSet
 from rest_framework.mixins import ListModelMixin, CreateModelMixin, UpdateModelMixin, DestroyModelMixin, \
     RetrieveModelMixin
 
@@ -139,7 +140,7 @@ class UserAPIView(APIView):
         # print(f"drf.request={request}")
         print(f"django.reqeust={req._request}")  # WSGIHttpRequest
         print(f"@@!Meta={req._request.META.get('Accept')}")
-        # print(f"reqeust.query_parames={request.query_params}")
+        # print(f"reqeust.query_parames={req.query_params}")
         # return Response({"msg":"ookk"})
         # 有些参数会引起apifox提示header token error!
         # headers={"@@test":"line by cxxu Response"}
@@ -308,7 +309,7 @@ RetrieveUpdateDestroyAPIView = RetrieveAPIView + UpdateAPIView + DestroyAPIView
 """Mixin提供的api界面进一步完善,可以自动完成分页显示等效果"""
 
 
-class UserGenericMixin(ListModelMixin, GenericAPIView, CreateModelMixin):
+class UserGenericMixin(GenericAPIView, ListModelMixin, CreateModelMixin):
     # 定义queryset,该属性字段将由DRF框架内来(使用)
     # print("try to invoke authentication ")
     queryset = uob.all()
@@ -341,14 +342,164 @@ class UserInfoGenericMixin(GenericAPIView, UpdateModelMixin, DestroyModelMixin, 
 class UserListCreateAPIView(ListCreateAPIView):
     queryset = uob.all()
     serializer_class = UserModelSerializer
+
+
 # class UserRetrieveUpdateAPIView(RetrieveAPIView,UpdateAPIView):
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     queryset = uob.all()
     serializer_class = UserModelSerializer
 
+
 class UserRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     queryset = uob.all()
     serializer_class = UserModelSerializer
+
+
+"""上面的接口在实现过程中，也存在了代码重复的情况，我们如果合并成一个接口类，则需要考虑2个问题;1．路由的合并问题
+2. get方法重复问题
+drf提供了视图集可以解决上面的问题ViewSet-->基本视图集
+解决APIView中的代码重复问题
+GenericViewSet -->通用视图集
+解决APIView中的代码重复问题，同时让代码更加"""
+
+
+class UserViewSet(ViewSet):
+    """此时基于APIView的整合"""
+
+    def get_user_info(self, req, pk):
+        # 拷贝UserAPIView的事项.
+        try:
+            user = uob.get(pk=pk)
+        except User.DoesNotExist:
+            return Res(status=status.HTTP_404_NOT_FOUND)
+        user_ser = UserModelSerializer(instance=user)
+        print(req)
+        print(f"@req.data={req.data}")
+        return Res(user_ser.data)
+
+    def get_all(self, req):
+        # 我们采用框架规范建议的方式(使用方法来引用类型属性)
+        queryset = self.get_queryset()  # 主要效果就是self.queryset(当然,通过函数来引用类变量,我们可以再对类变量做一些加工(判断)等处理
+        ser = self.get_serializer(instance=queryset, many=True)  # 这一句也类似self.serializer_class
+        return Res(ser.data)
+
+    def post(self, req):
+        ser = self.get_serializer(data=req.data)
+        # 数据的修改(put->create)/增加(post->create)需要is_valid();然后再save(),比较通用的操作
+        ser.is_valid(raise_exception=True)
+        ser.save()
+        return Res(ser.data, status=status.HTTP_201_CREATED)
+
+    def update(self, req, pk):
+        try:
+            # user = uob.get(pk)#wrong!,use keyword parameter please!
+            user = uob.get(pk=pk)
+            print(user)
+        except User.DoesNotExist:
+            return Res(status=status.HTTP_404_NOT_FOUND)
+        # 修改比添加和删除需要多出传入目标数据(被修改的对象instance需要被修改成什么样(或者说哪些字段data需要修改)
+        # req.data比django原生req.body.data方便
+        print(req)
+        print(f"😂😂😂😂@req.data={req.data}")
+        user_ser = UserModelSerializer(instance=user, data=req.data)
+        user_ser.is_valid(raise_exception=True)
+        user_ser.save()
+        return Res(user_ser.data, status=status.HTTP_201_CREATED)
+        # return Res({"msg": "tesing..."})
+
+    def delete(self, req, pk):
+        ins = self.get_object()
+        ins.delete()
+        return Res(status=status.HTTP_204_NO_CONTENT)
+
+
+"""
+我们可以继续让一些合并的视图集父类让视图继承即可。
+ReadOnlyModelViewSet:获取多条数据+获取一条数据:
+ReadOnlyModelViewSet = mixins.RetrieveModelMixin + mixins .ListModelMixin，+ GenericViewSet
+
+ModelViewSet
+实现了5个API接口
+
+"""
+
+
+class UserGenericViewSet(GenericViewSet, ListCreateAPIView, RetrieveUpdateDestroyAPIView):
+    queryset = uob.all()
+    serializer_class = UserModelSerializer
+
+
+# ReadOnlyModelViewSet+Mixin
+class UserReadOnlyMixin(ReadOnlyModelViewSet, CreateModelMixin, UpdateModelMixin, DestroyModelMixin):
+    queryset = uob.all()
+    serializer_class = UserModelSerializer
+
+
+# ModelViewSet:将继承关系进一步简写.
+"""
+mixins.CreateModelMixin,
+                   mixins.RetrieveModelMixin,
+                   mixins.UpdateModelMixin,
+                   mixins.DestroyModelMixin,
+                   mixins.ListModelMixin,
+                   GenericViewSet
+"""
+"""
+视图集中附加action的声明
+
+在视图集中，如果想要让Router自动帮助我们为自定义的动作生成路由信息，需要使用rest_framework.decorators.action装饰器。
+以action装饰器装饰的方法名会作为`action动作名`，与list、retrieve等同。
+
+action装饰器可以接收两个参数:
+- methods:声明该action对应的请求方式，列表参数- detail:声明该action的路径是否与`单一资源对应`路由前缀/<pk>/action方法名/
+.True表示路径格式是xxx/<pk>/action方法名/- False表示路径格式是xxx/action方法名/- url_path:声明该action的路由尾缀。
+
+"""
+
+
+class UserModelViewSet(ModelViewSet):
+    # 这两行根据被操作的数据模型的不同而不同uob=User.object
+    queryset = uob.all()
+    serializer_class = UserModelSerializer
+
+    # action装饰可以提供基于CRUD的extra actions(DRF的界面中也会体现出
+    # 登录本身不太容易通过restful 描述
+    #    @action(methods=["get"],detail=False,url_path="user/login")
+    @action(methods=["get", "post"], detail=False)
+    # http://127.0.0.1:8000/user/user_ModelViewSet/login_detail/
+    def login(self, req):
+        # 查看action
+        print(self.action)
+        return Response({"msg": "login success!"})
+
+    @action(methods=["get"], detail=True)
+    # http://127.0.0.1:8000/user/user_ModelViewSet/2/login_detail/
+    def login_detail(self, req, pk):
+        return Response({"msg": pk})
+
+    @action(methods=["get"], detail=True, url_path="user_p/login_pd")
+    # url_path所指定的url段可以映射到下面的方法
+    # http://127.0.0.1:8000/user/user_ModelViewSet/2/user_p/login_pd/
+    def login_pathed_detail(self, req, pk):
+        return Response({"msg": pk})
+
+    @action(methods=["get"], detail=False)
+    def filter_names(self, req):
+        """http://127.0.0.1:8000/api/user_ModelViewSet/filter_names/?pattern=create"""
+        # queryset=uob.filter(name__contains="cxxu")
+        # self.queryset
+        if (req.query_params):
+            pattern = req.query_params.get("pattern")
+            print(f"@pattern={pattern}")
+            query = self.get_queryset().filter(name__contains=pattern)
+            print(req.query_params)
+        else:
+            # ser=uob.all()
+            query=uob.all()
+        ser = UserModelSerializer(instance=query, many=True)
+        return Res(ser.data)
+        return Response(req.query_params)
+
 
 class UserSer0View(View):
     """

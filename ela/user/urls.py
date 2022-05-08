@@ -64,12 +64,70 @@ urlpatterns = [
     re_path('user_ListCreate/', views.UserListCreateAPIView.as_view()),
     re_path('^user_RetrieveUpdate/(?P<pk>\d+)$', views.UserRetrieveUpdateAPIView.as_view()),
     re_path('^user_RetrieveUpdateDestroy/(?P<pk>\d+)$', views.UserRetrieveUpdateDestroyAPIView.as_view()),
+    # ViewSet series:(两种匹配模式共用统一一个视图类
+    # 视图集(ViewSet)使得路由的代码变得冗长,后期可以使用默认路由来配合ViewSet的路由简化给部分的编写
 
+    # path('user_ViewSet/', views.UserViewSet.as_view({
+    #     "get": "get_all",
+    #     "post": "post"
+    # })),
+    # re_path('^user_ViewSet/(?P<pk>\d+)$', views.UserViewSet.as_view({
+    #     "get": "get_user_info",
+    #     "put": "update"
+    # })),
+    # # GenericViewSet(注意,以下的映射需要以默认的名称来映射(如果是自定以的方法名,需要再ViewSet中显式的定义并实现,然后在下方的字典参数中注册)
+    # path("user_GenericViewSet/", views.UserGenericViewSet.as_view({
+    #     "get": "list",
+    #     "post": "create",
+    # })),
+    # re_path('^user_GenericViewSet/(?P<pk>\d+)$', views.UserGenericViewSet.as_view(
+    #     {
+    #         "get": "retrieve",
+    #         "put": "update",
+    #         "delete": "destroy",
+    #     }
+    # )),
+    # # ReadOnlyViewSet(注意,以下的映射需要以默认的名称来映射(如果是自定以的方法名,需要再ViewSet中显式的定义并实现,然后在下方的字典参数中注册)
+    # path("user_ReadOnlyViewSet/", views.UserReadOnlyMixin.as_view({
+    #     "get": "list",
+    #     "post": "create",
+    # })),
+    # re_path('^user_ReadOnlyViewSet/(?P<pk>\d+)$', views.UserReadOnlyMixin.as_view(
+    #     {
+    #         "get": "retrieve",
+    #         "put": "update",
+    #         "delete": "destroy",
+    #         # "delete":"delete"
+    #     }
+    # )),
+    # #     ModelViewSet
+    # path("user_ModelViewSet/", views.UserModelViewSet.as_view({
+    #     "get": "list",
+    #     "post": "create",
+    # })),
+    # re_path('^user_ModelViewSet/(?P<pk>\d+)$', views.UserModelViewSet.as_view(
+    #     {
+    #         "get": "retrieve",
+    #         "put": "update",
+    #         "delete": "destroy",
+    #     }
+    # )),
 ]
 
-# router=SimpleRouter()
 # 简单路由
-#
+router = SimpleRouter()
+#提供(生成)更多的路由
+# DefaultRouter与SimpleRouter的区别是,DefaultRouter会多附带一个默认的API根视图，返回一个包含所有列表视图的超链接响应数据。
+router=DefaultRouter()
+# 注册路由(该操作会将基于ViewSet的视图集视图类生成对应的一系列路由)
+router.register("user_GenericViewSet", views.UserGenericViewSet, basename="user_GenericViewSet")
+router.register("user_ModelViewSet", views.UserModelViewSet, basename="ModelViewSetReg")
+print(f"@router.urls={router.urls}")
+urlpatterns += router.urls
+cnt=0
+for url in urlpatterns:
+    cnt+=1
+    print(f"url:@cnt={cnt},@url={url}")
 # router.register(r"user", views.UserApiViewSet)
 # # 将DRF框架生成的连接插入到urlpatterns中
 # urlpatterns += router.urls
@@ -79,4 +137,4 @@ urlpatterns = [
 # <URLPattern '^user/(?P<pk>[^/.]+)/$' [name='user-detail']>
 # ]
 # 譬如使用http://127.0.0.1:8000/user/user/来访问DRF提供的路由
-print(urlpatterns)
+# print(urlpatterns)

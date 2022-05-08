@@ -66,27 +66,33 @@ class User(models.Model):
 
 
 class WordSearchHistory(models.Model):
-    uid = models.IntegerField(primary_key=True)
+    # 主键不显示设置,django自动生成
+    # 将uid设置为外键.
+    # user = models.IntegerField()
+    # 将外键行设置为虚拟外键(db_constraint=False)
+    user=models.ForeignKey(User,on_delete=models.DO_NOTHING,related_name="user_search_history",db_constraint=False)
     spelling = models.IntegerField()
 
     class Meta:
         managed = True
         db_table = 'word_search_history'
-        unique_together = (('uid', 'spelling'),)
+        # unique_together = (('uid', 'spelling'),)
 
 
 class WordStar(models.Model):
-    uid = models.IntegerField(primary_key=True)
+    # user = models.IntegerField(primary_key=True)
+    user=models.ForeignKey(User,on_delete=models.DO_NOTHING,related_name="user_word_star",db_constraint=False)
     spelling = models.IntegerField()
 
     class Meta:
         managed = True
         db_table = 'word_star'
-        unique_together = (('uid', 'spelling'),)
+        # unique_together = (('uid', 'spelling'),)
 
 
 class FeedBack(models.Model):
-    uid = models.IntegerField(primary_key=True)
+    # uid = models.IntegerField(primary_key=True)
+    user=models.ForeignKey(User,on_delete=models.DO_NOTHING,related_name="user_feedback",db_constraint=False)
     content = models.CharField(max_length=255)
     date = models.DateTimeField()
 

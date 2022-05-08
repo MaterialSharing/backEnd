@@ -122,12 +122,14 @@ router=DefaultRouter()
 # 注册路由(该操作会将基于ViewSet的视图集视图类生成对应的一系列路由)
 router.register("user_GenericViewSet", views.UserGenericViewSet, basename="user_GenericViewSet")
 router.register("user_ModelViewSet", views.UserModelViewSet, basename="ModelViewSetReg")
-print(f"@router.urls={router.urls}")
+# print(f"@router.urls={router.urls}")
 urlpatterns += router.urls
-cnt=0
-for url in urlpatterns:
-    cnt+=1
-    print(f"url:@cnt={cnt},@url={url}")
+""" 分行打印路由数组,并且计数"""
+# cnt=0
+# for url in urlpatterns:
+#     cnt+=1
+#     print(f"url:@cnt={cnt},@url={url}")
+
 # router.register(r"user", views.UserApiViewSet)
 # # 将DRF框架生成的连接插入到urlpatterns中
 # urlpatterns += router.urls

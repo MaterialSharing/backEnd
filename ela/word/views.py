@@ -8,14 +8,16 @@ from django.http import HttpResponse
 from django.views import View
 
 # import ela.word.models
+from rest_framework.viewsets import ModelViewSet
+
 from .models import Word
 
 import word.models
+from .serializer import WordModleSerializer
 
-
+wob=Word.objects
 def index(request):
     return HttpResponse("Words!")
-
 
 class WordAPIView(View):
     def get(self, request, word="apply"):
@@ -45,3 +47,6 @@ class WordAPIView(View):
         # word_list=query_set
         #     json_dumps_params可以设置中文编码使得其在浏览器中可以正确显示(不排斥非ascii编码)
         return django.http.JsonResponse(word_list, safe=False, json_dumps_params={"ensure_ascii": False})
+class WordModelViewSet(ModelViewSet):
+    queryset = wob.all()
+    serializer_class = WordModleSerializer

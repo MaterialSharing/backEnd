@@ -12,6 +12,22 @@ def name_common_checker(value):
     return value
 
 
+"""
+什么时候声明的序列化器需要继承序列化器基类Serializer，什么时候继承模型序列化器类ModelSerializer?
+1 继承序列化器类serializer
+    2 字段声明
+    3 验证
+    4 添加/保存数据功能
+5 继承模型序列化器类ModelSerializer
+    字段声明[可选,看需要]
+    7 Meta声明
+    8 验证
+    9 添加/保存数据功能[可选]
+看数据是否从mysqI数据库中获取，如果是则使用ModelSerializer，不是则使用Serializer I
+
+"""
+
+
 # 只用最基本的Serializer类来实现serializer(不使用ModelSerializer中的功能)
 # 该序列化器的名称后缀以基本的Serializer结尾
 class UserSerializer(serializers.Serializer):
@@ -45,6 +61,7 @@ class UserSerializer(serializers.Serializer):
         return value
 
     # 为序列号器实现update方法,使得序列化器能够帮助我们完成数据更新
+    # 在ModelSerializer中,会自动帮我们实现两个方法(create()/update())
     def update(self, instance, validated_data):
         # instance.name = validated_data.get("name", instance.name)
         # instance.signin = validated_data.get("signin", instance.signin)
@@ -70,6 +87,52 @@ class UserSerializer(serializers.Serializer):
 # 继承于ModelSerializer来编写比较简化的代码
 # 该序列化器的名称以ModelSerializer结尾
 class UserModelSerializer(serializers.ModelSerializer):
+    # 可以编写数据模型之外的子字段在此处:
+    # 也可以放置在read_only数组中
+    # 注意这里的字段要只读,一般数据库是没有相应字段,在在这里声明,只用于查询数据的时候展示,不写入
+    # nickname = serializers.CharField(default="testNickname", read_only=True)
+
     class Meta:
+        # ModelSerialzier内部会使用到Meta内类中的model字段来获取模型进行分析
         model = User
-        fields = "__all__"
+        # fields = "__all__"
+        # 如果需要包含模型之外的字段,在上方单独定义字段
+        fields = ["uid", "name", "signin", "signin", ]  # "nickname"
+        # read_only_fields = ["sex", "birthday"]  # 因为是只读,所以旨在序列化(将数据库读出的数据对象转换为指定格式(json...)
+        extra_kwargs = {
+            "signin": {
+                "min_value": 0,
+                "max_value": 100000,
+                "error_messages": {
+                    "min_value": "sign should meet :sign>=0",
+                    "max_value": "sign should meet :sign<100000"
+                }
+            }
+        }
+
+    """update & create
+        def update(self, instance, validated_data):
+        raise_errors_on_nested_writes('update', self, validated_data)
+        info = model_meta.get_field_info(instance)
+
+        # Simply set each attribute on the instance, and then save it.
+        # Note that unlike `.create()` we don't need to treat many-to-many
+        # relationships as being a special case. During updates we already
+        # have an instance pk for the relationships to be associated with.
+        # 遍历实例字段
+        m2m_fields = []
+        for attr, value in validated_data.items():
+            if attr in info.relations and info.relations[attr].to_many:
+                m2m_fields.append((attr, value))
+            else:
+                setattr(instance, attr, value)
+                
+        instance.save()
+        
+        """
+    # 在ModelSerializer中,会自动帮我们实现两个方法(create()/update())
+    # 但是如果需求比较复杂,就需要重写对应的方法(override)
+    # 譬如说,我们要加密用户上传上来的密码,然后在入库
+    # 重写也一般是基于被继承的函数添加一些东系(譬如数据加密,然后在调用父类的被重载函数)
+    # def create(self, validated_data):
+    #     pass

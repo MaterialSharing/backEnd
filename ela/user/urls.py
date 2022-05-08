@@ -20,11 +20,11 @@ urlpatterns=[
 '''
 # 原生开发api(基于通用视图集)所配置的路由:
 urlpatterns = [
-    path('', views.UserApiView.as_view(), name='userPost'),
+    path('', views.UserView.as_view(), name='userPost'),
     # regex array without regexp
     # re_path(r'^(?P<pk>)$',views.UserApiView.as_view(),name='userCheck'),
-    re_path(r'^user/$', views.UserApiView.as_view(), name='userCheck'),
-    re_path(r'^(?P<pk>\d+)/$', views.UserApiView.as_view(), name='userCheck'),
+    re_path(r'^user/$', views.UserView.as_view(), name='userCheck'),
+    re_path(r'^(?P<pk>\d+)/$', views.UserView.as_view(), name='userCheck'),
 
 ]
 # 废弃原生开发
@@ -49,12 +49,18 @@ def register(self,
 router.register("user_d", views.UserApiViewSet, basename="user_drf"),
 urlpatterns = [] + router.urls
 # 暂时关闭
-urlpatterns=[]
+urlpatterns = []
 # 使用drf逐级改造
-urlpatterns=[
+urlpatterns = [
     # user应用内的子路由配置
     # 这里的user表示'资源'(总路由中的user表示应用名)
-    path('user/',views.UserSerView.as_view()),
+    path('user/', views.UserSerView.as_view()),
+    path('user_apiView/', views.UserAPIView.as_view()),
+    re_path('^user_apiView/(?P<pk>\d+)$', views.UserInfoAPIView.as_view()),
+    re_path('^user_generic/(?P<pk>\d+)$', views.UserInfoGenericAPIView.as_view()),
+    re_path('^user_generic/$', views.UserGenericAPIView.as_view()),
+    re_path('^user_genericMixin/$', views.UserGenericMixin.as_view()),
+    re_path('^user_genericMixin/(?P<pk>\d+)$', views.UserInfoGenericMixin.as_view()),
 ]
 
 # router=SimpleRouter()

@@ -793,6 +793,8 @@ class UserApiViewSet(ModelViewSet):
 
 
 # 简化继承后的版本(ListAPIView)
+# class ListAPIView(mixins.ListModelMixin,
+#                   GenericAPIView
 class ListView(ListAPIView):
     print("@@try to invoke authentication ")
     # permission_classes = [IsAuthenticated]

@@ -119,6 +119,8 @@ class UserModelSerializer(serializers.ModelSerializer):
     """方式1"""
     # user = UserModelSerializer()
     # user_word_star = WordStarModelSerializer(many=True)
+    # 指定depth,应该在外表对应的序列化器中指定depth
+    # 当然,一个表(模型)可以对应创建多个序列化器
     """方式2:可以减少json深度"""
     # user_name=serializers.CharField(source="user.name")
     # user_signin=serializers.IntegerField(source="user.signin")

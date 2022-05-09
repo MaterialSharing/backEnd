@@ -1,6 +1,7 @@
 import json
 
 import django.http
+from deprecated.classic import deprecated
 from django.shortcuts import render
 
 # Create your views here.
@@ -8,6 +9,9 @@ from django.http import HttpResponse
 from django.views import View
 
 # import ela.word.models
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.decorators import action
+from rest_framework.filters import OrderingFilter
 from rest_framework.viewsets import ModelViewSet
 
 from .models import Word
@@ -29,6 +33,7 @@ def index(request):
     return HttpResponse("Words!")
 
 
+@deprecated
 class WordAPIView(View):
     def get(self, request, word="apply"):
         # query_set= Word.objects.all()[:10]
@@ -62,7 +67,13 @@ class WordAPIView(View):
 class WordModelViewSet(ModelViewSet):
     queryset = wob.all()
     serializer_class = WordModleSerializer
-
+    # 过滤+排序,统一配置(要么都局部/要么都在setting中全局配置,才可以同是生效
+    filter_backends = [DjangoFilterBackend,OrderingFilter]
+    # http://127.0.0.1:8000/word/dict/?ordering=-spelling
+    filter_fields=['spelling']
+    ordering_fields=['spelling','id']
+    # @action(method=["get"],detail=False)
+    # def
 
 class WordNotesModelViewSet(ModelViewSet):
     queryset = wnob.all()

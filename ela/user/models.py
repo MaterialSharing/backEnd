@@ -34,7 +34,7 @@ class User(models.Model):
         # return [1,3,4]
         # print( "@uws.values():",self.user_word_star.values())
         # 返回全部字段
-        print(self.user_word_star.values())
+        # print(self.user_word_star.values())
         return self.user_word_star.values("spelling","id")
         # return self.user_word_star.values()
 

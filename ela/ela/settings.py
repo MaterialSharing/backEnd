@@ -38,7 +38,7 @@ REST_FRAMEWORK = {
     #     'rest_framework.permissions.AllowAny',
     # )
 
-    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
+    # 'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     # 配置分野参数
     # http://127.0.0.1:8000/user/?page=2
     #  "next": "http://127.0.0.1:8000/user/?page=3",

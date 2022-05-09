@@ -46,7 +46,7 @@ def register(self,
              ) -> None
  '''
 # 最终版本路由(预览)
-router.register("user_d", views.UserApiViewSet, basename="user_drf"),
+# router.register("user_d", views.UserApiViewSet, basename="user_drf"),
 urlpatterns = [] + router.urls
 # 暂时关闭
 urlpatterns = []

@@ -1,6 +1,8 @@
+from deprecated.classic import deprecated
 from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer
 
-from user.models import User
+from user.models import User, WordSearchHistory, WordStar
 
 uob = User.objects
 
@@ -30,15 +32,18 @@ def name_common_checker(value):
 
 # 只用最基本的Serializer类来实现serializer(不使用ModelSerializer中的功能)
 # 该序列化器的名称后缀以基本的Serializer结尾
+@deprecated
 class UserSerializer(serializers.Serializer):
     # 定义元数据类
     class Meta:
         # 指定序列化器是使用的模型类
         model = User
         # 指明使用的字段是给模型的全部字段.
-        # fields = "__all__"
+        fields = "__all__"
         #     可以通过数组,指定个别字段
-        fields = ["name", "signin", "signupdate", ]
+        # fields = ["name", "signin", "signupdate", ]
+
+    #     指定嵌套(关联)深度
 
     # 基本的校验方式:通过指定字段的参数来传递限制条件
     name = serializers.CharField(max_length=30)
@@ -84,6 +89,18 @@ class UserSerializer(serializers.Serializer):
         return user
 
 
+# 单词收藏序列化器
+class WordStarModelSerializer(ModelSerializer):
+    class Meta:
+        model = WordStar
+        fields = "__all__"
+        # fields = ["id", "spelling", "user_name","user_signin"]
+        # fields=["id","user_info","spelling"]
+        #在外键引用者中指定关联深度(被反向查询的深度)
+        depth = 0
+        depth = 1
+
+
 # 继承于ModelSerializer来编写比较简化的代码
 # 该序列化器的名称以ModelSerializer结尾
 class UserModelSerializer(serializers.ModelSerializer):
@@ -91,13 +108,35 @@ class UserModelSerializer(serializers.ModelSerializer):
     # 也可以放置在read_only数组中
     # 注意这里的字段要只读,一般数据库是没有相应字段,在在这里声明,只用于查询数据的时候展示,不写入
     nickname = serializers.CharField(default="testNickname", read_only=True)
+    """序列化器嵌套"""
+    # 嵌套调用序列化器
+    # 对外键模型做反向查询,外键表对象想要知道哪些对象引用了自己
+    # 注意名字必须是外键名(更准确的说,是related_name所指定的名字,可以防止名字冲突)
+    # (这个名字是定义在外键引用者模型中)(被引用者中不体现)
+    # user = UserModelSerializer()
+    # 如果反向查询到多个对象,那么需要传入构造参数many=True
+    # user_word_star = WordStarModelSerializer(many=True)
+    """方式1"""
+    # user = UserModelSerializer()
+    # user_word_star = WordStarModelSerializer(many=True)
+    """方式2:可以减少json深度"""
+    # user_name=serializers.CharField(source="user.name")
+    # user_signin=serializers.IntegerField(source="user.signin")
+    #
+    """使用模型中自定义方法"""
+
 
     class Meta:
         # ModelSerialzier内部会使用到Meta内类中的model字段来获取模型进行分析
         model = User
         # fields = "__all__"
         # 如果需要包含模型之外的字段,在上方单独定义字段
-        fields = ["uid", "name", "signin", "signin","nickname", ]  # "nickname"
+        # fields = ["uid", "name", "signin", "nickname","user_word_star" ]  # "nickname"
+        # 注意,属性方法被fields="__all__"囊括,您需要显式的将字段卸载fields
+        # 幸运的是,我们通常也是通过逐个指定白名单来提供给客户端
+        # http://127.0.0.1:8000/user/user_info/ (注意DRF的分页功能,数据较少,请在page1检查)
+        fields = ["uid", "name", "signin", "nickname","alias" ]  # "nickname"
+
         read_only_fields = ["sex", "birthday"]  # 因为是只读,所以旨在序列化(将数据库读出的数据对象转换为指定格式(json...)
         extra_kwargs = {
             "signin": {
@@ -109,6 +148,7 @@ class UserModelSerializer(serializers.ModelSerializer):
                 }
             }
         }
+        # depth = 1
 
     """update & create
         def update(self, instance, validated_data):
@@ -136,3 +176,11 @@ class UserModelSerializer(serializers.ModelSerializer):
     # 重写也一般是基于被继承的函数添加一些东系(譬如数据加密,然后在调用父类的被重载函数)
     # def create(self, validated_data):
     #     pass
+
+
+class WSHModelSerializer(ModelSerializer):
+    # user_search
+    class Meta:
+        model = WordSearchHistory
+        # fields = ["user"]
+        fields = "__all__"

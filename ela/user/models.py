@@ -25,6 +25,19 @@ class User(models.Model):
         s = self
         return str([s.uid, s.name, s.signin, s.examdate, s.examtype, s.signupdate])
 
+    # @property
+    # def user_name(self):
+    #     s = self
+    #     return s.name
+    # @property
+    def alias(self):
+        # return [1,3,4]
+        # print( "@uws.values():",self.user_word_star.values())
+        # 返回全部字段
+        print(self.user_word_star.values())
+        return self.user_word_star.values("spelling","id")
+        # return self.user_word_star.values()
+
 
 # class UserInfo(models.Model):
 #     # 使用默认值会优于可空值(如果能够找到合适的more值的话!)
@@ -64,35 +77,64 @@ class User(models.Model):
 #         managed=True
 #         db_table = 'user'
 
+class WordStar(models.Model):
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="user_word_star", db_constraint=False)
+    spelling = models.CharField(default="application", max_length=25)
+
+    # testField=models.CharField(default="testField",max_length=55)
+    class Meta:
+        managed = True
+        db_table = 'word_star'
+        # unique_together = (('uid', 'spelling'),)
+
+    def __str__(self):
+        s = self
+        return str([s.id, s.user, s.spelling])
+        # return "ws@@"
+
+    #     自定义属性方法
+    # @property
+    # def spelling(self):
+    #     return [12, 3, 4]
+    # return self.spelling.Upper()
+    # return self.user_id.values()
+    #     # print(self.user_word_star)
+    # return User.objects.values()
+    @property
+    def alias(self):
+        return [1, 2, 3]
+
 
 class WordSearchHistory(models.Model):
     # 主键不显示设置,django自动生成
     # 将uid设置为外键.
     # user = models.IntegerField()
     # 将外键行设置为虚拟外键(db_constraint=False)
-    user=models.ForeignKey(User,on_delete=models.DO_NOTHING,related_name="user_search_history",db_constraint=False)
-    spelling = models.IntegerField()
-
     class Meta:
         managed = True
         db_table = 'word_search_history'
         # unique_together = (('uid', 'spelling'),)
 
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="user_search_history", db_constraint=False)
+    spelling = models.CharField(default="application", max_length=25)
 
-class WordStar(models.Model):
-    # user = models.IntegerField(primary_key=True)
-    user=models.ForeignKey(User,on_delete=models.DO_NOTHING,related_name="user_word_star",db_constraint=False)
-    spelling = models.IntegerField()
+    def __str__(self):
+        s = self
+        return str([s.id, s.user, s.spelling])
+    # def ush(self):
+    #     return self.user_search
 
-    class Meta:
-        managed = True
-        db_table = 'word_star'
-        # unique_together = (('uid', 'spelling'),)
+
+class TestForeignKey(models.Model):
+    # 外键会实际的在数据库中生成
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="user_testF", db_constraint=False)
+    count = models.CharField(max_length=50)
+    #     如果不设置Meta,数据库名称将自动生成
 
 
 class FeedBack(models.Model):
     # uid = models.IntegerField(primary_key=True)
-    user=models.ForeignKey(User,on_delete=models.DO_NOTHING,related_name="user_feedback",db_constraint=False)
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="user_feedback", db_constraint=False)
     content = models.CharField(max_length=255)
     date = models.DateTimeField()
 

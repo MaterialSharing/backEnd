@@ -17,14 +17,58 @@ from rest_framework.viewsets import ModelViewSet, ViewSet, GenericViewSet, ReadO
 from rest_framework.mixins import ListModelMixin, CreateModelMixin, UpdateModelMixin, DestroyModelMixin, \
     RetrieveModelMixin
 
-from user.models import User
+from user.models import User, WordStar, WordSearchHistory
 from rest_framework import serializers, status
-from user.serializer import UserSerializer, UserModelSerializer
+from user.serializer import UserSerializer, UserModelSerializer, WordStarModelSerializer, WSHModelSerializer
 
 # from django.urls
 # Create your views here.
 uob = User.objects
 Res = Response
+
+
+def index(request):
+    return HttpResponse("Hello, world. You're at the polls index.\n content provided by poll/view.py")
+
+
+def userAdd(request, name):
+    print("try to add demo user..")
+    # 实例化一个新对象,用以增加和修改表的记录
+    ob = User()
+    # print(ob.objects.all())
+    print(ob)
+    print(type(ob))
+    ob.name = name
+    ob.examDate = '2021-10-11'
+    ob.examType = '6'
+    ob.signIn = 33
+    # 使用save执行
+    ob.save()
+    return HttpResponse(f"{ob.name} added!")
+
+
+def userDelete(request, name):
+    print("try to delete user%s" % (name))
+    # t:table
+    modUser = User.objects
+    user = modUser.all()
+
+
+def userCheck(request, name):
+    print("try user check..")
+    ob = User.objects
+    try:
+
+        users = ob.all()
+        for user in users:
+            print(user)
+            print()
+        # ob.get(name='cxxu')
+        res = ob.get(name=name)
+        print(f'@res={res}')
+        return HttpResponse(res)
+    except:
+        return HttpResponse("no specified user exist yet !")
 
 
 # 使用Django原生的方式开发Restful api
@@ -495,7 +539,7 @@ class UserModelViewSet(ModelViewSet):
             print(req.query_params)
         else:
             # ser=uob.all()
-            query=uob.all()
+            query = uob.all()
         ser = UserModelSerializer(instance=query, many=True)
         return Res(ser.data)
         return Response(req.query_params)
@@ -774,45 +818,17 @@ class ListView(ListAPIView):
     # def get()等就不用再写了.
 
 
-def index(request):
-    return HttpResponse("Hello, world. You're at the polls index.\n content provided by poll/view.py")
+wsob = WordStar.objects
 
 
-def userAdd(request, name):
-    print("try to add demo user..")
-    # 实例化一个新对象,用以增加和修改表的记录
-    ob = User()
-    # print(ob.objects.all())
-    print(ob)
-    print(type(ob))
-    ob.name = name
-    ob.examDate = '2021-10-11'
-    ob.examType = '6'
-    ob.signIn = 33
-    # 使用save执行
-    ob.save()
-    return HttpResponse(f"{ob.name} added!")
+class WordStarModelViewSet(ModelViewSet):
+    queryset = wsob.all()
+    serializer_class = WordStarModelSerializer
 
 
-def userDelete(request, name):
-    print("try to delete user%s" % (name))
-    # t:table
-    modUser = User.objects
-    user = modUser.all()
+wshob = WordSearchHistory.objects
 
 
-def userCheck(request, name):
-    print("try user check..")
-    ob = User.objects
-    try:
-
-        users = ob.all()
-        for user in users:
-            print(user)
-            print()
-        # ob.get(name='cxxu')
-        res = ob.get(name=name)
-        print(f'@res={res}')
-        return HttpResponse(res)
-    except:
-        return HttpResponse("no specified user exist yet !")
+class WSHModelViewSet(ModelViewSet):
+    queryset = wshob.all()
+    serializer_class = WSHModelSerializer

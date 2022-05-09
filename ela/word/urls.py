@@ -10,5 +10,6 @@ urlpatterns=[
 ]
 router=SimpleRouter()
 router.register("word_ViewSet",views.WordModelViewSet,basename="word")
+# http://127.0.0.1:8000/word/word_ViewSet/1000/
 urlpatterns+=router.urls
 print(f"@router.urls={router.urls}@word")

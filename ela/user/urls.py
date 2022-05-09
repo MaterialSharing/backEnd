@@ -116,15 +116,20 @@ urlpatterns = [
 
 # 简单路由
 router = SimpleRouter()
-#提供(生成)更多的路由
+# 提供(生成)更多的路由
 # DefaultRouter与SimpleRouter的区别是,DefaultRouter会多附带一个默认的API根视图，返回一个包含所有列表视图的超链接响应数据。
-router=DefaultRouter()
+# router=DefaultRouter()
+""" """
 # 注册路由(该操作会将基于ViewSet的视图集视图类生成对应的一系列路由)
-router.register("user_GenericViewSet", views.UserGenericViewSet, basename="user_GenericViewSet")
-router.register("user_ModelViewSet", views.UserModelViewSet, basename="ModelViewSetReg")
+# router.register("user_GenericViewSet", views.UserGenericViewSet, basename="user_GenericViewSet")
+# router.register("user_ModelViewSet", views.UserModelViewSet, basename="ModelViewSetReg")
+router.register("user_info", views.UserModelViewSet, basename="user_info")
+router.register("word_search_history", views.WSHModelViewSet, basename="word_search_history")
+router.register("word_star", views.WordStarModelViewSet, basename="word_star")
 # print(f"@router.urls={router.urls}")
 urlpatterns += router.urls
-""" 分行打印路由数组,并且计数"""
+# print(urlpatterns)
+# """ 分行打印路由数组,并且计数"""
 # cnt=0
 # for url in urlpatterns:
 #     cnt+=1
@@ -139,4 +144,3 @@ urlpatterns += router.urls
 # <URLPattern '^user/(?P<pk>[^/.]+)/$' [name='user-detail']>
 # ]
 # 譬如使用http://127.0.0.1:8000/user/user/来访问DRF提供的路由
-# print(urlpatterns)

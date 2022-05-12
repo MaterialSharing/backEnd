@@ -2,6 +2,7 @@
 import json
 
 import django.http
+from deprecated.classic import deprecated
 from django.http import JsonResponse
 from django.http import HttpResponse
 from django.views import View
@@ -24,14 +25,16 @@ from user.serializer import UserSerializer, UserModelSerializer, WordStarModelSe
 
 # from django.urls
 # Create your views here.
+from word.filters import DIYPagination
+
 uob = User.objects
 Res = Response
 
-
+@deprecated
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.\n content provided by poll/view.py")
 
-
+@deprecated
 def userAdd(request, name):
     print("try to add demo user..")
     # 实例化一个新对象,用以增加和修改表的记录
@@ -47,14 +50,14 @@ def userAdd(request, name):
     ob.save()
     return HttpResponse(f"{ob.name} added!")
 
-
+@deprecated
 def userDelete(request, name):
     print("try to delete user%s" % (name))
     # t:table
     modUser = User.objects
     user = modUser.all()
 
-
+@deprecated
 def userCheck(request, name):
     print("try user check..")
     ob = User.objects
@@ -73,6 +76,7 @@ def userCheck(request, name):
 
 
 # 使用Django原生的方式开发Restful api
+@deprecated
 class UserView(View):
     def get(self, reqeust, pk=-1):
         print("@pk", pk)
@@ -159,7 +163,7 @@ class UserView(View):
         # return HttpResponse(status=204)
         return JsonResponse(data={}, status=204)
 
-
+@deprecated()
 class UserSer0View(View):
     """
     def post(self,request):
@@ -302,7 +306,7 @@ class UserSer0View(View):
         user_ser.save()  # 这里传递的参数给save()可以免除验证
         return JsonResponse(user_ser.data, status=201)
 
-
+@deprecated()
 class UserSerView(View):
 
     def get_get(self, request):
@@ -399,11 +403,28 @@ authentication_classes列表或元组，身份认证类
 
 
 # 编写基于drf提供的APIView的子类视图
-# 尝试实现常用的5中类型接口,可以将这5个接口划分为2部分(拆分给两个视图类来负责)
-# 根据路由url是否带有参数:
+# 尝试基于ApiView实现常用的5中类型接口,可以将这5个接口划分为2部分(拆分给两个视图类来负责)
+# 根据路由url是否带有参数:(将接口分散到多个视图类中)
 # 一个类负责处理带有参数(pk)(查询/修改/删除)某个id)
 # 另一个负责不需要带参数的(譬如查询所有/添加一条记录(id自增)
+
 # 此时的简化还是有限的,无法更加通用(可以通过genericAPIView进一步优化
+
+# APIView是REST framework提供的所有视图的基类，继承自Django的View父类。
+#
+# drf的APIView与djangoView的不同之处在于：
+#
+# 传入到视图方法中的是REST framework的Request对象，而不是Django的HttpRequeset对象；
+# 视图方法可以返回REST framework的Response对象，视图会为响应数据设置（render）符合前端要求的格式；
+# 任何APIException异常都会被捕获到，并且处理成合适的响应信息；
+# 重写了as_view()，在进行dispatch()路由分发前，会对http请求进行身份认证、权限检查、访问流量控制。
+# 支持定义的类属性
+#
+# authentication_classes 列表或元组，身份认证类
+# permissoin_classes 列表或元组，权限检查类
+# throttle_classes 列表或元祖，流量控制类
+# 在APIView中仍以常规的类视图定义方法来实现get() 、post() 或者其他请求方式的方法。
+@deprecated()
 class UserAPIView(APIView):
     def get(self, req):
         # print(f"drf.request={request}")
@@ -413,8 +434,8 @@ class UserAPIView(APIView):
         # return Response({"msg":"ookk"})
         # 有些参数会引起apifox提示header token error!
         # headers={"@@test":"line by cxxu Response"}
-        users_ser = uob.all()
-        users_ser = UserModelSerializer(instance=users_ser, many=True)
+        users = uob.all()
+        users_ser = UserModelSerializer(instance=users, many=True)
         return Res(users_ser.data)
         return Response({"msg": "ok(drfResponse)"}, status=status.HTTP_200_OK)
 
@@ -447,7 +468,7 @@ class UserAPIView(APIView):
         """
         return Response({"msg": "ok(drf_post)"})
 
-
+@deprecated()
 class UserInfoAPIView(APIView):
     def get(self, req, pk):
         try:
@@ -455,8 +476,8 @@ class UserInfoAPIView(APIView):
         except User.DoesNotExist:
             return Res(status=status.HTTP_404_NOT_FOUND)
         user_ser = UserModelSerializer(instance=user)
-        print(req)
-        print(f"@req.data={req.data}")
+        # print(req)
+        # print(f"@req.data={req.data}")
         return Res(user_ser.data)
 
     def put(self, req, pk):
@@ -491,12 +512,14 @@ class UserInfoAPIView(APIView):
 # 再genericAPIView中,通过浏览器访问的界面中进一步增强了具体性,其中特别是根据数据模型,创建了一个较为方便的表单视图(在APIView中仅有一个总体的框框)
 # 同时,错误信息进一步改善,可以将错误返回为一个json
 # 通用代码进一步抽象成基类,可以被子类继承复用
+@deprecated()
 class UserGenericAPIView(GenericAPIView):
     """
     这些属性(代码不可共用(直接涉及到具体的模型),将它们提前到类属性中),而不是作为成员方法的内部变量.
     """
-    # 固定属性queryset
+    # 固定属性queryset(必填)
     queryset = uob.all()
+    # 默认序列化器指定(选填)
     serializer_class = UserModelSerializer
 
     def get(self, req):
@@ -512,11 +535,18 @@ class UserGenericAPIView(GenericAPIView):
         ser.save()
         return Res(ser.data, status=status.HTTP_201_CREATED)
 
-
+@deprecated()
 class UserInfoGenericAPIView(GenericAPIView):
     queryset = uob.all()
+    # 默认序列化器
     serializer_class = UserModelSerializer
-
+    # 重写序列化器指定方法
+    # def get_serializer_class(self):
+    #         """重写获取序列化器类的方法"""
+    #         if self.request.method == "GET":
+    #             return StudentModel2Serializer
+    #         else:
+    #             return StudentModelSerializer
     def get(self, req, pk):
         ins = self.get_object()
         # keyword name must be `instance`(by source code of DRF
@@ -577,7 +607,7 @@ RetrieveUpdateDestroyAPIView = RetrieveAPIView + UpdateAPIView + DestroyAPIView
 # 使用混入类
 """Mixin提供的api界面进一步完善,可以自动完成分页显示等效果"""
 
-
+@deprecated()
 class UserGenericMixin(GenericAPIView, ListModelMixin, CreateModelMixin):
     # 定义queryset,该属性字段将由DRF框架内来(使用)
     # print("try to invoke authentication ")
@@ -591,7 +621,7 @@ class UserGenericMixin(GenericAPIView, ListModelMixin, CreateModelMixin):
     def post(self, req):
         return self.create(req)
 
-
+@deprecated()
 class UserInfoGenericMixin(GenericAPIView, UpdateModelMixin, DestroyModelMixin, RetrieveModelMixin):
     queryset = uob.all()
     serializer_class = UserModelSerializer
@@ -612,22 +642,22 @@ class UserInfoGenericMixin(GenericAPIView, UpdateModelMixin, DestroyModelMixin, 
 
 # 使用视图子类,根据接口功能来继承视图类
 # class UserListCreateAPIView(ListAPIView,CreateAPIView):
+@deprecated()
 class UserListCreateAPIView(ListCreateAPIView):
     queryset = uob.all()
     serializer_class = UserModelSerializer
 
+    # @override list method (derived from ListAPIView)
+    # def list(self):
+    #     pass
 
-# 最终的版本:ModelViewSet
-# 自定义分页器配置
-class DIYPagination(PageNumberPagination):
-    page_query_param = 'pager'  # 默认是page
-    page_size = 4  # 每一页可以显示的条数
-    max_page_size = 50  # 前端最多可以请求到第50页
+
 
 
 # 简化继承后的版本(ListAPIView)
 # class ListAPIView(mixins.ListModelMixin,
 #                   GenericAPIView
+@deprecated
 class ListView(ListAPIView):
     print("@@try to invoke authentication ")
     # permission_classes = [IsAuthenticated]
@@ -654,11 +684,12 @@ class ListView(ListAPIView):
 
 
 # class UserRetrieveUpdateAPIView(RetrieveAPIView,UpdateAPIView):
+@deprecated
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     queryset = uob.all()
     serializer_class = UserModelSerializer
 
-
+@deprecated
 class UserRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     queryset = uob.all()
     serializer_class = UserModelSerializer
@@ -671,7 +702,7 @@ drf提供了视图集可以解决上面的问题ViewSet-->基本视图集
 GenericViewSet -->通用视图集
 解决APIView中的代码重复问题，同时让代码更加"""
 
-
+@deprecated
 class UserViewSet(ViewSet):
     """此时基于APIView的整合"""
 
@@ -732,13 +763,14 @@ ModelViewSet
 
 """
 
-
+@deprecated
 class UserGenericViewSet(GenericViewSet, ListCreateAPIView, RetrieveUpdateDestroyAPIView):
     queryset = uob.all()
     serializer_class = UserModelSerializer
 
 
 # ReadOnlyModelViewSet+Mixin
+@deprecated()
 class UserReadOnlyMixin(ReadOnlyModelViewSet, CreateModelMixin, UpdateModelMixin, DestroyModelMixin):
     queryset = uob.all()
     serializer_class = UserModelSerializer
@@ -770,12 +802,14 @@ class UserModelViewSet(ModelViewSet):
     # 这两行根据被操作的数据模型的不同而不同uob=User.object
     queryset = uob.all()
     serializer_class = UserModelSerializer
+    # 过滤/分页
     filter_fields = ('name', 'signupdate','signin')
     # filter_backends = [OrderingFilter]
     # http://127.0.0.1:8000/user/?ordering=uid
     # http://127.0.0.1:8000/user/?ordering=-signin
     #     局部验证
     authentication_classes = [SessionAuthentication,BasicAuthentication]
+    # pagination_class = DIYPagination
     # 如何修改get?
     def get(self, req):
         # print(req.user)

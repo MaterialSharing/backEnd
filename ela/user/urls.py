@@ -64,6 +64,14 @@ urlpatterns = [
     re_path('user_ListCreate/', views.UserListCreateAPIView.as_view()),
     re_path('^user_RetrieveUpdate/(?P<pk>\d+)$', views.UserRetrieveUpdateAPIView.as_view()),
     re_path('^user_RetrieveUpdateDestroy/(?P<pk>\d+)$', views.UserRetrieveUpdateDestroyAPIView.as_view()),
+    #1 添加自定视图函数(尤其是在基本的CRUD操作之外的操作.有多种方案
+    #2 采用视图集
+    #3  视图图集可以通过DRF提供的as.views()函数,通过传入映射http动作:自定函数的映射关系子字典,来区分和调用不同的处理函数
+    #3 一个视图集中可以有多个隶属于get动作的方法,但是为例区分它们,你需要编写相应数量的路由(以及指定映射关系使得自定函数能够工作)
+    #2 采用api分散在多个视图类中的方式编写多个方法,视图类中的方法名局限于与固定的几个方法名,可以通过注释来加说明函数/参数用途
+    #3 比如前面的get(无参)获取全部数据的方法,以及需要指定主键pk的get方法,将它们放置在不同的视图类中
+    #3这种方式,也是通过编写路由来区分函数调用(
+
     # ViewSet series:(两种匹配模式共用统一一个视图类
     # 视图集(ViewSet)使得路由的代码变得冗长,后期可以使用默认路由来配合ViewSet的路由简化给部分的编写
 

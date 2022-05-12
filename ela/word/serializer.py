@@ -3,7 +3,7 @@ from rest_framework.serializers import ModelSerializer
 from word.models import Word, WordNotes, Cet4WordsReq, Cet6WordsReq, NeepWordsReq
 
 
-class WordModleSerializer(ModelSerializer):
+class WordModelSerializer(ModelSerializer):
     class Meta:
         model = Word
         # fields=["spelling"]

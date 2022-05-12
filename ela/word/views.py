@@ -1,4 +1,5 @@
 import json
+from warnings import filters
 
 import django.http
 from deprecated.classic import deprecated
@@ -11,13 +12,14 @@ from django.views import View
 # import ela.word.models
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
-from rest_framework.filters import OrderingFilter
+from rest_framework import filters
+from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.viewsets import ModelViewSet
 
 from .models import Word
 
 import word.models
-from .serializer import WordModleSerializer
+from .serializer import WordModelSerializer
 from word.models import WordNotes, Cet4WordsReq, Cet6WordsReq, NeepWordsReq
 from word.serializer import NeepWordsReqModelSerializer, WordNotesModelSerializer, Cet4WordsReqModelSerializer, \
     Cet6WordsReqModelSerializer
@@ -66,14 +68,15 @@ class WordAPIView(View):
 
 class WordModelViewSet(ModelViewSet):
     queryset = wob.all()
-    serializer_class = WordModleSerializer
+    serializer_class = WordModelSerializer
     # 过滤+排序,统一配置(要么都局部/要么都在setting中全局配置,才可以同是生效
-    filter_backends = [DjangoFilterBackend,OrderingFilter]
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
     # http://127.0.0.1:8000/word/dict/?ordering=-spelling
-    filter_fields=['spelling']
-    ordering_fields=['spelling','id']
+    filter_fields = ['spelling', 'wid', 'plurality', 'thirdpp']
+    ordering_fields = ['spelling', 'id']
     # @action(method=["get"],detail=False)
     # def
+
 
 class WordNotesModelViewSet(ModelViewSet):
     queryset = wnob.all()
@@ -83,6 +86,30 @@ class WordNotesModelViewSet(ModelViewSet):
 class Cet4WordsModelViewSet(ModelViewSet):
     queryset = c4ob.all()
     serializer_class = Cet4WordsReqModelSerializer
+    # 过滤/搜索/排序/分页
+    ## individual filter_backends config(local for current View)
+    ### 局部单独配置会覆盖全局变量
+    # filter_backends = [filters.SearchFilter,DjangoFilterBackend,OrderingFilter ]
+    # filter_backends = [filters.SearchFilter]
+    # 过滤
+    ##基本过滤
+    filter_fields = ['spelling', 'wordorder']  # 指定模型字段,作为url参数名
+    ##基于文本字段的过滤
+    ### 点击Filter按钮,可以弹出Search框,该api默认提供类似contain的效果
+    """
+    The search behavior may be restricted by prepending various characters to the search_fields.
+    '^' Starts-with search.
+    '=' Exact matches.
+    '@' Full-text search. (Currently only supported Django's PostgreSQL backend.)
+    '$' Regex search.
+    """
+    ####  正则搜索:测试连接:
+    """     http://127.0.0.1:8000/word/cet4/?search=s.*p.*
+    """
+    search_fields = ['$spelling']
+    # http://127.0.0.1:8000/word/cet4/?ordering=-spelling
+    # 排序
+    ordering_fields = ['spelling', 'wordorder']
 
 
 class Cet6WordsModelViewSet(ModelViewSet):

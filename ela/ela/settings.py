@@ -13,6 +13,10 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+# from rest_framework.filters import OrderingFilter
+# import word
+# from word.filters import DIYPagination
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
@@ -25,11 +29,14 @@ SECRET_KEY = 'django-insecure-4@f$7t9t#zigdv1#5(&hd^oa!vetbizq*%#!%g@h71a_ir39@-
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-#不可以再本文件(settings.py)中导入多余的包,容易造成某些配置无法正常工作!
+# 不可以再本文件(settings.py)中导入多余的包,容易造成某些配置无法正常工作!
 # from  rest_framework.pagination import PageNumberPagination as PNP
 # from django_filters.rest_framework import DjangoFilterBackend
 # dpc="DEFAULT_PAGENATION_CLASS"
+
+
 REST_FRAMEWORK = {
+    # 权限认证
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.BasicAuthentication',  # 使用基本认证
         'rest_framework.authentication.SessionAuthentication',  # session认证
@@ -37,17 +44,26 @@ REST_FRAMEWORK = {
     # 'DEFAULT_PERMISSON_CLASSES': (
     #     'rest_framework.permissions.AllowAny',
     # )
+    # 'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    # 配置过滤
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter',
+    ],
 
-    # 'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
-    # 配置分野参数
+    # 测试连接
+    # 分页参数
     # http://127.0.0.1:8000/user/?page=2
     #  "next": "http://127.0.0.1:8000/user/?page=3",
     #  "previous": "http://127.0.0.1:8000/user/",
-    'DEFAULT_PAGINATION_CLASS':'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE':3, #each page content size
+    # 分页配置:pagination
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    # word.filters.DIYPagination
+    'DEFAULT_PAGINATION_CLASS': 'word.filters.DIYPagination',
+    'PAGE_SIZE': 3,  # each page content size
     # dpc:(PNP)
 }
-
 
 # Application definition
 
@@ -60,7 +76,8 @@ INSTALLED_APPS = [
     #     name = 'user'
     # --------add your app to active (register) them!----------
     'rest_framework',  # DRF
-    'django_filters',
+    'django_filters',  # 过滤
+    'blogs.apps.BlogsConfig',
     'main.apps.MainConfig',
     'scoreImprover.apps.ScoreimproverConfig',
     'word.apps.WordConfig',

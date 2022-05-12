@@ -44,6 +44,7 @@ class ResultsView(generic.DetailView):
 def vote(request, question_id):
     """ 参数question_id从传递进来(vote)的url解析并接受传入
     利用该参数进行数据库查询"""
+    # python异常处理文档:https://docs.python.org/zh-cn/3/tutorial/errors.html#handling-exceptions
     question = get_object_or_404(Question, pk=question_id)
     try:
         # 一对多(外键模型实例的)反向查询choice_set 语言上相当于(question的)choices

@@ -131,13 +131,13 @@ class UserModelSerializer(serializers.ModelSerializer):
     class Meta:
         # ModelSerialzier内部会使用到Meta内类中的model字段来获取模型进行分析
         model = User
-        # fields = "__all__"
+        fields = "__all__"
         # 如果需要包含模型之外的字段,在上方单独定义字段
         # fields = ["uid", "name", "signin", "nickname","user_word_star" ]  # "nickname"
         # 注意,属性方法被fields="__all__"囊括,您需要显式的将字段卸载fields
         # 幸运的是,我们通常也是通过逐个指定白名单来提供给客户端
         # http://127.0.0.1:8000/user/user_info/ (注意DRF的分页功能,数据较少,请在page1检查)
-        fields = ["uid", "name", "signin", "nickname","alias" ]  # "nickname"
+        # fields = ["uid", "name", "signin", "nickname","alias" ]  # "nickname"
 
         read_only_fields = ["sex", "birthday"]  # 因为是只读,所以旨在序列化(将数据库读出的数据对象转换为指定格式(json...)
         extra_kwargs = {

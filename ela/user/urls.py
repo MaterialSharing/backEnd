@@ -64,13 +64,20 @@ urlpatterns = [
     re_path('user_ListCreate/', views.UserListCreateAPIView.as_view()),
     re_path('^user_RetrieveUpdate/(?P<pk>\d+)$', views.UserRetrieveUpdateAPIView.as_view()),
     re_path('^user_RetrieveUpdateDestroy/(?P<pk>\d+)$', views.UserRetrieveUpdateDestroyAPIView.as_view()),
-    #1 添加自定视图函数(尤其是在基本的CRUD操作之外的操作.有多种方案
-    #2 采用视图集
-    #3  视图图集可以通过DRF提供的as.views()函数,通过传入映射http动作:自定函数的映射关系子字典,来区分和调用不同的处理函数
-    #3 一个视图集中可以有多个隶属于get动作的方法,但是为例区分它们,你需要编写相应数量的路由(以及指定映射关系使得自定函数能够工作)
-    #2 采用api分散在多个视图类中的方式编写多个方法,视图类中的方法名局限于与固定的几个方法名,可以通过注释来加说明函数/参数用途
-    #3 比如前面的get(无参)获取全部数据的方法,以及需要指定主键pk的get方法,将它们放置在不同的视图类中
-    #3这种方式,也是通过编写路由来区分函数调用(
+    path('info/<int:pk>/signin/', views.UserModelViewSet.as_view({
+        "put": "signin"
+    })),
+    # 多对多(user_word_star)
+    # path('star')
+
+
+    # 1 添加自定视图函数(尤其是在基本的CRUD操作之外的操作.有多种方案
+    # 2 采用视图集
+    # 3  视图图集可以通过DRF提供的as.views()函数,通过传入映射http动作:自定函数的映射关系子字典,来区分和调用不同的处理函数
+    # 3 一个视图集中可以有多个隶属于get动作的方法,但是为例区分它们,你需要编写相应数量的路由(以及指定映射关系使得自定函数能够工作)
+    # 2 采用api分散在多个视图类中的方式编写多个方法,视图类中的方法名局限于与固定的几个方法名,可以通过注释来加说明函数/参数用途
+    # 3 比如前面的get(无参)获取全部数据的方法,以及需要指定主键pk的get方法,将它们放置在不同的视图类中
+    # 3这种方式,也是通过编写路由来区分函数调用(
 
     # ViewSet series:(两种匹配模式共用统一一个视图类
     # 视图集(ViewSet)使得路由的代码变得冗长,后期可以使用默认路由来配合ViewSet的路由简化给部分的编写
@@ -80,7 +87,7 @@ urlpatterns = [
     #     "post": "post"
     # })),
     # re_path('^user_ViewSet/(?P<pk>\d+)$', views.UserViewSet.as_view({
-    #     "get": "get_user_info",
+    #     "get": "get_info",
     #     "put": "update"
     # })),
     # # GenericViewSet(注意,以下的映射需要以默认的名称来映射(如果是自定以的方法名,需要再ViewSet中显式的定义并实现,然后在下方的字典参数中注册)
@@ -131,7 +138,7 @@ router = SimpleRouter()
 # 注册路由(该操作会将基于ViewSet的视图集视图类生成对应的一系列路由)
 # router.register("user_GenericViewSet", views.UserGenericViewSet, basename="user_GenericViewSet")
 # router.register("user_ModelViewSet", views.UserModelViewSet, basename="ModelViewSetReg")
-router.register("user_info", views.UserModelViewSet, basename="user_info")
+router.register("info", views.UserModelViewSet, basename="info")
 router.register("word_search_history", views.WSHModelViewSet, basename="word_search_history")
 router.register("word_star", views.WordStarModelViewSet, basename="word_star")
 # print(f"@router.urls={router.urls}")

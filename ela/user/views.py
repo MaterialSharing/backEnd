@@ -30,9 +30,11 @@ from word.filters import DIYPagination
 uob = User.objects
 Res = Response
 
+
 @deprecated
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.\n content provided by poll/view.py")
+
 
 @deprecated
 def userAdd(request, name):
@@ -50,12 +52,14 @@ def userAdd(request, name):
     ob.save()
     return HttpResponse(f"{ob.name} added!")
 
+
 @deprecated
 def userDelete(request, name):
     print("try to delete user%s" % (name))
     # t:table
     modUser = User.objects
     user = modUser.all()
+
 
 @deprecated
 def userCheck(request, name):
@@ -163,6 +167,7 @@ class UserView(View):
         # return HttpResponse(status=204)
         return JsonResponse(data={}, status=204)
 
+
 @deprecated()
 class UserSer0View(View):
     """
@@ -249,7 +254,8 @@ class UserSer0View(View):
         # user = uob.create(**data)
         # 检查添加后的结果(再次基于返回的模型对象(记录对象)实例化出来的序列化器,并借助该对象的data方法,得到类字典的数据
         # user_ser = UserSerializer(instance=user)
-        user_ser.save()  # 会根据实例化serializer时,是否传入instance 属性来判断是否子弟哦那个调用update方法,如果没有传入,则自动调用create()
+        # 会根据实例化serializer时,是否传入instance 属性来判断是否子弟哦那个调用update方法,如果没有传入,则自动调用create()
+        user_ser.save()
         user_data = user_ser.data
         return JsonResponse(user_data, status=201)
         # ret=user_ser.is_valid()
@@ -305,6 +311,7 @@ class UserSer0View(View):
 
         user_ser.save()  # 这里传递的参数给save()可以免除验证
         return JsonResponse(user_ser.data, status=201)
+
 
 @deprecated()
 class UserSerView(View):
@@ -468,6 +475,7 @@ class UserAPIView(APIView):
         """
         return Response({"msg": "ok(drf_post)"})
 
+
 @deprecated()
 class UserInfoAPIView(APIView):
     def get(self, req, pk):
@@ -535,11 +543,13 @@ class UserGenericAPIView(GenericAPIView):
         ser.save()
         return Res(ser.data, status=status.HTTP_201_CREATED)
 
+
 @deprecated()
 class UserInfoGenericAPIView(GenericAPIView):
     queryset = uob.all()
     # 默认序列化器
     serializer_class = UserModelSerializer
+
     # 重写序列化器指定方法
     # def get_serializer_class(self):
     #         """重写获取序列化器类的方法"""
@@ -607,6 +617,7 @@ RetrieveUpdateDestroyAPIView = RetrieveAPIView + UpdateAPIView + DestroyAPIView
 # 使用混入类
 """Mixin提供的api界面进一步完善,可以自动完成分页显示等效果"""
 
+
 @deprecated()
 class UserGenericMixin(GenericAPIView, ListModelMixin, CreateModelMixin):
     # 定义queryset,该属性字段将由DRF框架内来(使用)
@@ -620,6 +631,7 @@ class UserGenericMixin(GenericAPIView, ListModelMixin, CreateModelMixin):
 
     def post(self, req):
         return self.create(req)
+
 
 @deprecated()
 class UserInfoGenericMixin(GenericAPIView, UpdateModelMixin, DestroyModelMixin, RetrieveModelMixin):
@@ -650,8 +662,6 @@ class UserListCreateAPIView(ListCreateAPIView):
     # @override list method (derived from ListAPIView)
     # def list(self):
     #     pass
-
-
 
 
 # 简化继承后的版本(ListAPIView)
@@ -689,6 +699,7 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     queryset = uob.all()
     serializer_class = UserModelSerializer
 
+
 @deprecated
 class UserRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     queryset = uob.all()
@@ -701,6 +712,7 @@ drf提供了视图集可以解决上面的问题ViewSet-->基本视图集
 解决APIView中的代码重复问题
 GenericViewSet -->通用视图集
 解决APIView中的代码重复问题，同时让代码更加"""
+
 
 @deprecated
 class UserViewSet(ViewSet):
@@ -763,6 +775,7 @@ ModelViewSet
 
 """
 
+
 @deprecated
 class UserGenericViewSet(GenericViewSet, ListCreateAPIView, RetrieveUpdateDestroyAPIView):
     queryset = uob.all()
@@ -803,25 +816,68 @@ class UserModelViewSet(ModelViewSet):
     queryset = uob.all()
     serializer_class = UserModelSerializer
     # 过滤/分页
-    filter_fields = ('name', 'signupdate','signin')
+    filter_fields = ('name', 'signupdate', 'signin')
     # filter_backends = [OrderingFilter]
     # http://127.0.0.1:8000/user/?ordering=uid
     # http://127.0.0.1:8000/user/?ordering=-signin
     #     局部验证
-    authentication_classes = [SessionAuthentication,BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     # pagination_class = DIYPagination
     # 如何修改get?
-    def get(self, req):
-        # print(req.user)
-        if req.user.id:
-            print("authenticate success!")
-        else :
-            print("authenticate failed!")
-        return Res({"msg":"done"})
+    # def get(self, req):
+    #     # print(req.user)
+    #     if req.user.id:
+    #         print("authenticate success!")
+    #     else :
+    #         print("authenticate failed!")
+    #     return Res({"msg":"done"})
+    """method not allow 问题
+    通常是发生在http action(动作名不匹配的情况下)
+    譬如,某个方法是被定义为只允许put操作,但是您的请求是get或者post操作,那么就会触发method not allowed!"""
+
+    # HTTP 405 Method Not Allowed
+    # Allow: PUT, OPTIONS
+    # Content-Type: application/json
+    # Vary: Accept
+    #
+    # {
+    #     "detail": "Method \"GET\" not allowed."
+    # }
+    # 在urls.py中,本函数被指定为put操作
+    def signin(self, req, pk):
+
+        print("@pk=", pk)
+        # 同故通过post动作提交请求信息(包含在请求头中)
+        print(f"req.data={req}")
+
+        print(f"req.data={req.data}")
+        # rest_framework.mixins.UpdateModelMixin def update(self,
+        #            request: {data},
+        #            *args: Any,
+        #            **kwargs: Any) -> Response
+        ##我们调用DRF的UpdateModelMixin提供的更新方法update
+        # self.update(req, pk)
+        # 但是此处只需要自增signin即可
+        user = uob.get(pk=pk)
+        user.signin += 1
+        user.save()
+        ser = UserModelSerializer(instance=user)
+        # return Res({"msg": f"{ser.data}"})
+        return Res(ser.data)
 
     # action装饰可以提供基于CRUD的extra actions(DRF的界面中也会体现出
     # 登录本身不太容易通过restful 描述
     #    @action(methods=["get"],detail=False,url_path="user/login")
+    # @action(methods=["post"],detail=True)
+    # def sign_in(self,req,pk):
+    #     print("@pk=",pk)
+    #     # 同故通过post动作提交请求信息(包含在请求头中)
+    #     print(f"req.data={req}")
+    #
+    #     print(f"req.data={req.data}")
+
+    # self.save(req,pk)
+
     @action(methods=["get", "post"], detail=False)
     # http://127.0.0.1:8000/user/user_ModelViewSet/login_detail/
     def login(self, req):
@@ -840,6 +896,7 @@ class UserModelViewSet(ModelViewSet):
     def login_pathed_detail(self, req, pk):
         return Response({"msg": pk})
 
+    # 用户名作为参数,查找相关用户
     @action(methods=["get"], detail=False)
     def filter_names(self, req):
         """http://127.0.0.1:8000/api/user_ModelViewSet/filter_names/?pattern=create"""
@@ -879,6 +936,16 @@ wsob = WordStar.objects
 class WordStarModelViewSet(ModelViewSet):
     queryset = wsob.all()
     serializer_class = WordStarModelSerializer
+
+    def star_word(self, req, pk):
+        """收藏一个单词"""
+        # 调用CreateModelMixin提供的create()方法,帮助我们自动完成validate等操作
+        # rest_framework.mixins.CreateModelMixin def create(self,
+        #            request: {data},
+        #            *args: Any,
+        #            **kwargs: Any) -> Response
+        # 该调用直接返回一个Response对象,我们无需再手动使用Response()方法进行打包封装
+        return self.create(req.data)
 
 
 wshob = WordSearchHistory.objects

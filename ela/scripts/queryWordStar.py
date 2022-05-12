@@ -1,3 +1,6 @@
+import os
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ela.settings')
+
 from cxxulib.printer import print1
 from user.models import WordStar
 

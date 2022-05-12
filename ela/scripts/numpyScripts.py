@@ -7,6 +7,8 @@
 # get randon array
 # source_size=words_df.size
 # from numpy.random.mtrand import rand
+import os
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ela.settings')
 import random as rand
 def get_range_randoms(low=20, high=100, size=10, contain_high=0, sorted=1):
     '''

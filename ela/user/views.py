@@ -844,6 +844,7 @@ class UserModelViewSet(ModelViewSet):
     #     "detail": "Method \"GET\" not allowed."
     # }
     # 在urls.py中,本函数被指定为put操作
+    # @property
     def signin(self, req, pk):
 
         print("@pk=", pk)
@@ -937,7 +938,7 @@ class WordStarModelViewSet(ModelViewSet):
     queryset = wsob.all()
     serializer_class = WordStarModelSerializer
 
-    def star_word(self, req, pk):
+    def star_word(self, req):
         """收藏一个单词"""
         # 调用CreateModelMixin提供的create()方法,帮助我们自动完成validate等操作
         # rest_framework.mixins.CreateModelMixin def create(self,
@@ -945,7 +946,14 @@ class WordStarModelViewSet(ModelViewSet):
         #            *args: Any,
         #            **kwargs: Any) -> Response
         # 该调用直接返回一个Response对象,我们无需再手动使用Response()方法进行打包封装
-        return self.create(req.data)
+        # print("@req:", req.data)
+        # return self.create(req)
+        # 检查序列化器行为
+        # data = {"user": 22, "spelling": "apply"}
+        # serializer = self.get_serializer(data=req.data)
+
+        return self.create(req)
+        # return Res({"msg": "testing.. "})
 
 
 wshob = WordSearchHistory.objects
@@ -954,3 +962,6 @@ wshob = WordSearchHistory.objects
 class WSHModelViewSet(ModelViewSet):
     queryset = wshob.all()
     serializer_class = WSHModelSerializer
+    def history_create(self,req):
+        """post:create a entry for user search a warod"""
+        return self.create(req)

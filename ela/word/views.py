@@ -82,6 +82,11 @@ class WordNotesModelViewSet(ModelViewSet):
     queryset = wnob.all()
     serializer_class = WordNotesModelSerializer
 
+    #     指定需要开放的可排序/可过滤字段
+    filter_fields = ["spelling", "difficulty_rate", "uid"]
+    search_fields = ['$spelling']
+    ordering_fields = ['spelling', 'uid']
+
 
 class Cet4WordsModelViewSet(ModelViewSet):
     queryset = c4ob.all()

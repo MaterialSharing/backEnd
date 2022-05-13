@@ -89,18 +89,6 @@ class UserSerializer(serializers.Serializer):
         return user
 
 
-# 单词收藏序列化器
-class WordStarModelSerializer(ModelSerializer):
-    class Meta:
-        model = WordStar
-        fields = "__all__"
-        # fields = ["id", "spelling", "user_name","user_signin"]
-        # fields=["id","user_info","spelling"]
-        #在外键引用者中指定关联深度(被反向查询的深度)
-        depth = 0
-        depth = 1
-
-
 # 继承于ModelSerializer来编写比较简化的代码
 # 该序列化器的名称以ModelSerializer结尾
 class UserModelSerializer(serializers.ModelSerializer):
@@ -126,7 +114,6 @@ class UserModelSerializer(serializers.ModelSerializer):
     # user_signin=serializers.IntegerField(source="user.signin")
     #
     """使用模型中自定义方法"""
-
 
     class Meta:
         # ModelSerialzier内部会使用到Meta内类中的model字段来获取模型进行分析
@@ -168,9 +155,9 @@ class UserModelSerializer(serializers.ModelSerializer):
                 m2m_fields.append((attr, value))
             else:
                 setattr(instance, attr, value)
-                
+
         instance.save()
-        
+
         """
     # 在ModelSerializer中,会自动帮我们实现两个方法(create()/update())
     # 但是如果需求比较复杂,就需要重写对应的方法(override)
@@ -178,6 +165,21 @@ class UserModelSerializer(serializers.ModelSerializer):
     # 重写也一般是基于被继承的函数添加一些东系(譬如数据加密,然后在调用父类的被重载函数)
     # def create(self, validated_data):
     #     pass
+
+
+# 单词收藏序列化器
+class WordStarModelSerializer(ModelSerializer):
+    class Meta:
+        model = WordStar
+        # fields = ["id", "spelling", "user_name","user_signin"]
+        fields=["id","user_id","spelling"]
+        fields = "__all__"
+        #在主表(外键引用者)中指定外键关联深度(被反向查询的深度)
+        # depth = 1
+        # 后面指定的值会覆盖前面的值(与return不同)
+        depth = 0
+
+
 
 
 class WSHModelSerializer(ModelSerializer):

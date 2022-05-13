@@ -247,7 +247,7 @@ class PollsQuestion(models.Model):
         db_table = 'polls_question'
 
 
-class ScoreImproverNeepStudy(models.Model):
+class ImproverNeepStudy(models.Model):
     sid = models.IntegerField(db_column='SID', primary_key=True)  # Field name made lowercase.
     wid = models.CharField(max_length=255)
     last_see_datetime = models.DateTimeField(blank=True, null=True)
@@ -256,7 +256,7 @@ class ScoreImproverNeepStudy(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'score_improver_neep_study'
+        db_table = 'improver_neep_study'
 
 
 class User(models.Model):

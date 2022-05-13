@@ -79,7 +79,7 @@ INSTALLED_APPS = [
     'django_filters',  # 过滤
     'blogs.apps.BlogsConfig',
     'main.apps.MainConfig',
-    'scoreImprover.apps.ScoreimproverConfig',
+    'scoreImprover.apps.ScoreImproverConfig',
     'word.apps.WordConfig',
     'user.apps.UserConfig',
     'django.contrib.admin',

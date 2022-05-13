@@ -13,7 +13,10 @@ class NeepStudyModelSerializer(ModelSerializer):
     class Meta:
         model = NeepStudy
         fields = "__all__"
-
+        # fields+=""
+        # 默认关联深度
+        # 关联外键(表)的深度为1
+        # depth=1
 
 class Cet4StudyModelSerializer(ModelSerializer):
     class Meta:

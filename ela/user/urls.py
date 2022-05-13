@@ -2,6 +2,8 @@ from django.urls import URLPattern, path, re_path
 from rest_framework.routers import DefaultRouter, SimpleRouter
 
 from . import views
+from .serializer import WSHModelSerializer
+from .views import WSHModelViewSet
 
 '''
 低级错误检测
@@ -68,8 +70,15 @@ urlpatterns = [
         "put": "signin"
     })),
     # 多对多(user_word_star)
-    # path('star')
-
+    # post 不应该将参数放置在url中:'<int:uid>/star/<str:word>/' bad behaviour!
+    # path('star/', views.WordStarModelViewSet.as_view(
+    #     {
+    #         'post': 'star_word'
+    #     }
+    # )),
+    # path('history/', WSHModelViewSet.as_view({
+    #     'post': 'history_create'
+    # }))
 
     # 1 添加自定视图函数(尤其是在基本的CRUD操作之外的操作.有多种方案
     # 2 采用视图集
@@ -139,8 +148,8 @@ router = SimpleRouter()
 # router.register("user_GenericViewSet", views.UserGenericViewSet, basename="user_GenericViewSet")
 # router.register("user_ModelViewSet", views.UserModelViewSet, basename="ModelViewSetReg")
 router.register("info", views.UserModelViewSet, basename="info")
-router.register("word_search_history", views.WSHModelViewSet, basename="word_search_history")
-router.register("word_star", views.WordStarModelViewSet, basename="word_star")
+router.register("history", views.WSHModelViewSet, basename="word_search_history")
+router.register("star", views.WordStarModelViewSet, basename="word_star")
 # print(f"@router.urls={router.urls}")
 urlpatterns += router.urls
 # print(urlpatterns)

@@ -8,5 +8,5 @@ from rest_framework.pagination import PageNumberPagination
 @deprecated
 class DIYPagination(PageNumberPagination):
     page_query_param = 'pager'  # 默认是page
-    page_size = 2  # 每一页可以显示的条数
+    page_size = 5  # 每一页可以显示的条数
     max_page_size = 50  # 前端最多可以请求到第50页

@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class ScoreimproverConfig(AppConfig):
+class ScoreImproverConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'scoreImprover'

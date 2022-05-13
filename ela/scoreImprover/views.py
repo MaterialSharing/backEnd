@@ -8,16 +8,18 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
+from scoreImprover.models import NeepStudy
+from scoreImprover.serializer import NeepStudyModelSerializer
 from scripts.numpyScripts import get_range_randoms
 from word.models import WordNotes, Cet4WordsReq, Cet6WordsReq, NeepWordsReq
 from word.serializer import NeepWordsReqModelSerializer, WordNotesModelSerializer, Cet4WordsReqModelSerializer, \
     Cet6WordsReqModelSerializer
-from word.views import wob, c4ob
+from word.views import wob, c4ob, neepob
 from word.serializer import WordModelSerializer
 
 
 def index(request):
-    return HttpResponse("scoreImprover!")
+    return HttpResponse("Improver!")
 
 
 # class Review(GenericAPIView,ListModelMixin):
@@ -35,8 +37,8 @@ class Review(ListAPIView):
 
     def get(self, req, size=5):
         # size = 5
-        if(size<0):
-            return Res({"msg":"requirement:size>=0! "})
+        if (size < 0):
+            return Res({"msg": "requirement:size>=0! "})
         set = self.get_queryset()
         upper = set.count()
 
@@ -49,3 +51,22 @@ class Review(ListAPIView):
     #     pass
     # def get(self):
     #     queryset=
+
+
+neep_study_ob = NeepStudy.objects
+
+
+class NeepStudyModelViewSet(ModelViewSet):
+    queryset = neep_study_ob.all()
+    serializer_class = NeepStudyModelSerializer
+
+    # def last_see(self,req):
+    # neep_study_ob.exists(req.)
+    def create_unique(self, req):
+        data = {
+            "id": 1,
+            "last_see_datetime": "2022-05-13T10:26:40.857357Z",
+            "familiarity": 1,
+            "wid": 1
+        }
+        item = NeepStudy(**data)

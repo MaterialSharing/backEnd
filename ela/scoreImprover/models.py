@@ -1,22 +1,33 @@
 from django.db import models
 
-
 # Create your models here.
+from user.models import User
+from word.models import NeepWordsReq
+
+
 class NeepStudy(models.Model):
     id = models.IntegerField(db_column='SID', primary_key=True)  # Field name made lowercase.
     # wid = models.CharField(max_length=255)
-    wid = models.IntegerField(default=0)
-    last_see_datetime = models.DateTimeField(blank=True, null=True)
+    # wid = models.IntegerField(default=0)
+    uid = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    wid = models.ForeignKey(NeepWordsReq, on_delete=models.DO_NOTHING)
+    # 在被NeepWordsReq反向引用的时候,默认名虚拟字段名为neepstudy_set;也可以指定related_name
+    # DateField.auto_now¶
+    # Automatically set the field to now every time the object is saved.
+    # Useful for “last-modified” timestamps.
+    # last_see_datetime = models.DateTimeField(null=True)
+    last_see_datetime = models.DateTimeField(auto_now=True, null=True)
     familiarity = models.IntegerField(default=0, help_text="熟练度")
-    study_progress = models.IntegerField()
-
+    # 通过计算的得到学习进度
+    # study_progress = models.IntegerField()
     class Meta:
         managed = True
         db_table = 'neep_study'
 
     def __str__(self):
         s = self
-        return str([s.id, s.wid, s.last_see_datetime, s.familiarity, s.study_progress])
+        return str(
+            f"[s.id={s.id}, s.wid={s.wid}, s.last_see_datetime={s.last_see_datetime}, s.familiarity={s.familiarity}]")
 
 
 class Cet4Study(models.Model):
@@ -25,7 +36,6 @@ class Cet4Study(models.Model):
     wid = models.IntegerField(default=0)
     last_see_datetime = models.DateTimeField(blank=True, null=True)
     familiarity = models.IntegerField(default=0, help_text="熟练度")
-    study_progress = models.IntegerField()
 
     class Meta:
         managed = True
@@ -42,7 +52,6 @@ class Cet6Study(models.Model):
     wid = models.IntegerField(default=0)
     last_see_datetime = models.DateTimeField(blank=True, null=True)
     familiarity = models.IntegerField(default=0, help_text="熟练度")
-    study_progress = models.IntegerField()
 
     class Meta:
         managed = True

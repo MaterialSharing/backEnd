@@ -44,3 +44,6 @@
 #
 # res=get_range_randoms(55, 177, 10, contain_high=0, sorted=1)
 # print(res)
+from random import random
+
+print(random())

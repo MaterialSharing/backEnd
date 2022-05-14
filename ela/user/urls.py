@@ -69,6 +69,16 @@ urlpatterns = [
     path('info/<int:pk>/signin/', views.UserModelViewSet.as_view({
         "put": "signin"
     })),
+    # path('info/<int:pk>/review/<str:examtype>/list',
+    # 注意re_path不支持类型转换器(<int:pk>)这类写法在re_path中会失效,导致无法正确解析路由
+    # 不要混用正则和类型转换器!
+    re_path('^info/(?P<pk>\d+)/review/(?P<examtype>\w+)/$', views.UserModelViewSet.as_view({
+        "get": "review_list"
+    })),
+    path('info/<int:pk>/review/', views.UserModelViewSet.as_view({
+        "get": "review"
+    }))
+
     # 多对多(user_word_star)
     # post 不应该将参数放置在url中:'<int:uid>/star/<str:word>/' bad behaviour!
     # path('star/', views.WordStarModelViewSet.as_view(
@@ -150,6 +160,7 @@ router = SimpleRouter()
 router.register("info", views.UserModelViewSet, basename="info")
 router.register("history", views.WSHModelViewSet, basename="word_search_history")
 router.register("star", views.WordStarModelViewSet, basename="word_star")
+
 # print(f"@router.urls={router.urls}")
 urlpatterns += router.urls
 # print(urlpatterns)

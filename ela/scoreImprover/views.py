@@ -110,8 +110,8 @@ class NeepStudyModelViewSet(ModelViewSet):
 
     def refresh(self, req):
         wid = req.data.get("wid")
-        uid = req.data.get("uid")
-        queryset = neep_study_ob.filter(wid=wid) & neep_study_ob.filter(uid=uid)
+        user = req.data.get("user")
+        queryset = neep_study_ob.filter(wid=wid) & neep_study_ob.filter(user=user)
         # if queryset.count():
         #     instance = queryset[0]
         #     ser = self.serializer_class(instance=instance, data=req.data)

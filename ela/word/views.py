@@ -14,7 +14,10 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework import filters
 from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+
+# from user.views import Res
 
 from .models import Word
 
@@ -29,6 +32,7 @@ wnob = WordNotes.objects
 c4ob = Cet4WordsReq.objects
 c6ob = Cet6WordsReq.objects
 neepob = NeepWordsReq.objects
+Res = Response
 
 
 def index(request):
@@ -70,12 +74,22 @@ class WordModelViewSet(ModelViewSet):
     queryset = wob.all()
     serializer_class = WordModelSerializer
     # 过滤+排序,统一配置(要么都局部/要么都在setting中全局配置,才可以同是生效
-    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    # filter_backends = [DjangoFilterBackend, OrderingFilter]
     # http://127.0.0.1:8000/word/dict/?ordering=-spelling
     filter_fields = ['spelling', 'wid', 'plurality', 'thirdpp']
+    # 使用单引号!!
+    # search_fields = ['$spelling']
+    search_fields = ['$spelling', 'plurality', 'thirdpp', 'present_participle', 'past_tense', 'past_participle']
+
     ordering_fields = ['spelling', 'id']
+
+    # search_fields = ['$spelling', 'plurality', 'thirdpp', 'presetn_participle', 'past_tense', 'past_participle']
+
     # @action(method=["get"],detail=False)
-    # def
+    def explain(self, req, spelling):
+        word = self.get_queryset().get(spelling=spelling)
+        ser = self.serializer_class(instance=word)
+        return Res(ser.data)
 
 
 class WordNotesModelViewSet(ModelViewSet):
@@ -84,7 +98,6 @@ class WordNotesModelViewSet(ModelViewSet):
 
     #     指定需要开放的可排序/可过滤字段
     filter_fields = ["spelling", "difficulty_rate", "uid"]
-    search_fields = ['$spelling']
     ordering_fields = ['spelling', 'uid']
 
 

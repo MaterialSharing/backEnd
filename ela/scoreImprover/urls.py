@@ -24,7 +24,8 @@ urlpatterns = [
     })),
     re_path('^neep/recently/(?P<days>(\-|\+)?\d+(\.\d+)?)$', views.NeepStudyModelViewSet.as_view({
         "get": "recently"
-    })), re_path('^neep/timedelta/(?P<unit>\w+)/(?P<value>(\-|\+)?\d+(\.\d+)?)$', views.NeepStudyModelViewSet.as_view({
+    })),
+    re_path('^neep/timedelta/(?P<unit>\w+)/(?P<value>(\-|\+)?\d+(\.\d+)?)$', views.NeepStudyModelViewSet.as_view({
         "get": "recently_unitable"
     })),
 ]

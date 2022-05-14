@@ -13,6 +13,7 @@ class User(models.Model):
     name = models.CharField(max_length=50, default='name_id')
     signin = models.IntegerField(db_column='signIn', default=0,
                                  help_text="the sign in days >=0")  # Field name made lowercase.
+    openid = models.CharField(max_length=150, null=True, default=None, unique=True)
     examtype = models.CharField(db_column='examType', max_length=1, default="4")  # Field name made lowercase.
     examdate = models.DateField(db_column='examDate', default='1970-01-01')  # Field name made lowercase.
     signupdate = models.DateField(db_column='signUpDate', auto_now_add=True)  # Field name made lowercase.

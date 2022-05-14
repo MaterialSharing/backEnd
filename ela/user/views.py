@@ -19,6 +19,8 @@ from rest_framework.viewsets import ModelViewSet, ViewSet, GenericViewSet, ReadO
 from rest_framework.mixins import ListModelMixin, CreateModelMixin, UpdateModelMixin, DestroyModelMixin, \
     RetrieveModelMixin
 
+from scoreImprover.serializer import NeepStudyModelSerializer
+from scoreImprover.views import neep_study_ob
 from user.models import User, WordStar, WordSearchHistory
 from rest_framework import serializers, status
 from user.serializer import UserSerializer, UserModelSerializer, WordStarModelSerializer, WSHModelSerializer
@@ -846,7 +848,7 @@ class UserModelViewSet(ModelViewSet):
     # 在urls.py中,本函数被指定为put操作
     # @property
     def signin(self, req, pk):
-
+        """ 签到天数加一"""
         print("@pk=", pk)
         # 同故通过post动作提交请求信息(包含在请求头中)
         print(f"req.data={req}")
@@ -865,6 +867,21 @@ class UserModelViewSet(ModelViewSet):
         ser = UserModelSerializer(instance=user)
         # return Res({"msg": f"{ser.data}"})
         return Res(ser.data)
+
+    def review_list(self, req, examtype, pk):
+        if (examtype == "neep"):
+            queryset = neep_study_ob.filter(familiarity__lte=4) & neep_study_ob.filter(user=pk)
+            ser = NeepStudyModelSerializer(instance=queryset, many=True)
+            return Response(ser.data)
+        return Response("empty...")
+
+    def review(self, req, pk):
+        examtype = "neep"
+        if (examtype == "neep"):
+            queryset = neep_study_ob.filter(familiarity_lte=4) & neep_study_ob.filter(user=pk)
+            ser = NeepStudyModelSerializer(instance=queryset, many=True)
+            return Response(ser.data)
+        return Response("empty...")
 
     # action装饰可以提供基于CRUD的extra actions(DRF的界面中也会体现出
     # 登录本身不太容易通过restful 描述
@@ -937,7 +954,8 @@ wsob = WordStar.objects
 class WordStarModelViewSet(ModelViewSet):
     queryset = wsob.all()
     serializer_class = WordStarModelSerializer
-    filter_fields=["spelling","user"]
+    filter_fields = ["spelling", "user"]
+
     def star_word(self, req):
         """收藏一个单词"""
         # 调用CreateModelMixin提供的create()方法,帮助我们自动完成validate等操作
@@ -962,6 +980,7 @@ wshob = WordSearchHistory.objects
 class WSHModelViewSet(ModelViewSet):
     queryset = wshob.all()
     serializer_class = WSHModelSerializer
-    def history_create(self,req):
+
+    def history_create(self, req):
         """post:create a entry for user search a warod"""
         return self.create(req)

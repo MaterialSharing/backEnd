@@ -937,7 +937,7 @@ wsob = WordStar.objects
 class WordStarModelViewSet(ModelViewSet):
     queryset = wsob.all()
     serializer_class = WordStarModelSerializer
-
+    filter_fields=["spelling","user"]
     def star_word(self, req):
         """收藏一个单词"""
         # 调用CreateModelMixin提供的create()方法,帮助我们自动完成validate等操作

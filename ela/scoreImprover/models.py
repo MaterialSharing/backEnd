@@ -6,7 +6,7 @@ from word.models import NeepWordsReq
 
 
 class NeepStudy(models.Model):
-    id = models.IntegerField(db_column='SID', primary_key=True)  # Field name made lowercase.
+    id = models.AutoField(primary_key=True)  # Field name made lowercase.
     # wid = models.CharField(max_length=255)
     # wid = models.IntegerField(default=0)
     uid = models.ForeignKey(User, on_delete=models.DO_NOTHING)
@@ -18,6 +18,7 @@ class NeepStudy(models.Model):
     # last_see_datetime = models.DateTimeField(null=True)
     last_see_datetime = models.DateTimeField(auto_now=True, null=True)
     familiarity = models.IntegerField(default=0, help_text="熟练度")
+
     # 通过计算的得到学习进度
     # study_progress = models.IntegerField()
     class Meta:
@@ -27,7 +28,7 @@ class NeepStudy(models.Model):
     def __str__(self):
         s = self
         return str(
-            f"[s.id={s.id}, s.wid={s.wid}, s.last_see_datetime={s.last_see_datetime}, s.familiarity={s.familiarity}]")
+            f"[s.id={s.id}, s.uid={s.uid},s.wid={s.wid}, s.last_see_datetime={s.last_see_datetime}, s.familiarity={s.familiarity}]")
 
 
 class Cet4Study(models.Model):

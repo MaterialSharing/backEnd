@@ -4,7 +4,6 @@
 from django.db import models
 import random as rand
 
-
 # Create your models here.
 from django.forms import forms
 
@@ -16,7 +15,9 @@ class User(models.Model):
                                  help_text="the sign in days >=0")  # Field name made lowercase.
     examtype = models.CharField(db_column='examType', max_length=1, default="4")  # Field name made lowercase.
     examdate = models.DateField(db_column='examDate', default='1970-01-01')  # Field name made lowercase.
-    signupdate = models.DateField(db_column='signUpDate', default='1970-01-01')  # Field name made lowercase.
+    signupdate = models.DateField(db_column='signUpDate', auto_now_add=True)  # Field name made lowercase.
+
+    # signupdate = models.DateField(db_column='signUpDate', default='1970-01-01')  # Field name made lowercase.
     # 使用微信授权登录,不设密码字段?
     # password = models.CharField(default="123",widget=forms.PasswordInput, max_length=20)
 

@@ -27,8 +27,8 @@ urlpatterns = [
     # re_path(r'^(?P<pk>)$',views.UserApiView.as_view(),name='userCheck'),
     re_path(r'^user/$', views.UserView.as_view(), name='userCheck'),
     re_path(r'^(?P<pk>\d+)/$', views.UserView.as_view(), name='userCheck'),
-
 ]
+
 # 废弃原生开发
 urlpatterns = []
 

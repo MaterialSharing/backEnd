@@ -19,4 +19,4 @@ router.register("note", WordNotesModelViewSet, basename='note')
 
 # http://127.0.0.1:8000/word/word_ViewSet/1000/
 urlpatterns += router.urls
-print(f"@router.urls={router.urls}@word")
+# print(f"@router.urls={router.urls}@word")

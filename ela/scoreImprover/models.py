@@ -1,6 +1,9 @@
 from django.db import models
 
 # Create your models here.
+from django.utils import timezone
+import datetime
+
 from user.models import User
 from word.models import NeepWordsReq
 
@@ -9,7 +12,7 @@ class NeepStudy(models.Model):
     id = models.AutoField(primary_key=True)  # Field name made lowercase.
     # wid = models.CharField(max_length=255)
     # wid = models.IntegerField(default=0)
-    uid = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     wid = models.ForeignKey(NeepWordsReq, on_delete=models.DO_NOTHING)
     # 在被NeepWordsReq反向引用的时候,默认名虚拟字段名为neepstudy_set;也可以指定related_name
     # DateField.auto_now¶
@@ -25,10 +28,28 @@ class NeepStudy(models.Model):
         managed = True
         db_table = 'neep_study'
 
+    # @property
+    def recently(self, days=1):
+        now: datetime = timezone.now()  # 类型注解:datatime
+        # time_range_start = now - datetime.timedelta(days=1)
+        # datetime.timedelta def __new__(cls: Type[Self],
+        #             days: float = ...,
+        #             seconds: float = ...,
+        #             microseconds: float = ...,
+        #             milliseconds: float = ...,
+        #             minutes: float = ...,
+        #             hours: float = ...,
+        #             weeks: float = ...) -> Self
+        time_range_start = now - datetime.timedelta(days=days)
+        time_range_end = now
+        # 调用timedelta函数,可以轻松的对某个时间点做偏移
+        # python中允许不等式连续拼接
+        return time_range_start <= self.last_see_datetime <= time_range_end
+
     def __str__(self):
         s = self
         return str(
-            f"[s.id={s.id}, s.uid={s.uid},s.wid={s.wid}, s.last_see_datetime={s.last_see_datetime}, s.familiarity={s.familiarity}]")
+            f"[s.id={s.id}, s.uid={s.user},s.wid={s.wid}, s.last_see_datetime={s.last_see_datetime}, s.familiarity={s.familiarity}]")
 
 
 class Cet4Study(models.Model):

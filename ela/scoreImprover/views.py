@@ -1,7 +1,12 @@
+from datetime import timedelta
+
+from django.db.models import QuerySet
 from django.shortcuts import render
 from django.http import HttpResponse
 # Create your views here.
+from django.utils import timezone
 from django.views import View
+from rest_framework import status
 from rest_framework.generics import GenericAPIView, ListAPIView
 from rest_framework.mixins import ListModelMixin
 from rest_framework.response import Response
@@ -59,7 +64,7 @@ neep_study_ob = NeepStudy.objects
 class NeepStudyModelViewSet(ModelViewSet):
     queryset = neep_study_ob.all()
     serializer_class = NeepStudyModelSerializer
-    filter_fields = ["uid", "wid", "familiarity"]
+    filter_fields = ["user", "wid", "familiarity"]
     search_fields = filter_fields
     # def last_see(self,req):
     # neep_study_ob.exists(req.)
@@ -107,18 +112,67 @@ class NeepStudyModelViewSet(ModelViewSet):
         wid = req.data.get("wid")
         uid = req.data.get("uid")
         queryset = neep_study_ob.filter(wid=wid) & neep_study_ob.filter(uid=uid)
-        if queryset.count():
+        # if queryset.count():
+        #     instance = queryset[0]
+        #     ser = self.serializer_class(instance=instance, data=req.data)
+        #     ser.is_valid()
+        #     ser.save()
+        #     return Res(ser.data)
+        # todo 温习django的原生update(put)操作
+        # return self.update(req, instance=instance)
+        if queryset.count():  # 原生方案
             instance = queryset[0]
-            ser = self.serializer_class(instance=instance, data=req.data)
-            ser.is_valid()
-            ser.save()
-            return Res(ser.data)
-            # todo 温习django的原生update(put)操作
-            # return self.update(req, instance=instance)
+            # 执行一次幂等操作,使得其可以触发时间更新操作!
+            # instance.wid += 0#error:外键类型wid是属于Word模型实例,而不是整型
+            # 单纯的对一个未修改的对象执行一次save()操作,也可以触发modified 条件,以便于自动更新时间字段(auto_now=True)
+            instance.save()
+            # ser = self.serializer_class(instance=instance, data=req.data)
+            return Res(self.serializer_class(instance=instance).data, status=status.HTTP_201_CREATED)
         else:
             # ser = self.serializer_class(data=req.data)
             return self.create(req)
         # return Res(ser.data)
+
+    def recently(self, req, days):
+        queryset = neep_study_ob.filter(last_see_datetime__gte=timezone.now() - timedelta(days=float(days)))
+        return Res(self.serializer_class(instance=queryset, many=True).data)
+
+    def recently_unitable(self, req, unit, value):
+        value = float(value)
+        # 只需要使用字典打包以下关键字参数
+        d = {unit: value}
+        delta = timedelta(**d)
+        # delta = timedelta({unit: value})
+
+        # 您不需要如下的负责判断
+        # if (unit == 'days'):
+        #     delta = timedelta(days=value)
+        # elif (unit == 'hours'):
+        #     delta = timedelta(hours=value)
+        # else:
+        #     print("unit的取值是hours或者days!")
+        queryset = neep_study_ob.filter(last_see_datetime__gte=timezone.now() - delta)
+        return Res(self.serializer_class(instance=queryset, many=True).data)
+
+    def recently_old(self, req, days):
+        # return neep_study_ob
+        queryset = self.get_queryset().all()
+        # return self.get_queryset().filter()
+        recents = []
+        for item in queryset:
+            b = item.recently(days=float(days))
+            print("@item.recently:", b)
+            if b:
+                recents.append(item.id)
+        # # QuerySet()
+        #     # Res
+        # queryset.filter(id)
+        # print(recents[0])
+        # return Res("tesing..")
+        print("@recents:", recents)
+        queryset = neep_study_ob.filter(id__in=recents)
+        ser = self.serializer_class(instance=queryset, many=True)
+        return Res(ser.data)
 
 
 class NeepStudyDetailViewSet(ModelViewSet):

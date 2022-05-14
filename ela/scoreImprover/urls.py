@@ -21,7 +21,12 @@ urlpatterns = [
     })),
     path('neep/refresh/', views.NeepStudyModelViewSet.as_view({
         "put": "refresh"
-    }))
+    })),
+    re_path('^neep/recently/(?P<days>(\-|\+)?\d+(\.\d+)?)$', views.NeepStudyModelViewSet.as_view({
+        "get": "recently"
+    })), re_path('^neep/timedelta/(?P<unit>\w+)/(?P<value>(\-|\+)?\d+(\.\d+)?)$', views.NeepStudyModelViewSet.as_view({
+        "get": "recently_unitable"
+    })),
 ]
 
 router = SimpleRouter()

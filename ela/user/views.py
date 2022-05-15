@@ -1,10 +1,12 @@
 # from django.shortcuts import render
 import json
+from datetime import timedelta
 
 import django.http
 from deprecated.classic import deprecated
 from django.http import JsonResponse
 from django.http import HttpResponse
+from django.utils import timezone
 from django.views import View
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.decorators import action
@@ -847,6 +849,39 @@ class UserModelViewSet(ModelViewSet):
     # }
     # 在urls.py中,本函数被指定为put操作
     # @property
+
+    def recently_unitable(self, req,pk, unit, value):
+        value = float(value)
+        # 只需要使用字典打包以下关键字参数
+        d = {unit: value}
+        delta = timedelta(**d)
+        # delta = timedelta({unit: value})
+
+        # 您不需要如下的负责判断
+        # if (unit == 'days'):
+        #     delta = timedelta(days=value)
+        # elif (unit == 'hours'):
+        #     delta = timedelta(hours=value)
+        # else:
+        #     print("unit的取值是hours或者days!")
+        queryset = neep_study_ob.filter(last_see_datetime__gte=timezone.now() - delta)
+
+        return Res(NeepStudyModelSerializer(instance=queryset, many=True).data)
+
+    def progress(self, req, pk, examtype):
+        progress = 0
+        if (examtype == "neep"):
+            progress = neep_study_ob.filter(user=pk).count()
+        # & neep_study_ob.filter(examtype=neep)
+        return Res({"examtyep": examtype, "progress": progress})
+
+    def rank(self, req, pk):
+        signin_pk: int = self.queryset.get(pk=pk).signin
+        rank = self.queryset.filter(signin__gt=signin_pk).count() + 1
+        users_sum = self.queryset.count()
+        data = {"rank": rank, "percentage": rank / users_sum, "singin": signin_pk}
+        return Res(data)
+
     def signin(self, req, pk):
         """ 签到天数加一"""
         print("@pk=", pk)
@@ -980,6 +1015,8 @@ wshob = WordSearchHistory.objects
 class WSHModelViewSet(ModelViewSet):
     queryset = wshob.all()
     serializer_class = WSHModelSerializer
+    filter_fields = ["spelling", "user"]
+    search_fields = ['spelling', "user"]
 
     def history_create(self, req):
         """post:create a entry for user search a warod"""

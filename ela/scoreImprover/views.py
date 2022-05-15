@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from deprecated.classic import deprecated
 from django.db.models import QuerySet
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -71,6 +72,7 @@ class NeepStudyModelViewSet(ModelViewSet):
     """判断到底是要创建/修改学习记录,可以有前端完成,
     这里尝试后端处理(判断)"""
 
+    @deprecated
     def create_unique(self, req):
         # data = {
         #     # "id": 1,
@@ -133,26 +135,28 @@ class NeepStudyModelViewSet(ModelViewSet):
             return self.create(req)
         # return Res(ser.data)
 
+    @deprecated
     def recently(self, req, days):
         queryset = neep_study_ob.filter(last_see_datetime__gte=timezone.now() - timedelta(days=float(days)))
         return Res(self.serializer_class(instance=queryset, many=True).data)
 
-    def recently_unitable(self, req, unit, value):
-        value = float(value)
-        # 只需要使用字典打包以下关键字参数
-        d = {unit: value}
-        delta = timedelta(**d)
-        # delta = timedelta({unit: value})
-
-        # 您不需要如下的负责判断
-        # if (unit == 'days'):
-        #     delta = timedelta(days=value)
-        # elif (unit == 'hours'):
-        #     delta = timedelta(hours=value)
-        # else:
-        #     print("unit的取值是hours或者days!")
-        queryset = neep_study_ob.filter(last_see_datetime__gte=timezone.now() - delta)
-        return Res(self.serializer_class(instance=queryset, many=True).data)
+    # def recently_unitable(self, req, unit, value):
+    #     value = float(value)
+    #     # 只需要使用字典打包以下关键字参数
+    #     d = {unit: value}
+    #     delta = timedelta(**d)
+    #     # delta = timedelta({unit: value})
+    #
+    #     # 您不需要如下的负责判断
+    #     # if (unit == 'days'):
+    #     #     delta = timedelta(days=value)
+    #     # elif (unit == 'hours'):
+    #     #     delta = timedelta(hours=value)
+    #     # else:
+    #     #     print("unit的取值是hours或者days!")
+    #     queryset = neep_study_ob.filter(last_see_datetime__gte=timezone.now() - delta)
+    #
+    #     return Res(self.serializer_class(instance=queryset, many=True).data)
 
     def recently_old(self, req, days):
         # return neep_study_ob

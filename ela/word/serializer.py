@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 
-from word.models import Word, WordNotes, Cet4WordsReq, Cet6WordsReq, NeepWordsReq
+from word.models import Word, WordNotes, Cet4WordsReq, Cet6WordsReq, NeepWordsReq, WordMatcher
 
 
 class WordModelSerializer(ModelSerializer):
@@ -8,7 +8,10 @@ class WordModelSerializer(ModelSerializer):
         model = Word
         # fields=["spelling"]
         fields = "__all__"
-
+class WordMatcherModelSerializer(ModelSerializer):
+    class Meta:
+        model=WordMatcher
+        fields = "__all__"
 
 class WordNotesModelSerializer(ModelSerializer):
     class Meta:

@@ -15,6 +15,7 @@ from rest_framework.decorators import action
 from rest_framework import filters
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 # from user.views import Res
@@ -22,16 +23,19 @@ from rest_framework.viewsets import ModelViewSet
 from .models import Word
 
 import word.models
-from .serializer import WordModelSerializer
-from word.models import WordNotes, Cet4WordsReq, Cet6WordsReq, NeepWordsReq
+from .serializer import WordModelSerializer, WordMatcherModelSerializer
+from word.models import WordNotes, Cet4WordsReq, Cet6WordsReq, NeepWordsReq, WordMatcher
 from word.serializer import NeepWordsReqModelSerializer, WordNotesModelSerializer, Cet4WordsReqModelSerializer, \
     Cet6WordsReqModelSerializer
 
 wob = Word.objects
+wmob = WordMatcher.objects
+
 wnob = WordNotes.objects
 c4ob = Cet4WordsReq.objects
 c6ob = Cet6WordsReq.objects
 neepob = NeepWordsReq.objects
+
 Res = Response
 
 
@@ -92,6 +96,37 @@ class WordModelViewSet(ModelViewSet):
         return Res(ser.data)
 
 
+class WordMatcherViewSet(ModelViewSet):
+    """ 模糊匹配数据库"""
+    queryset = wmob.all()
+    serializer_class = WordMatcherModelSerializer
+    filter_fields = ['spelling', 'char_set']
+
+    def fuzzy_match(self, req, spelling):
+        # spelling_chars = "".join(list(set(spelling)).sort())
+        chars = list(set(spelling))
+        chars.sort()
+        spelling_chars = "".join(chars)
+
+        # print(spelling_chars)
+        spelling_len = len(spelling)
+        left_len = spelling_len * 0.75
+        # right_len = spelling_len * 1.25
+        right_len = spelling_len * 2
+
+        # 模糊匹配
+        # queryset = self.get_queryset().filter(spelling__length__gte=left_len) & self.get_queryset().filter(
+        #     spelling__length__lte=right_len) & self.queryset.filter(char_set__contains=spelling_chars)
+        #
+        queryset = wmob.filter(spelling__length__gte=left_len) & wmob.filter(
+            spelling__length__lte=right_len) & wmob.filter(char_set__contains=spelling_chars)
+        # 匹配开头(严格模式)(可以额外设置变量,追加if)
+        # print(queryset)
+        queryset = queryset.filter(spelling__startswith=spelling[:2])
+        print(queryset)
+        return Res(self.serializer_class(instance=queryset, many=True).data)
+
+
 class WordNotesModelViewSet(ModelViewSet):
     queryset = wnob.all()
     serializer_class = WordNotesModelSerializer
@@ -138,3 +173,19 @@ class Cet6WordsModelViewSet(ModelViewSet):
 class NeepWordsModelViewSet(ModelViewSet):
     queryset = neepob.all()
     serializer_class = NeepWordsReqModelSerializer
+
+
+# 逻辑类
+class WordSumModelViewSet(APIView):
+    # queryset_c4 = c4ob.all()
+
+    def get(self, req, examtype):
+        queryset = c4ob
+        if (examtype == "6"):
+            queryset = c6ob
+        elif (examtype == "8"):
+            queryset = neepob
+        sum = queryset.all().count()
+        print(sum)
+        # return Res({examtype: queryset.all().count()})
+        return Res({examtype: sum})

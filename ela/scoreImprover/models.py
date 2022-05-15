@@ -20,6 +20,9 @@ class NeepStudy(models.Model):
     # Useful for “last-modified” timestamps.
     # last_see_datetime = models.DateTimeField(null=True)
     last_see_datetime = models.DateTimeField(auto_now=True, null=True)
+    # 由于此表是学习记录表,所以一定是学习过的单词才会进入到本表中,遂,都是见过面的
+    # 自然的,我们可以统计本表中的(指定用户uid,且考试类型:neep类型的)单词的条数,来计算出学习进度.
+    # is_new = models.BooleanField(default=True,help_text="单词是否学过")
     familiarity = models.IntegerField(default=0, help_text="熟练度")
 
     # 通过计算的得到学习进度

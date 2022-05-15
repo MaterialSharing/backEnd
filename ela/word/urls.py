@@ -9,12 +9,17 @@ urlpatterns = [
     # path(r'<slug:word>/',views.WordAPIView.as_view(),name='wordQuery'),
     # re_path(r'^(?P<word>\w*)/$',views.WordAPIView.as_view(),name='wordQuery'),
     # path(r'word/',views.WordAPIView.as_view(),name='word'),
-    path('dict/<str:spelling>',views.WordModelViewSet.as_view({
-        "get":"explain"
-    }))
+    path('dict/<str:spelling>', views.WordModelViewSet.as_view({
+        "get": "explain"
+    })),
+    path('fuzzy/<str:spelling>', views.WordMatcherViewSet.as_view({
+        "get": "fuzzy_match"
+    })),
+    path('sum/<str:examtype>/', views.WordSumModelViewSet.as_view())
 ]
 router = SimpleRouter()
 router.register("dict", views.WordModelViewSet, basename="word")
+# router.register("word_matcher",views.WordMatcherViewSet)
 router.register("cet4", views.Cet4WordsModelViewSet, basename="cet4")
 router.register("cet6", views.Cet6WordsModelViewSet, basename="cet6")
 router.register("neep", views.NeepWordsModelViewSet, basename="neep")

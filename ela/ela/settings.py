@@ -18,6 +18,8 @@ from pathlib import Path
 # from word.filters import DIYPagination
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+# 添加斜杠(对于put/post操作,url应该手动添加末尾的斜杠(下面的APPEND_SLASH=False则不会对末尾确实显式的`/`报错,但是这样不利于排查问题)
+# APPEND_SLASH = True
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/

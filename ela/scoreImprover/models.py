@@ -9,7 +9,7 @@ from word.models import NeepWordsReq
 
 
 class NeepStudy(models.Model):
-    id = models.AutoField(primary_key=True)  # Field name made lowercase.
+    id = models.AutoField(primary_key=True)
     # wid = models.CharField(max_length=255)
     # wid = models.IntegerField(default=0)
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
@@ -56,10 +56,10 @@ class NeepStudy(models.Model):
 
 
 class Cet4Study(models.Model):
-    id = models.IntegerField(db_column='SID', primary_key=True)  # Field name made lowercase.
-    # wid = models.CharField(max_length=255)
-    wid = models.IntegerField(default=0)
-    last_see_datetime = models.DateTimeField(blank=True, null=True)
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    wid = models.ForeignKey(NeepWordsReq, on_delete=models.DO_NOTHING)
+    last_see_datetime = models.DateTimeField(auto_now=True, null=True)
     familiarity = models.IntegerField(default=0, help_text="熟练度")
 
     class Meta:
@@ -68,14 +68,15 @@ class Cet4Study(models.Model):
 
     def __str__(self):
         s = self
-        return str([s.id, s.wid, s.last_see_datetime, s.familiarity, s.study_progress])
+        return str(
+            f"[s.id={s.id}, s.uid={s.user},s.wid={s.wid}, s.last_see_datetime={s.last_see_datetime}, s.familiarity={s.familiarity}]")
 
 
 class Cet6Study(models.Model):
-    id = models.IntegerField(db_column='SID', primary_key=True)  # Field name made lowercase.
-    # wid = models.CharField(max_length=255)
-    wid = models.IntegerField(default=0)
-    last_see_datetime = models.DateTimeField(blank=True, null=True)
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    wid = models.ForeignKey(NeepWordsReq, on_delete=models.DO_NOTHING)
+    last_see_datetime = models.DateTimeField(auto_now=True, null=True)
     familiarity = models.IntegerField(default=0, help_text="熟练度")
 
     class Meta:
@@ -84,7 +85,8 @@ class Cet6Study(models.Model):
 
     def __str__(self):
         s = self
-        return str([s.id, s.wid, s.last_see_datetime, s.familiarity, s.study_progress])
+        return str(
+            f"[s.id={s.id}, s.uid={s.user},s.wid={s.wid}, s.last_see_datetime={s.last_see_datetime}, s.familiarity={s.familiarity}]")
 
 
 class LongSentences(models.Model):

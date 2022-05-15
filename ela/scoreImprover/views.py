@@ -14,13 +14,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-from scoreImprover.models import NeepStudy
+from scoreImprover.models import NeepStudy, Cet4Study, Cet6Study
 from cxxulib import Randoms
-from scoreImprover.serializer import NeepStudyModelSerializer, NeepStudyDetailModelSerializer
+from scoreImprover.serializer import NeepStudyModelSerializer, NeepStudyDetailModelSerializer, Cet4StudyModelSerializer, \
+    Cet6StudyModelSerializer
 from word.models import WordNotes, Cet4WordsReq, Cet6WordsReq, NeepWordsReq
 from word.serializer import NeepWordsReqModelSerializer, WordNotesModelSerializer, Cet4WordsReqModelSerializer, \
     Cet6WordsReqModelSerializer
-from word.views import wob, c4ob, neepob
+from word.views import wob, c4ob, neepob, c6ob
 from word.serializer import WordModelSerializer
 
 
@@ -59,6 +60,8 @@ class Review(ListAPIView):
     #     queryset=
 
 
+cet4_study_ob = Cet4Study.objects
+cet6_study_ob = Cet6Study.objects
 neep_study_ob = NeepStudy.objects
 
 
@@ -177,6 +180,161 @@ class NeepStudyModelViewSet(ModelViewSet):
         queryset = neep_study_ob.filter(id__in=recents)
         ser = self.serializer_class(instance=queryset, many=True)
         return Res(ser.data)
+
+
+class Cet4StudyModelViewSet(ModelViewSet):
+    queryset = cet4_study_ob.all()
+    serializer_class = Cet4StudyModelSerializer
+    filter_fields = ["user", "wid", "familiarity"]
+    search_fields = filter_fields
+
+
+class Cet6StudyModelViewSet(ModelViewSet):
+    queryset = cet6_study_ob.all()
+    serializer_class = Cet6StudyModelSerializer
+    filter_fields = ["user", "wid", "familiarity"]
+    search_fields = filter_fields
+
+
+# class RefresherAPIView(GenericAPIView):
+class RefresherModelViewSet(ModelViewSet):
+
+    def get_queryset(self, examtype="4"):
+        queryset = cet4_study_ob
+        if (examtype == "cet6"):
+            queryset = cet6_study_ob
+        elif (examtype == "neep"):
+            queryset = neep_study_ob
+        # sum = queryset.all().count()
+        # print(sum)
+        return queryset
+
+    def get_serializer_class(self, examtype):
+        ser = None
+        print("@get_serializer_class::examtype:", examtype, examtype == 'cet4')
+        if (examtype == 'cet4'):
+            ser = Cet4StudyModelSerializer
+        # ser = Cet6StudyModelSerializer
+        if (examtype == "cet6"):
+            ser = Cet6StudyModelSerializer
+        elif (examtype == "neep"):
+            ser = NeepStudyModelSerializer
+        return ser
+
+    # def get_serializer_class(self):
+    # 无参的,才可以被create正确调用(同时可以接受参数来判断)
+
+    # def get_serializer_class(self):
+    #     get
+    def refresh(self, req, examtype):
+        print("@@refresh:刚刚捕获到请求...")
+        wid = req.data.get("wid")
+        user = req.data.get("user")
+        # 根据参数examtype计算出需要使用的模型Manager
+        queryset = self.get_queryset(examtype=examtype)
+        print("@refresh:queryset:", queryset)
+        queryset = queryset.filter(wid=wid) & queryset.filter(user=user)
+        # if queryset.count():
+        #     instance = queryset[0]
+        #     ser = self.serializer_class(instance=instance, data=req.data)
+        #     ser.is_valid()
+        #     ser.save()
+        #     return Res(ser.data)
+        # todo 温习django的原生update(put)操作
+        # return self.update(req, instance=instance)
+        ser = self.get_serializer_class(examtype=examtype)
+        # 最佳位置?
+        self.serializer_class = ser
+        print("@ser:", ser, "@examtype:", examtype)
+
+        if queryset.count():  # 原生方案
+            instance = queryset[0]
+            print("当前条目已经存在,于对应数据库,仅执行修改操作..", instance)
+            # 执行一次幂等操作,使得其可以触发时间更新操作!
+            # instance.wid += 0#error:外键类型wid是属于Word模型实例,而不是整型
+            # 单纯的对一个未修改的对象执行一次save()操作,也可以触发modified 条件,以便于自动更新时间字段(auto_now=True)
+            instance.save()
+            # ser = self.serializer_class(instance=instance, data=req.data)
+            tip_d = {"examtype": examtype, "msg": "modify the existed obj", "ser": str(type(ser))}
+            # print(type(ser.data))
+            # for item in ser.data:
+            #     print(item)
+            extra_d = dict(**ser(instance=instance).data, **tip_d)
+            # print(type(ser.data))
+            print("extra_d:", extra_d)
+            return Res(extra_d, status=status.HTTP_201_CREATED)
+            # return Res(ser(instance=instance).data, status=status.HTTP_201_CREATED)
+        else:
+            # ser = self.serializer_class(data=req.data)
+            print("@self.serializer_class:", self.serializer_class)
+            print("下一行执行self.create(req)")
+            # 查看库文件(GenericAPI)(范围为库文件的符号查询:get_serializer)
+            #     def get_serializer(self, *args, **kwargs):
+            #         """
+            #         Return the serializer instance that should be used for validating and
+            #         deserializing input, and for serializing output.
+            #         """
+            #         serializer_class = self.get_serializer_class()
+            #         kwargs.setdefault('context', self.get_serializer_context())
+            #         return serializer_class(*args, **kwargs)
+            ser = ser(data=req.data)
+            ser.is_valid()
+            instance = ser.save()
+            # 注意,不是所有对象都可以转化(序列化)为Json
+            # 应该尽量使用基础类型,必要的时候,可以使用str()将任意类型对象转换为字符串后再塞入包装
+            tip_d = {"examtype": examtype, "ser": str(type(ser))}
+            # print(type(ser.data))
+            # for item in ser.data:
+            #     print(item)
+            extra_d = dict(**ser.data, **tip_d)
+            # print()
+            print("@extra_d", extra_d)
+            return Res(extra_d)
+            return self.create(req)
+
+
+# class RefresherAPIView(GenericAPIView):
+#     def get_queryset(self, examtype):
+#         queryset = c4ob
+#         if (examtype == "6"):
+#             queryset = c6ob
+#         elif (examtype == "8"):
+#             queryset = neepob
+#         # sum = queryset.all().count()
+#         # print(sum)
+#         return queryset
+#
+#     def get_serializer_class(self, examtype):
+#         ser = Cet4StudyModelSerializer
+#         if (examtype == "6"):
+#             ser = Cet6StudyModelSerializer
+#         elif (examtype == "8"):
+#             ser = NeepStudyModelSerializer
+#         return ser
+#
+#     def refresh(self, req, examtype):
+#         wid = req.data.get("wid")
+#         user = req.data.get("user")
+#         queryset = neep_study_ob.filter(wid=wid) & neep_study_ob.filter(user=user)
+#         # if queryset.count():
+#         #     instance = queryset[0]
+#         #     ser = self.serializer_class(instance=instance, data=req.data)
+#         #     ser.is_valid()
+#         #     ser.save()
+#         #     return Res(ser.data)
+#         # todo 温习django的原生update(put)操作
+#         # return self.update(req, instance=instance)
+#         if queryset.count():  # 原生方案
+#             instance = queryset[0]
+#             # 执行一次幂等操作,使得其可以触发时间更新操作!
+#             # instance.wid += 0#error:外键类型wid是属于Word模型实例,而不是整型
+#             # 单纯的对一个未修改的对象执行一次save()操作,也可以触发modified 条件,以便于自动更新时间字段(auto_now=True)
+#             instance.save()
+#             # ser = self.serializer_class(instance=instance, data=req.data)
+#             return Res(self.serializer_class(instance=instance).data, status=status.HTTP_201_CREATED)
+#         else:
+#             # ser = self.serializer_class(data=req.data)
+#             return self.create(req)
 
 
 class NeepStudyDetailViewSet(ModelViewSet):

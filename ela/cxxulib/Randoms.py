@@ -1,7 +1,9 @@
 import random as rand
 
+
 class Randoms:
-    def get_range_randoms(low=20, high=100, size=10, contain_high=0, sorted=1):
+    def get_range_randoms( low: int = 20, high: int = 100, size: int = 10, contain_high: int = 0,
+                          sorted: int = 1) -> list[int]:
         '''
 
         :param low: 随机数下界

@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from datetime import timedelta
 
 from deprecated.classic import deprecated
@@ -14,6 +15,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
+from cxxulib.printer import print1
 from scoreImprover.models import NeepStudy, Cet4Study, Cet6Study
 from cxxulib import Randoms
 from scoreImprover.serializer import NeepStudyModelSerializer, NeepStudyDetailModelSerializer, Cet4StudyModelSerializer, \
@@ -36,29 +38,6 @@ def index(request):
 #     def get(self):
 # class ListAPIView(mixins.ListModelMixin, GenericAPIView)
 Res = Response
-
-
-class Review(ListAPIView):
-    queryset = c4ob.all()
-    serializer_class = Cet4WordsReqModelSerializer
-
-    def get(self, req, size=5):
-        # size = 5
-        if (size < 0):
-            return Res({"msg": "requirement:size>=0! "})
-        set = self.get_queryset()
-        upper = set.count()
-
-        random_words_pks = Randoms.Randoms.get_range_randoms(low=0, high=upper, contain_high=1, size=size)
-        q_in = c4ob.filter(wordorder__in=random_words_pks)
-        ser = self.serializer_class(instance=q_in, many=True)
-        return Response(ser.data)
-
-    # def list(self):
-    #     pass
-    # def get(self):
-    #     queryset=
-
 
 cet4_study_ob = Cet4Study.objects
 cet6_study_ob = Cet6Study.objects
@@ -207,6 +186,7 @@ class RefresherModelViewSet(ModelViewSet):
             queryset = neep_study_ob
         # sum = queryset.all().count()
         # print(sum)
+        print("@refresh:queryset:", queryset)
         return queryset
 
     def get_serializer_class(self, examtype):
@@ -219,6 +199,7 @@ class RefresherModelViewSet(ModelViewSet):
             ser = Cet6StudyModelSerializer
         elif (examtype == "neep"):
             ser = NeepStudyModelSerializer
+        print("@ser:", ser, "@examtype:", examtype)
         return ser
 
     # def get_serializer_class(self):
@@ -232,7 +213,6 @@ class RefresherModelViewSet(ModelViewSet):
         user = req.data.get("user")
         # 根据参数examtype计算出需要使用的模型Manager
         queryset = self.get_queryset(examtype=examtype)
-        print("@refresh:queryset:", queryset)
         queryset = queryset.filter(wid=wid) & queryset.filter(user=user)
         # if queryset.count():
         #     instance = queryset[0]
@@ -245,7 +225,6 @@ class RefresherModelViewSet(ModelViewSet):
         ser = self.get_serializer_class(examtype=examtype)
         # 最佳位置?
         self.serializer_class = ser
-        print("@ser:", ser, "@examtype:", examtype)
 
         if queryset.count():  # 原生方案
             instance = queryset[0]
@@ -293,48 +272,104 @@ class RefresherModelViewSet(ModelViewSet):
             return self.create(req)
 
 
-# class RefresherAPIView(GenericAPIView):
-#     def get_queryset(self, examtype):
-#         queryset = c4ob
-#         if (examtype == "6"):
-#             queryset = c6ob
-#         elif (examtype == "8"):
-#             queryset = neepob
-#         # sum = queryset.all().count()
-#         # print(sum)
-#         return queryset
+# class Review(ListAPIView):
+#     queryset = c4ob.all()
+#     serializer_class = Cet4WordsReqModelSerializer
 #
-#     def get_serializer_class(self, examtype):
-#         ser = Cet4StudyModelSerializer
-#         if (examtype == "6"):
-#             ser = Cet6StudyModelSerializer
-#         elif (examtype == "8"):
-#             ser = NeepStudyModelSerializer
-#         return ser
+#     def get(self, req, size=5):
+#         # size = 5
+#         if (size < 0):
+#             return Res({"msg": "requirement:size>=0! "})
+#         set = self.get_queryset()
+#         upper = set.count()
 #
-#     def refresh(self, req, examtype):
-#         wid = req.data.get("wid")
-#         user = req.data.get("user")
-#         queryset = neep_study_ob.filter(wid=wid) & neep_study_ob.filter(user=user)
-#         # if queryset.count():
-#         #     instance = queryset[0]
-#         #     ser = self.serializer_class(instance=instance, data=req.data)
-#         #     ser.is_valid()
-#         #     ser.save()
-#         #     return Res(ser.data)
-#         # todo 温习django的原生update(put)操作
-#         # return self.update(req, instance=instance)
-#         if queryset.count():  # 原生方案
-#             instance = queryset[0]
-#             # 执行一次幂等操作,使得其可以触发时间更新操作!
-#             # instance.wid += 0#error:外键类型wid是属于Word模型实例,而不是整型
-#             # 单纯的对一个未修改的对象执行一次save()操作,也可以触发modified 条件,以便于自动更新时间字段(auto_now=True)
-#             instance.save()
-#             # ser = self.serializer_class(instance=instance, data=req.data)
-#             return Res(self.serializer_class(instance=instance).data, status=status.HTTP_201_CREATED)
-#         else:
-#             # ser = self.serializer_class(data=req.data)
-#             return self.create(req)
+#         random_words_pks = Randoms.Randoms.get_range_randoms(low=0, high=upper, contain_high=1, size=size)
+#         q_in = c4ob.filter(wordorder__in=random_words_pks)
+#         ser = self.serializer_class(instance=q_in, many=True)
+#         return Response(ser.data)
+
+# def list(self):
+class QueryDispatcher:
+    def get_queryset_study(self, examtype="4"):
+        queryset = cet4_study_ob
+        if (examtype == "cet6"):
+            queryset = cet6_study_ob
+        elif (examtype == "neep"):
+            queryset = neep_study_ob
+        # sum = queryset.all().count()
+        # print(sum)
+        print("@dispatcher:queryset_study:", queryset)
+        return queryset
+
+    def get_queryset_reqs(self, examtype="4"):
+        # 考纲表manager
+        queryset = c4ob
+        if (examtype == "cet6"):
+            queryset = c6ob
+        elif (examtype == "neep"):
+            queryset = neepob
+        # sum = queryset.all().count()
+        # print(sum)
+        print("@dispatcher:queryset_reqs:", queryset)
+        return queryset
+
+    def get_serializer_class_reqs(self, examtype="4"):
+        ser = Cet4WordsReqModelSerializer
+        if (examtype == "cet6"):
+            ser = Cet6WordsReqModelSerializer
+        elif (examtype == "neep"):
+            ser = NeepWordsReqModelSerializer
+        print("@dispatcher:", ser)
+        return ser
+
+
+class RandomInspectionModelViewSet(ModelViewSet):
+    get_queryset = QueryDispatcher.get_queryset_reqs
+    get_serializer_class = QueryDispatcher.get_serializer_class_reqs
+
+    def get_words_random(self, req, examtype, size):
+        # size = 5
+        if (size < 0):
+            return Res({"msg": "requirement:size>=0! "})
+        # fuck.
+        # set = self.get_queryset()
+        ser = self.get_serializer_class(examtype=examtype)
+        queryset = self.get_queryset(examtype=examtype)
+        upper = queryset.count()
+        random_words_pks = Randoms.Randoms.get_range_randoms(low=0, high=upper, contain_high=1, size=size)
+
+        print("尝试调用get_queryset(my code)..")
+        print("@queryset:",queryset,queryset.count())
+        q_in = queryset.filter(wordorder__in=random_words_pks)
+        # print()
+        # str(object)比str(type(object))更加管用.
+        tip_d = {"examtype": examtype, "queryset": str(queryset), "ser": str(ser)}
+        ser = ser(instance=q_in, many=True)
+        # print(ser.data)
+        # extra_d = {**tip_d, **ser.data}
+        # from collections import OrderedDict
+        tip_od = OrderedDict(tip_d)
+        # extra_od = [tip_od[key] = ser.data[key]
+        # for key in ser.data]
+        ser_data = ser.data
+        # print(tip_od, data_od)
+        # print("@tip_od:", type(tip_od))
+        # print1(tip_od)
+        # print("@ser_data:",type(ser_data))
+        # print1(ser_data)
+        # list of OrderedDict
+        extra_od = [tip_od]
+        for item in ser_data:
+            extra_od.append(item)
+
+        # data
+        # ser_data
+        # for key in ser_data:
+        #     tip_od[key] = ser_data[key]
+        # return Res("testing")
+        return Res(extra_od)
+        return Response(ser.data)
+
 
 
 class NeepStudyDetailViewSet(ModelViewSet):

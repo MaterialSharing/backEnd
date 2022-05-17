@@ -9,10 +9,14 @@ urlpatterns = [
     # path(r'<slug:word>/',views.WordAPIView.as_view(),name='wordQuery'),
     # re_path(r'^(?P<word>\w*)/$',views.WordAPIView.as_view(),name='wordQuery'),
     # path(r'word/',views.WordAPIView.as_view(),name='word'),
-    path('dict/<str:spelling>', views.WordModelViewSet.as_view({
+    path('dict/<str:spelling>/', views.WordModelViewSet.as_view({
         "get": "explain"
     })),
-    path('fuzzy/<str:spelling>', views.WordMatcherViewSet.as_view({
+    path('fuzzy/', views.WordMatcherViewSet.as_view({ "get":"list"})),
+    path('fuzzy/<str:spelling>/', views.WordMatcherViewSet.as_view({
+        "get": "fuzzy_match_simple"
+    })),
+    path('fuzzy/<str:spelling>/<int:start_with>/', views.WordMatcherViewSet.as_view({
         "get": "fuzzy_match"
     })),
     path('sum/<str:examtype>/', views.WordSumModelViewSet.as_view())

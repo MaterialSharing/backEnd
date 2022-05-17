@@ -13,7 +13,7 @@ from django.views import View
 # import ela.word.models
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
-from rest_framework import filters
+from rest_framework import filters, status
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -92,8 +92,13 @@ class WordModelViewSet(ModelViewSet):
 
     # @action(method=["get"],detail=False)
     def explain(self, req, spelling):
-        word = self.get_queryset().get(spelling=spelling)
-        ser = self.serializer_class(instance=word)
+        # word = self.get_queryset().get(spelling=spelling)
+        # 使用get如果查询无果,会抛出异常! 使用filter如果查询无果,返回空集合
+        word_queryset = self.get_queryset().filter(spelling=spelling)
+        if (len(word_queryset) == 0):
+            return Res(f"sorry,there is no explain for the word:{spelling},try fuzzy match api? /word/fuzzy/{spelling}",
+                       status=status.HTTP_404_NOT_FOUND)
+        ser = self.serializer_class(instance=word_queryset)
         return Res(ser.data)
 
 
@@ -102,71 +107,114 @@ class WordMatcherViewSet(ModelViewSet):
     queryset = wmob.all()
     serializer_class = WordMatcherModelSerializer
     filter_fields = ['spelling', 'char_set']
+    search_fields = ['$spelling', 'char_set']
 
-    def fuzzy_match(self, req, spelling):
-        # spelling_chars = "".join(list(set(spelling)).sort())
-        spelling_char_list = list(set(spelling))
+    def fuzzy_match(self, req, spelling, start_with=0, contain=0):
+        """
+        :param req:
+        :type req:
+        :param spelling:
+        :type spelling:
+        :param start_with:匹配开头的字符串长度 (default: {0},表示没有被强制规定)
+        :type start_with:
+        :return:
+        :rtype: Response
+        """
+        params = req.query_params
+        print("@params", params,type(params))
+        contain=params.get("contain",0)
+        end_with=params.get("end_with",0)
+
+        # print("@contain:", contain)
+        spelling_len = len(spelling)
+        # 根据模糊拼写的长度,选择一个较为合适的start_with
+        if (start_with == 0):
+            # 没有被强制设值
+            # 启用内部判断取值
+            if (spelling_len > 4):
+                start_with = 2
+            else:
+                start_with = 1
+        # 获得模糊拼写的字母集合
+        spelling_char_set = set(spelling)
+        # 获取模糊拼写的字母集列表(字母集合去重后转换为列表)
+        spelling_char_list = list(spelling_char_set)
+        # 对字母集合转成的列表进行排序
         spelling_char_list.sort()
-        spelling_char_set = set(spelling_char_list)
-        spelling_char_set_str = "".join(spelling_char_set)
+        # 获得有序的字符集字符串
+        spelling_char_set_str = "".join(spelling_char_list)
         spelling_char_set_len = len(spelling_char_set)
         # print("@spelling_chars:", spelling_char_set_str)
-
-        # print(spelling_chars)
-        spelling_len = len(spelling)
+        # 定义匹配的单词的长度范围
         left_len = spelling_len * 0.70
         # right_len = spelling_len * 1.25
-        right_len = spelling_len * 1.25
+        right_len = spelling_len * 1.4
         if spelling_len >= 4:
             right_len = spelling_len * 2
 
         # 模糊匹配
         # queryset = self.get_queryset().filter(spelling__length__gte=left_len) & self.get_queryset().filter(
         #     spelling__length__lte=right_len) & self.queryset.filter(char_set__contains=spelling_chars)
-        """debug code:"""
-        # queryset_len = wmob.filter(spelling__length__gte=left_len) & wmob.filter(
-        #     spelling__length__lte=right_len)
-        # print("@queryset_len:", queryset_len )
-        # querset_contains =wmob.filter(char_set__contains=spelling_chars)
-        # print("@querset_contains:", querset_contains)
+
+
+
         """限制单词长度"""
         queryset = self.queryset.filter(spelling__length__gte=left_len) & self.queryset.filter(
             spelling__length__lte=right_len)
+        # 是否要求模糊输入的拼写字符集是候选词的子集(强制)
+        if (contain):
+            #基于候选拼写的特征字符集
+            # 这里char_set是字符串
+            # 候选词的字符集作为全集(contains作用于字符串之间的判断)
+            queryset = queryset.filter(char_set_str__contains=spelling_char_set_str)
+        if(end_with):
+            # 基于完整的候选拼写
+            queryset=queryset.filter(spelling__endswith=spelling[-int(end_with):])
         # 匹配开头(严格模式)(可以额外设置变量,追加if)
         # print(queryset)
         # 匹配发音:mysql中有一个soundx函数,
-        queryset = queryset.filter(spelling__startswith=spelling[:1])
+        queryset = queryset.filter(spelling__startswith=spelling[:start_with])
         """限制单词字符集规模的差异"""
         # 10:14(5:7);
         # 10:16(5:8);
-        queryset = queryset.filter(char_set__length__lte=1.25 * spelling_char_set_len)
+        queryset = queryset.filter(char_set_str__length__lte=1.25 * spelling_char_set_len)
         # 3:5;
         # 4:5
-        queryset = queryset.filter(char_set__length__gte=0.6 * spelling_char_set_len)
-
+        queryset = queryset.filter(char_set_str__length__gte=0.6 * spelling_char_set_len)
+        # 此时如果是contain=1,那么就直接返回结果了
+        if (contain):
+            print(queryset)
+            return Res(self.serializer_class(instance=queryset, many=True).data)
         """匹配字符组成(最后一步)"""
         # 方案0:使用icontains函数来匹配(无法匹配到替换了个别字母的形近词!
         ## 可以引入随机剔除字符操作
         # 方案1:双向包含(或运算)(比上衣种情况稍好,但还是无法满足需求)
         # 方案2:差集(限制差集中的元素个数)(容错个别字母(种类)的不同)
-        # queryin = queryset.filter(char_set__in=spelling_chars)
+        # queryin = queryset.filter(char_set_str__in=spelling_chars)
         # print("@queryin:", queryin)
-        # queryset = queryset.filter(Q(char_set__contains=spelling_chars) | Q(char_set__in=spelling_chars))
+        # queryset = queryset.filter(Q(char_set_str__contains=spelling_chars) | Q(char_set_str__in=spelling_chars))
+
         items = []
         for item in queryset:
-            item_char_set_len = len(item.char_set)
-            item_spelling_len = len(item.spelling)
-            intersection = set(item.char_set) & set(spelling_char_set)
+            intersection = set(item.char_set_str) & set(spelling_char_set)
             intersection_len = len(intersection)
+            item_char_set = set(item.char_set_str)
+            item_char_set_len = len(item_char_set)
+            item_spelling_len = len(item.spelling)
             # if (item.spelling == "dad"):
             #     print("dad", diff, len(diff), item, spelling_chars_len * 0.5)
             #     # print()
+            # if (contain):
+            #     if (item_char_set.issubset(spelling_char_set) or spelling_char_set.issubset(item_char_set)):
+            #         items.append(item)
+
             if (spelling_len >= 5):
                 if (intersection_len >= spelling_char_set_len * 0.8 and intersection_len >= item_char_set_len * 0.8):
                     # if (item.spelling == "dad"):
                     # print(item, diff)
                     items.append(item)
             elif (intersection == spelling_char_set):
+                #     长度小于5的输入,我们只需要检查是否包含全部字符即可
                 # else:
                 print("@intersection", intersection)
                 print("@spelling_char_set", spelling_char_set)
@@ -175,9 +223,13 @@ class WordMatcherViewSet(ModelViewSet):
                     items.append(item)
 
         # print(queryset)
+        items.sort(key=lambda x: x.spelling)
         print(len(items))
         return Res(self.serializer_class(instance=items, many=True).data)
-        return Res(self.serializer_class(instance=queryset, many=True).data)
+        # return Res(self.serializer_class(instance=queryset, many=True).data)
+
+    def fuzzy_match_simple(self, req, spelling):
+        return self.fuzzy_match(req, spelling)
 
 
 class WordNotesModelViewSet(ModelViewSet):

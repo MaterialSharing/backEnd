@@ -40,11 +40,11 @@ CharField.register_lookup(Length)
 class WordMatcher(models.Model):
     """词典升级的时候,模糊匹配的词典也需要一并升级!!!!"""
     spelling = models.CharField(max_length=255)
-    char_set = models.CharField(max_length=26)
+    char_set_str = models.CharField(max_length=26)
     # word_length = models.IntegerField(default=0)
     #    django提供了类似的Length的数据库函数,长度子字段可以不需要存储(本身也不是一个好主意)
     def __str__(self):
-        return str([self.spelling,self.char_set])
+        return str([self.spelling,self.char_set_str])
 
 class Cet4WordsReq(models.Model):
     wordorder = models.AutoField(db_column='wordOrder', primary_key=True)  # Field name made lowercase.

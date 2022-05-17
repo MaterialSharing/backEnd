@@ -20,8 +20,8 @@ class UpdateWordMatcher:
     # 填充单词模糊匹配数据库支持(模糊推荐算法)
     # 测试两个例子
     def update(self):
-        sub_dict_set = wob.all()
-        sub_dict_set = wob.all()[11325:]
+        # sub_dict_set = wob.all()
+        sub_dict_set = wob.all()[:2]
         for item in sub_dict_set:
             # print(item)
             char_set = set(item.spelling)

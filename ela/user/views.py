@@ -4,6 +4,7 @@ from datetime import timedelta
 
 import django.http
 from deprecated.classic import deprecated
+from django.db.models import F
 from django.http import JsonResponse
 from django.http import HttpResponse
 from django.utils import timezone
@@ -850,7 +851,7 @@ class UserModelViewSet(ModelViewSet):
     # 在urls.py中,本函数被指定为put操作
     # @property
 
-    def recently_unitable(self, req,pk, unit, value):
+    def recently_unitable(self, req, pk, unit, value):
         value = float(value)
         # 只需要使用字典打包以下关键字参数
         d = {unit: value}
@@ -896,9 +897,28 @@ class UserModelViewSet(ModelViewSet):
         ##我们调用DRF的UpdateModelMixin提供的更新方法update
         # self.update(req, pk)
         # 但是此处只需要自增signin即可
+        """分部操作(get&save)的两种方式"""
+        # user = uob.get(pk=pk)
+        # # user.signin += 1
+        # # 使用F()提高并发安全性和执行效率
+        # user.signin = F('signin') + 1
+        # user.save()
+        # # 使用了F()表达式,我们必须重新拆执行查询,否则会报错(对象发生了变化)
+        # # An F() object represents the value of a model field,
+        # # transformed value of a model field, or annotated column.
+        # # It makes it possible to refer to model field values and perform database operations
+        # # using them without actually having to pull them out of the database into Python memory.
+        # user = uob.get(pk=pk)
+        """方式2:对queryset:F()&update()"""
+        user=uob.filter(pk=pk) # 这里的user是一个QuerySet
+        user.update(signin=F('signin') + 1)
         user = uob.get(pk=pk)
-        user.signin += 1
-        user.save()
+
+        # F() 除了用于上述对单个实例的操作外，F() 还可以与 update() 一起用于对象实例的 QuerySets。
+        # 这就把我们上面使用的两个查询——get() 和 save() 减少到只有一个：
+        # reporter = Reporters.objects.filter(name='Tintin')
+        # reporter.update(stories_filed=F('stories_filed') + 1)
+
         ser = UserModelSerializer(instance=user)
         # return Res({"msg": f"{ser.data}"})
         return Res(ser.data)

@@ -38,6 +38,7 @@ class Word(models.Model):
 CharField.register_lookup(Length)
 
 class WordMatcher(models.Model):
+    """词典升级的时候,模糊匹配的词典也需要一并升级!!!!"""
     spelling = models.CharField(max_length=255)
     char_set = models.CharField(max_length=26)
     # word_length = models.IntegerField(default=0)

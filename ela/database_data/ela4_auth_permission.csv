@@ -1,0 +1,137 @@
+id,name,content_type_id,codename
+1,Can add exam req,1,add_examreq
+2,Can change exam req,1,change_examreq
+3,Can delete exam req,1,delete_examreq
+4,Can view exam req,1,view_examreq
+5,Can add long sentences,2,add_longsentences
+6,Can change long sentences,2,change_longsentences
+7,Can delete long sentences,2,delete_longsentences
+8,Can view long sentences,2,view_longsentences
+9,Can add scoreimprover neep study,3,add_scoreimproverneepstudy
+10,Can change scoreimprover neep study,3,change_scoreimproverneepstudy
+11,Can delete scoreimprover neep study,3,delete_scoreimproverneepstudy
+12,Can view scoreimprover neep study,3,view_scoreimproverneepstudy
+13,Can add cet4 words req,4,add_cet4wordsreq
+14,Can change cet4 words req,4,change_cet4wordsreq
+15,Can delete cet4 words req,4,delete_cet4wordsreq
+16,Can view cet4 words req,4,view_cet4wordsreq
+17,Can add cet6 words req,5,add_cet6wordsreq
+18,Can change cet6 words req,5,change_cet6wordsreq
+19,Can delete cet6 words req,5,delete_cet6wordsreq
+20,Can view cet6 words req,5,view_cet6wordsreq
+21,Can add neep words req,6,add_neepwordsreq
+22,Can change neep words req,6,change_neepwordsreq
+23,Can delete neep words req,6,delete_neepwordsreq
+24,Can view neep words req,6,view_neepwordsreq
+25,Can add word,7,add_word
+26,Can change word,7,change_word
+27,Can delete word,7,delete_word
+28,Can view word,7,view_word
+29,Can add word notes,8,add_wordnotes
+30,Can change word notes,8,change_wordnotes
+31,Can delete word notes,8,delete_wordnotes
+32,Can view word notes,8,view_wordnotes
+33,Can add feed back,9,add_feedback
+34,Can change feed back,9,change_feedback
+35,Can delete feed back,9,delete_feedback
+36,Can view feed back,9,view_feedback
+37,Can add user,10,add_user
+38,Can change user,10,change_user
+39,Can delete user,10,delete_user
+40,Can view user,10,view_user
+41,Can add word star,11,add_wordstar
+42,Can change word star,11,change_wordstar
+43,Can delete word star,11,delete_wordstar
+44,Can view word star,11,view_wordstar
+45,Can add word search history,12,add_wordsearchhistory
+46,Can change word search history,12,change_wordsearchhistory
+47,Can delete word search history,12,delete_wordsearchhistory
+48,Can view word search history,12,view_wordsearchhistory
+49,Can add log entry,13,add_logentry
+50,Can change log entry,13,change_logentry
+51,Can delete log entry,13,delete_logentry
+52,Can view log entry,13,view_logentry
+53,Can add author,14,add_author
+54,Can change author,14,change_author
+55,Can delete author,14,delete_author
+56,Can view author,14,view_author
+57,Can add blog,15,add_blog
+58,Can change blog,15,change_blog
+59,Can delete blog,15,delete_blog
+60,Can view blog,15,view_blog
+61,Can add entry,16,add_entry
+62,Can change entry,16,change_entry
+63,Can delete entry,16,delete_entry
+64,Can view entry,16,view_entry
+65,Can add question,17,add_question
+66,Can change question,17,change_question
+67,Can delete question,17,delete_question
+68,Can view question,17,view_question
+69,Can add choice,18,add_choice
+70,Can change choice,18,change_choice
+71,Can delete choice,18,delete_choice
+72,Can view choice,18,view_choice
+73,Can add permission,19,add_permission
+74,Can change permission,19,change_permission
+75,Can delete permission,19,delete_permission
+76,Can view permission,19,view_permission
+77,Can add group,20,add_group
+78,Can change group,20,change_group
+79,Can delete group,20,delete_group
+80,Can view group,20,view_group
+81,Can add user,21,add_user
+82,Can change user,21,change_user
+83,Can delete user,21,delete_user
+84,Can view user,21,view_user
+85,Can add content type,22,add_contenttype
+86,Can change content type,22,change_contenttype
+87,Can delete content type,22,delete_contenttype
+88,Can view content type,22,view_contenttype
+89,Can add session,23,add_session
+90,Can change session,23,change_session
+91,Can delete session,23,delete_session
+92,Can view session,23,view_session
+93,Can add user info,24,add_userinfo
+94,Can change user info,24,change_userinfo
+95,Can delete user info,24,delete_userinfo
+96,Can view user info,24,view_userinfo
+97,Can add u,25,add_u
+98,Can change u,25,change_u
+99,Can delete u,25,delete_u
+100,Can view u,25,view_u
+101,Can add test foreign key,26,add_testforeignkey
+102,Can change test foreign key,26,change_testforeignkey
+103,Can delete test foreign key,26,delete_testforeignkey
+104,Can view test foreign key,26,view_testforeignkey
+105,Can add improver neep study,27,add_improverneepstudy
+106,Can change improver neep study,27,change_improverneepstudy
+107,Can delete improver neep study,27,delete_improverneepstudy
+108,Can view improver neep study,27,view_improverneepstudy
+109,Can add neep study,27,add_neepstudy
+110,Can change neep study,27,change_neepstudy
+111,Can delete neep study,27,delete_neepstudy
+112,Can view neep study,27,view_neepstudy
+113,Can add cet4 study,28,add_cet4study
+114,Can change cet4 study,28,change_cet4study
+115,Can delete cet4 study,28,delete_cet4study
+116,Can view cet4 study,28,view_cet4study
+117,Can add cet6 study,29,add_cet6study
+118,Can change cet6 study,29,change_cet6study
+119,Can delete cet6 study,29,delete_cet6study
+120,Can view cet6 study,29,view_cet6study
+121,Can add author,30,add_author
+122,Can change author,30,change_author
+123,Can delete author,30,delete_author
+124,Can view author,30,view_author
+125,Can add blog,31,add_blog
+126,Can change blog,31,change_blog
+127,Can delete blog,31,delete_blog
+128,Can view blog,31,view_blog
+129,Can add entry,32,add_entry
+130,Can change entry,32,change_entry
+131,Can delete entry,32,delete_entry
+132,Can view entry,32,view_entry
+133,Can add word matcher,33,add_wordmatcher
+134,Can change word matcher,33,change_wordmatcher
+135,Can delete word matcher,33,delete_wordmatcher
+136,Can view word matcher,33,view_wordmatcher

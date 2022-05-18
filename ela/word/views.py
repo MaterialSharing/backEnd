@@ -214,7 +214,7 @@ class WordMatcherViewSet(ModelViewSet):
             #         items.append(item)
 
             if (spelling_len >= 5):
-                if (intersection_len >= spelling_char_set_len * 0.8 and intersection_len >= item_char_set_len * 0.8):
+                if (intersection_len > spelling_char_set_len * 0.7 and intersection_len >= item_char_set_len * 0.8):
                     # if (item.spelling == "dad"):
                     # print(item, diff)
                     items.append(item)

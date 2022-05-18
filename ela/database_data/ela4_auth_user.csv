@@ -1,0 +1,2 @@
+id,password,last_login,is_superuser,username,first_name,last_name,email,is_staff,is_active,date_joined
+1,pbkdf2_sha256$320000$Tw4HGJ8C5aq9gbVZjGuLGw$6LXBHvc6dTFqjN0YIQ9+fxewYm9nrPwwMJr8cFBtpgM=,2022-05-09 06:05:47.166765,1,cxxu,"","",838808930@qq.com,1,1,2022-04-16 07:53:33.927844

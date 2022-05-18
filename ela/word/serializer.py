@@ -8,25 +8,34 @@ class WordModelSerializer(ModelSerializer):
         model = Word
         # fields=["spelling"]
         fields = "__all__"
+
+
 class WordMatcherModelSerializer(ModelSerializer):
     class Meta:
-        model=WordMatcher
+        model = WordMatcher
         fields = "__all__"
+
 
 class WordNotesModelSerializer(ModelSerializer):
     class Meta:
         model = WordNotes
         fields = "__all__"
+
+
 # 考纲表不需要提供接口全部接口
 class Cet4WordsReqModelSerializer(ModelSerializer):
     class Meta:
-        model=Cet4WordsReq
-        fields="__all__"
+        model = Cet4WordsReq
+        fields = "__all__"
+
+
 class Cet6WordsReqModelSerializer(ModelSerializer):
     class Meta:
-        model=Cet6WordsReq
-        fields="__all__"
+        model = Cet6WordsReq
+        fields = "__all__"
+
+
 class NeepWordsReqModelSerializer(ModelSerializer):
     class Meta:
-        model=NeepWordsReq
-        fields="__all__"
+        model = NeepWordsReq
+        fields = "__all__"

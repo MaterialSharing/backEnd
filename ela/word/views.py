@@ -98,7 +98,7 @@ class WordModelViewSet(ModelViewSet):
         if (len(word_queryset) == 0):
             return Res(f"sorry,there is no explain for the word:{spelling},try fuzzy match api? /word/fuzzy/{spelling}",
                        status=status.HTTP_404_NOT_FOUND)
-        ser = self.serializer_class(instance=word_queryset)
+        ser = self.serializer_class(instance=word_queryset,many=True)
         return Res(ser.data)
 
 

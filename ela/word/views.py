@@ -124,6 +124,8 @@ class WordMatcherViewSet(ModelViewSet):
         print("@params", params,type(params))
         contain=params.get("contain",0)
         end_with=params.get("end_with",0)
+        contain=int(contain)
+        end_with=int(end_with)
 
         # print("@contain:", contain)
         spelling_len = len(spelling)
@@ -167,12 +169,15 @@ class WordMatcherViewSet(ModelViewSet):
             # 这里char_set是字符串
             # 候选词的字符集作为全集(contains作用于字符串之间的判断)
             queryset = queryset.filter(char_set_str__contains=spelling_char_set_str)
+
         if(end_with):
+            print("@end_with:",end_with)
             # 基于完整的候选拼写
             queryset=queryset.filter(spelling__endswith=spelling[-int(end_with):])
         # 匹配开头(严格模式)(可以额外设置变量,追加if)
         # print(queryset)
         # 匹配发音:mysql中有一个soundx函数,
+        # 匹配开头的start_with个字符
         queryset = queryset.filter(spelling__startswith=spelling[:start_with])
         """限制单词字符集规模的差异"""
         # 10:14(5:7);

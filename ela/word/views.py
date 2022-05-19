@@ -91,7 +91,7 @@ class WordModelViewSet(ModelViewSet):
     # search_fields = ['$spelling', 'plurality', 'thirdpp', 'presetn_participle', 'past_tense', 'past_participle']
 
     # @action(method=["get"],detail=False)
-    def explain(self, req, spelling):
+    def dict(self, req, spelling):
         # word = self.get_queryset().get(spelling=spelling)
         # 使用get如果查询无果,会抛出异常! 使用filter如果查询无果,返回空集合
         word_queryset = self.get_queryset().filter(spelling=spelling)

@@ -20,14 +20,14 @@ from django.urls import path, include
 urlpatterns = [
     # 检测路由冲突:当某些个路由可能潜在的发生冲突,可以在这里注释掉其他路由来排查问题
     # 此处的path函数的第一个参数的含义是应用名,第二个参数(include()指出应用下的子路由配置对象),来匹配并路由后续的任务
-    path('', include('user.urls')),
+
+    # 注意slash(`/`不要漏掉)
     path('admin/', admin.site.urls),
     path('polls/', include('polls.urls')),
     path('word/', include('word.urls')),
     path('improver/', include('scoreImprover.urls')),
     path('main/', include('main.urls')),
     path('api/', include("user.urls")),
-    # 注意slash(`/`不要漏掉)
     path('user/', include('user.urls')),
     # path('blog/',include('blog.urls')),
     #     采用DRF风格的路由

@@ -674,7 +674,7 @@ class UserListCreateAPIView(ListCreateAPIView):
 #                   GenericAPIView
 @deprecated
 class ListView(ListAPIView):
-    print("@@try to invoke authentication ")
+    # print("@@try to invoke authentication ")
     # permission_classes = [IsAuthenticated]
     queryset = uob.all()
     serializer_class = UserSerializer

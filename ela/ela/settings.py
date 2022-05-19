@@ -77,15 +77,14 @@ INSTALLED_APPS = [
     #     default_auto_field = 'django.db.models.BigAutoField'
     #     name = 'user'
     # --------add your app to active (register) them!----------
-    'rest_framework',  # DRF
     'django_filters',  # 过滤
-    'blogs.apps.BlogsConfig',
+    'rest_framework',  # DRF
+    # 'blogs.apps.BlogsConfig',
     'main.apps.MainConfig',
     'scoreImprover.apps.ScoreImproverConfig',
     'word.apps.WordConfig',
     'user.apps.UserConfig',
     'django.contrib.admin',
-    # 'blog.apps.BlogConfig',
 
     'polls.apps.PollsConfig',
 

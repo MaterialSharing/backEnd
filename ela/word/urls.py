@@ -3,15 +3,15 @@ from rest_framework.routers import SimpleRouter
 
 from . import views
 from .views import WordNotesModelViewSet
-
+app_name= 'word'
 urlpatterns = [
     re_path(r'index', views.index, name="index"),
     # path(r'<slug:word>/',views.WordAPIView.as_view(),name='wordQuery'),
     # re_path(r'^(?P<word>\w*)/$',views.WordAPIView.as_view(),name='wordQuery'),
     # path(r'word/',views.WordAPIView.as_view(),name='word'),
     path('dict/<str:spelling>/', views.WordModelViewSet.as_view({
-        "get": "explain"
-    })),
+        "get": "dict"
+    }),name='dict'),
     path('fuzzy/', views.WordMatcherViewSet.as_view({ "get":"list"})),
     path('fuzzy/<str:spelling>/', views.WordMatcherViewSet.as_view({
         "get": "fuzzy_match_simple"

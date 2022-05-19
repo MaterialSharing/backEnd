@@ -124,6 +124,10 @@ class WordMatcherViewSet(ModelViewSet):
         print("@params", params,type(params))
         contain=params.get("contain",0)
         end_with=params.get("end_with",0)
+        if(contain==""):
+            contain=0
+        if(end_with==""):
+            end_with=0
         contain=int(contain)
         end_with=int(end_with)
 

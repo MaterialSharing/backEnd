@@ -1,5 +1,5 @@
 from cxxulib.printer import print1
-from scripts.numpyScripts import get_range_randoms
+from query_scripts.numpyScripts import get_range_randoms
 from word.serializer import Cet4WordsReqModelSerializer
 from word.views import c4ob
 

@@ -10,7 +10,10 @@ client = Client()
 # res=client.get('http://127.0.0.1:8000/word/dict/')
 # url=reverse('word:dict',args=['apple'])
 # url=reverse('word:dict')
-url=reverse('word:dict_spelling',args=['apple'])
+# 如果在word的url中使用app_name='word'，则应该使用'word:xx'的形式reverse.
+# url=reverse('word:dict_spelling',args=['apple'])
+url=reverse('dict_spelling',args=['apple'])
+res = client.get('http://127.0.0.1:8000/word/fuzzy/decay/0/')
 
 
 print(res.status_code)

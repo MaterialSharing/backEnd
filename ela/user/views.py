@@ -30,7 +30,7 @@ from user.serializer import UserSerializer, UserModelSerializer, WordStarModelSe
 
 # from django.urls
 # Create your views here.
-from word.filters import DIYPagination
+from word.paginations import DIYPagination
 
 uob = User.objects
 Res = Response

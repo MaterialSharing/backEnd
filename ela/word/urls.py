@@ -1,12 +1,13 @@
 from django.urls import path, re_path
-from rest_framework.routers import SimpleRouter
+from rest_framework.routers import SimpleRouter, DefaultRouter
 
 from . import views
 from .views import WordNotesModelViewSet
 
 # app_name = 'word'
 urlpatterns = [
-    re_path(r'index', views.index, name="index"),
+    # re_path(r'index', views.index, name="index"),
+    path('index_drf',views.IndexAPIView.as_view(),name="index_drf"),
     # path(r'<slug:word>/',views.WordAPIView.as_view(),name='wordQuery'),
     # re_path(r'^(?P<word>\w*)/$',views.WordAPIView.as_view(),name='wordQuery'),
     # path(r'word/',views.WordAPIView.as_view(),name='word'),
@@ -22,10 +23,14 @@ urlpatterns = [
     })),
     path('fuzzy/<str:spelling>/<int:start_with>/', views.WordMatcherViewSet.as_view({
         "get": "fuzzy_match"
-    })),
+    }),name = "fuzzy"),
     path('sum/<str:examtype>/', views.WordSumModelViewSet.as_view())
 ]
-router = SimpleRouter()
+# router = SimpleRouter()
+router=DefaultRouter()
+# Api Root for current django app(word)
+# The default basic root view for DefaultRouter
+# http://127.0.0.1:8000/word/  访问改路由,您可以获得DRF提供的隶属于本模块的且被register注册过的若干模块的路由(url)
 router.register("dict", views.WordModelViewSet, basename="dict_drf")
 # router.register("word_matcher",views.WordMatcherViewSet)
 router.register("cet4", views.Cet4WordsModelViewSet, basename="cet4")

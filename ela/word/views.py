@@ -15,12 +15,13 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework import filters, status
 from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 # from user.views import Res
-
+from .paginations import DIYPagination
 from .models import Word
 
 import word.models
@@ -42,6 +43,13 @@ Res = Response
 
 def index(request):
     return HttpResponse("Words!")
+
+
+class IndexAPIView(APIView):
+    def get(self,request):
+        5 / 0
+        # ????
+        return Response("Words!_drf")
 
 
 @deprecated
@@ -87,19 +95,23 @@ class WordModelViewSet(ModelViewSet):
     search_fields = ['$spelling', 'plurality', 'thirdpp', 'present_participle', 'past_tense', 'past_participle']
 
     ordering_fields = ['spelling', 'id']
+    pagination_class = DIYPagination
 
     # search_fields = ['$spelling', 'plurality', 'thirdpp', 'presetn_participle', 'past_tense', 'past_participle']
 
     # @action(method=["get"],detail=False)
     def dict(self, req, spelling):
         # word = self.get_queryset().get(spelling=spelling)
+        word_queryset = get_object_or_404(wob, spelling=spelling)
         # 使用get如果查询无果,会抛出异常! 使用filter如果查询无果,返回空集合
-        word_queryset = self.get_queryset().filter(spelling=spelling)
-        if (len(word_queryset) == 0):
-            return Res(f"sorry,there is no explain for the word:{spelling},try fuzzy match api? /word/fuzzy/{spelling}",
-                       status=status.HTTP_404_NOT_FOUND)
-        ser = self.serializer_class(instance=word_queryset,many=True)
+        # word_queryset = self.get_queryset().filter(spelling=spelling)
+        # if (len(word_queryset) == 0):
+        #     return Res(f"sorry,there is no explain for the word:{spelling},try fuzzy match api? /word/fuzzy/{spelling}",
+        #                status=status.HTTP_404_NOT_FOUND)
+        # ser = self.serializer_class(instance=word_queryset,many=True)
+        ser = self.serializer_class(instance=word_queryset)
         return Res(ser.data)
+        # .renderer_context({"test_moreinf":"good!!!"})
 
 
 class WordMatcherViewSet(ModelViewSet):
@@ -121,15 +133,15 @@ class WordMatcherViewSet(ModelViewSet):
         :rtype: Response
         """
         params = req.query_params
-        print("@params", params,type(params))
-        contain=params.get("contain",0)
-        end_with=params.get("end_with",0)
-        if(contain==""):
-            contain=0
-        if(end_with==""):
-            end_with=0
-        contain=int(contain)
-        end_with=int(end_with)
+        print("@params", params, type(params))
+        contain = params.get("contain", 0)
+        end_with = params.get("end_with", 0)
+        if (contain == ""):
+            contain = 0
+        if (end_with == ""):
+            end_with = 0
+        contain = int(contain)
+        end_with = int(end_with)
 
         # print("@contain:", contain)
         spelling_len = len(spelling)
@@ -162,22 +174,20 @@ class WordMatcherViewSet(ModelViewSet):
         # queryset = self.get_queryset().filter(spelling__length__gte=left_len) & self.get_queryset().filter(
         #     spelling__length__lte=right_len) & self.queryset.filter(char_set__contains=spelling_chars)
 
-
-
         """限制单词长度"""
         queryset = self.queryset.filter(spelling__length__gte=left_len) & self.queryset.filter(
             spelling__length__lte=right_len)
         # 是否要求模糊输入的拼写字符集是候选词的子集(强制)
         if (contain):
-            #基于候选拼写的特征字符集
+            # 基于候选拼写的特征字符集
             # 这里char_set是字符串
             # 候选词的字符集作为全集(contains作用于字符串之间的判断)
             queryset = queryset.filter(char_set_str__contains=spelling_char_set_str)
 
-        if(end_with):
-            print("@end_with:",end_with)
+        if (end_with):
+            print("@end_with:", end_with)
             # 基于完整的候选拼写
-            queryset=queryset.filter(spelling__endswith=spelling[-int(end_with):])
+            queryset = queryset.filter(spelling__endswith=spelling[-int(end_with):])
         # 匹配开头(严格模式)(可以额外设置变量,追加if)
         # print(queryset)
         # 匹配发音:mysql中有一个soundx函数,

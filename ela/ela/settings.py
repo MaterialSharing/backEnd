@@ -60,11 +60,18 @@ REST_FRAMEWORK = {
     #  "next": "http://127.0.0.1:8000/user/?page=3",
     #  "previous": "http://127.0.0.1:8000/user/",
     # 分页配置:pagination
-    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    # word.filters.DIYPagination
-    'DEFAULT_PAGINATION_CLASS': 'word.filters.DIYPagination',
+    # 分页方式1: limit&offset
+    # 分页方式2:pager=x
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    # 'DEFAULT_PAGINATION_CLASS': 'word.filters.DIYPagination',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 3,  # each page content size
     # dpc:(PNP)
+    # 在setting.Rest_Framework中注册自定义异常处理函数
+    # 'EXCEPTION_HANDLER': 'my_project.my_app.utils.custom_exception_handler',
+    # 获取路径的技巧:使用IDE搜索相应的类名/函数名(这里是函数名(符号),在顶一个该符号的地方右键复制其引用路径,既可以获得准确的符号访问路径!
+    'EXCEPTION_HANDLER': 'ela.exceptions.division_exception_handler'
+
 }
 
 # Application definition
@@ -78,6 +85,9 @@ INSTALLED_APPS = [
     #     name = 'user'
     # --------add your app to active (register) them!----------
     'django_filters',  # 过滤
+    # django自带的过滤器主要面向前后端不分离
+    # 采用drf的分页器,更好的支持前后你分离的项目
+    # drf的分页器针对于ListView的功能(或者其子类的视图)才有效果!
     'rest_framework',  # DRF
     # 'blogs.apps.BlogsConfig',
     'main.apps.MainConfig',

@@ -9,15 +9,16 @@ from django.forms import forms
 
 
 class User(models.Model):
-    uid = models.AutoField(primary_key=True,help_text="Unique ID")
-    name = models.CharField(max_length=50, default='name_id',help_text="User's name")
+    uid = models.AutoField(primary_key=True, help_text="Unique ID")
+    name = models.CharField(max_length=50, default='name_id', help_text="User's name")
     signin = models.IntegerField(db_column='signIn', default=0,
-                                 help_text="the sign in days >=0")  
-    openid = models.CharField(max_length=150, null=True, default=None, unique=True,help_text="User's openid")
-    examdate = models.DateField(db_column='examDate', default='1970-01-01',help_text="User's exam date")
-    signupdate = models.DateField(db_column='signUpDate', auto_now_add=True,help_text="User's sign up date")
+                                 help_text="the sign in days >=0")
+    openid = models.CharField(max_length=150, null=True, default=None, unique=True, help_text="User's openid")
+    examdate = models.DateField(db_column='examDate', default='1970-01-01', help_text="User's exam date")
+    examtype = models.CharField(db_column='examType', max_length=1, default="4")
+    signupdate = models.DateField(db_column='signUpDate', auto_now_add=True, help_text="User's sign up date")
 
-    # signupdate = models.DateField(db_column='signUpDate', default='1970-01-01')  
+    # signupdate = models.DateField(db_column='signUpDate', default='1970-01-01')
     # 使用微信授权登录,不设密码字段?
     # password = models.CharField(default="123",widget=forms.PasswordInput, max_length=20)
 
@@ -49,10 +50,10 @@ class User(models.Model):
 #     # 默认值是仅在django中体现的吗?(估计是)
 #     uid = models.AutoField(primary_key=True)
 #     name = models.CharField(max_length=20,default='name_id')
-#     signin = models.IntegerField(db_column='signIn',default=0)  
-#     examtype = models.CharField(db_column='examType', max_length=1,default=4)  
-#     examdate = models.DateField(db_column='examDate',default='1970-01-01')  
-#     signupdate = models.DateField(db_column='signUpDate',default='1970-01-01')  
+#     signin = models.IntegerField(db_column='signIn',default=0)  # Field name made lowercase.
+#     examtype = models.CharField(db_column='examType', max_length=1,default=4)  # Field name made lowercase.
+#     examdate = models.DateField(db_column='examDate',default='1970-01-01')  # Field name made lowercase.
+#     signupdate = models.DateField(db_column='signUpDate',default='1970-01-01')  # Field name made lowercase.
 #
 #     class Meta:
 #         managed=True
@@ -62,10 +63,10 @@ class User(models.Model):
 #     # 默认值是尽在django中体现的吗?(估计是)
 #     uid = models.AutoField(primary_key=True)
 #     name = models.CharField(max_length=20,default='name_id')
-#     signin = models.IntegerField(db_column='signIn',default=0)  
-#     examtype = models.CharField(db_column='examType', max_length=1,default=4)  
-#     examdate = models.DateField(db_column='examDate',default='1970-01-01',null=True)  
-#     signupdate = models.DateField(db_column='signUpDate',default='1970-01-01')  
+#     signin = models.IntegerField(db_column='signIn',default=0)  # Field name made lowercase.
+#     examtype = models.CharField(db_column='examType', max_length=1,default=4)  # Field name made lowercase.
+#     examdate = models.DateField(db_column='examDate',default='1970-01-01',null=True)  # Field name made lowercase.
+#     signupdate = models.DateField(db_column='signUpDate',default='1970-01-01')  # Field name made lowercase.
 #
 #     class Meta:
 #         managed=True
@@ -73,10 +74,10 @@ class User(models.Model):
 # class User(models.Model):
 #     uid = models.AutoField(primary_key=True)
 #     name = models.CharField(max_length=20,default='name_id')
-#     signin = models.IntegerField(db_column='signIn',default=0)  
-#     examtype = models.CharField(db_column='examType', max_length=1)  
-#     examdate = models.DateField(db_column='examDate',default='1970-01-01')  
-#     signupdate = models.DateField(db_column='signUpDate',default='1970-01-01')  
+#     signin = models.IntegerField(db_column='signIn',default=0)  # Field name made lowercase.
+#     examtype = models.CharField(db_column='examType', max_length=1)  # Field name made lowercase.
+#     examdate = models.DateField(db_column='examDate',default='1970-01-01')  # Field name made lowercase.
+#     signupdate = models.DateField(db_column='signUpDate',default='1970-01-01')  # Field name made lowercase.
 #
 #     class Meta:
 #         managed=True

@@ -17,7 +17,22 @@ from django.contrib import admin
 from django.urls import path, include
 
 # route 是一个匹配 URL 的准则（类似正则表达式）。当 Django 响应一个请求时，它会从 urlpatterns 的第一项开始，按顺序依次匹配列表中的项，直到找到匹配的项。
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
+from rest_framework import permissions
 from rest_framework.documentation import include_docs_urls
+from rest_framework.permissions import IsAuthenticated
+
+# schema_view = get_schema_view(title='ELA API')
+schema_view = get_schema_view(
+    openapi.Info(
+        title="ELA API",
+        default_version='v1',
+        description="ELA API",
+    ),
+    public=True,
+    # permission_classes=(IsAuthenticated,),
+)
 
 urlpatterns = [
     # 检测路由冲突:当某些个路由可能潜在的发生冲突,可以在这里注释掉其他路由来排查问题
@@ -25,6 +40,8 @@ urlpatterns = [
 
     # 注意slash(`/`不要漏掉)
     path('admin/', admin.site.urls),
+    # 可选的'swagger'参数,可以指定为其他名称
+    path('doc/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('docs/', include_docs_urls('DRF_docs_coreApi')),
     path('polls/', include('polls.urls')),
     path('word/', include('word.urls')),

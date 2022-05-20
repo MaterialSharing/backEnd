@@ -63,8 +63,8 @@ REST_FRAMEWORK = {
     # 分页方式1: limit&offset
     # 分页方式2:pager=x
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    # 'DEFAULT_PAGINATION_CLASS': 'word.filters.DIYPagination',
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': 'word.paginations.DIYPagination',
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 3,  # each page content size
     # dpc:(PNP)
     # 在setting.Rest_Framework中注册自定义异常处理函数
@@ -87,6 +87,7 @@ INSTALLED_APPS = [
     #     default_auto_field = 'django.db.models.BigAutoField'
     #     name = 'user'
     # --------add your app to active (register) them!----------
+    'drf_yasg',
     'coreapi',
     'django_filters',  # 过滤
     # django自带的过滤器主要面向前后端不分离

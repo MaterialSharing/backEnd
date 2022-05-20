@@ -70,7 +70,10 @@ REST_FRAMEWORK = {
     # 在setting.Rest_Framework中注册自定义异常处理函数
     # 'EXCEPTION_HANDLER': 'my_project.my_app.utils.custom_exception_handler',
     # 获取路径的技巧:使用IDE搜索相应的类名/函数名(这里是函数名(符号),在顶一个该符号的地方右键复制其引用路径,既可以获得准确的符号访问路径!
-    'EXCEPTION_HANDLER': 'ela.exceptions.division_exception_handler'
+    'EXCEPTION_HANDLER': 'ela.exceptions.division_exception_handler',
+    # 接口文档配置(coreapi)
+    # 注意还需要在urls.py中配置相应的url,否则无法访问!
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema',
 
 }
 
@@ -84,6 +87,7 @@ INSTALLED_APPS = [
     #     default_auto_field = 'django.db.models.BigAutoField'
     #     name = 'user'
     # --------add your app to active (register) them!----------
+    'coreapi',
     'django_filters',  # 过滤
     # django自带的过滤器主要面向前后端不分离
     # 采用drf的分页器,更好的支持前后你分离的项目

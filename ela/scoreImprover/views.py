@@ -189,8 +189,8 @@ class RefresherModelViewSet(ModelViewSet):
         print("@refresh:queryset:", queryset)
         return queryset
 
-    def get_serializer_class(self, examtype):
-        ser = None
+    def get_serializer_class(self, examtype='cet4'):
+        # ser = None
         print("@get_serializer_class::examtype:", examtype, examtype == 'cet4')
         if (examtype == 'cet4'):
             ser = Cet4StudyModelSerializer
@@ -339,7 +339,7 @@ class RandomInspectionModelViewSet(ModelViewSet):
         random_words_pks = Randoms.Randoms.get_range_randoms(low=0, high=upper, contain_high=1, size=size)
 
         print("尝试调用get_queryset(my code)..")
-        print("@queryset:",queryset,queryset.count())
+        print("@queryset:", queryset, queryset.count())
         q_in = queryset.filter(wordorder__in=random_words_pks)
         # print()
         # str(object)比str(type(object))更加管用.
@@ -369,7 +369,6 @@ class RandomInspectionModelViewSet(ModelViewSet):
         # return Res("testing")
         return Res(extra_od)
         return Response(ser.data)
-
 
 
 class NeepStudyDetailViewSet(ModelViewSet):

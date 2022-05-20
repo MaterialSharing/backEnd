@@ -34,7 +34,7 @@ def division_exception_handler(exc, context):
     response = exception_handler(exc, context)
 
     # Now add the HTTP status code to the response.
-    print("capture_exception@@@@")
+    # print("capture_exception@@@@")
     if response is None:
         if isinstance(exc, ZeroDivisionError):
             response = Res({"detail": "除数不能为0"})

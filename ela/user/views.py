@@ -817,6 +817,11 @@ action装饰器可以接收两个参数:
 
 
 class UserModelViewSet(ModelViewSet):
+    """
+    用户信息模型(这里写的文档将会反映到接口文档中去(coreapi)
+    create:创建一个新用户(注册)
+    read:获取用户信息
+    """
     # 这两行根据被操作的数据模型的不同而不同uob=User.object
     queryset = uob.all()
     serializer_class = UserModelSerializer

@@ -118,8 +118,9 @@ class WordMatcherViewSet(ModelViewSet):
     """ 模糊匹配数据库"""
     queryset = wmob.all()
     serializer_class = WordMatcherModelSerializer
-    filter_fields = ['spelling', 'char_set']
-    search_fields = ['$spelling', 'char_set']
+    # 使用coreapi可以自动生成文档,同时会检查一些错误(比如视图类于被更改的模型字段引用不匹配)
+    filter_fields = ['spelling', 'char_set_str']
+    search_fields = ['$spelling', 'char_set_str']
 
     def fuzzy_match(self, req, spelling, start_with=0, contain=0):
         """

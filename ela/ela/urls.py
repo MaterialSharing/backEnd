@@ -17,12 +17,15 @@ from django.contrib import admin
 from django.urls import path, include
 
 # route 是一个匹配 URL 的准则（类似正则表达式）。当 Django 响应一个请求时，它会从 urlpatterns 的第一项开始，按顺序依次匹配列表中的项，直到找到匹配的项。
+from rest_framework.documentation import include_docs_urls
+
 urlpatterns = [
     # 检测路由冲突:当某些个路由可能潜在的发生冲突,可以在这里注释掉其他路由来排查问题
     # 此处的path函数的第一个参数的含义是应用名,第二个参数(include()指出应用下的子路由配置对象),来匹配并路由后续的任务
 
     # 注意slash(`/`不要漏掉)
     path('admin/', admin.site.urls),
+    path('docs/', include_docs_urls('DRF_docs_coreApi')),
     path('polls/', include('polls.urls')),
     path('word/', include('word.urls')),
     path('improver/', include('scoreImprover.urls')),

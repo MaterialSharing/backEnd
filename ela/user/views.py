@@ -855,11 +855,41 @@ class UserModelViewSet(ModelViewSet):
     # 在urls.py中,本函数被指定为put操作
     # @property
 
-    def recently_unitable(self, req, pk, unit, value):
+    def recently_unitable(self, req, pk):
+        # unit = 'days', value = 8, examtype = 'neep'
+        # print("@@hhh!")
+        """正在开发query参数"""
+        # 指定考试类型
+        params_d = req.query_params
+        print("@params:", params_d)
+        examtype = params_d.get("examtype", "neep")
+        # timedelta的指定元素
+        unit = "days"
+        value = 8
+        examtype = "neep"
+        # unit = params_d.get("unit", "days")
+        # value = params_d.get("value", 8)
         value = float(value)
+        for key in params_d:
+            value_d = params_d[key]
+            print("@value,type",type(value_d))
+            # print("key:value",key,value_d)
+            if (len(value_d)):
+                print("@value len:",len(value_d))
+                if (key == "unit"):
+                    unit = value_d
+                elif (key == "value"):
+                    value = float(value_d)
+                elif (key == "examtype"):
+                    examtype = value_d
+
+        print("@params:", unit, value, examtype)
+
         # 只需要使用字典打包以下关键字参数
         d = {unit: value}
         delta = timedelta(**d)
+        study_ob = QuerysetDispatcher.get_queryset_study(examtype=examtype)
+
         # delta = timedelta({unit: value})
 
         # 您不需要如下的负责判断
@@ -869,14 +899,16 @@ class UserModelViewSet(ModelViewSet):
         #     delta = timedelta(hours=value)
         # else:
         #     print("unit的取值是hours或者days!")
-        queryset = neep_study_ob.filter(last_see_datetime__gte=timezone.now() - delta)
+        # 注意这里我们通过user来过滤
+        queryset = study_ob.filter(user=pk)
+        queryset = queryset.filter(last_see_datetime__gte=timezone.now() - delta)
 
         return Res(NeepStudyModelSerializer(instance=queryset, many=True).data)
 
     def progress(self, req, pk, examtype):
         progress = 0
         # if (examtype == "neep"):
-        querysetDispatcher=QuerysetDispatcher()
+        querysetDispatcher = QuerysetDispatcher()
         study_ob = querysetDispatcher.get_queryset_study(examtype=examtype)
         progress = study_ob.filter(user=pk).count()
 

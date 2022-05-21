@@ -56,31 +56,29 @@ urlpatterns = []
 urlpatterns = [
     # user应用内的子路由配置
     # 这里的user表示'资源'(总路由中的user表示应用名)
-    path('user/', views.UserSerView.as_view()),
-    path('user_apiView/', views.UserAPIView.as_view()),
-    re_path('^user_apiView/(?P<pk>\d+)$', views.UserInfoAPIView.as_view()),
-    re_path('^user_generic/(?P<pk>\d+)$', views.UserInfoGenericAPIView.as_view()),
-    re_path('^user_generic/$', views.UserGenericAPIView.as_view()),
-    re_path('^user_genericMixin/$', views.UserGenericMixin.as_view()),
-    re_path('^user_genericMixin/(?P<pk>\d+)$', views.UserInfoGenericMixin.as_view()),
-    re_path('user_ListCreate/', views.UserListCreateAPIView.as_view()),
-    re_path('^user_RetrieveUpdate/(?P<pk>\d+)$', views.UserRetrieveUpdateAPIView.as_view()),
-    re_path('^user_RetrieveUpdateDestroy/(?P<pk>\d+)$', views.UserRetrieveUpdateDestroyAPIView.as_view()),
+    # path('user/', views.UserSerView.as_view()),
+    # path('user_apiView/', views.UserAPIView.as_view()),
+    # re_path('^user_apiView/(?P<pk>\d+)$', views.UserInfoAPIView.as_view()),
+    # re_path('^user_generic/(?P<pk>\d+)$', views.UserInfoGenericAPIView.as_view()),
+    # re_path('^user_generic/$', views.UserGenericAPIView.as_view()),
+    # re_path('^user_genericMixin/$', views.UserGenericMixin.as_view()),
+    # re_path('^user_genericMixin/(?P<pk>\d+)$', views.UserInfoGenericMixin.as_view()),
+    # re_path('user_ListCreate/', views.UserListCreateAPIView.as_view()),
+    # re_path('^user_RetrieveUpdate/(?P<pk>\d+)$', views.UserRetrieveUpdateAPIView.as_view()),
+    # re_path('^user_RetrieveUpdateDestroy/(?P<pk>\d+)$', views.UserRetrieveUpdateDestroyAPIView.as_view()),
     path('info/<int:pk>/signin/', views.UserModelViewSet.as_view({
         "put": "signin"
     })),
     # path('info/<int:pk>/review/<str:examtype>/list',
     # 注意re_path不支持类型转换器(<int:pk>)这类写法在re_path中会失效,导致无法正确解析路由
     # 不要混用正则和类型转换器!
-    re_path('^info/(?P<pk>\d+)/review/(?P<examtype>\w+)/$', views.UserModelViewSet.as_view({
-        "get": "review_list"
-    })),
-    path('info/<int:pk>/review/', views.UserModelViewSet.as_view({
-        "get": "review"
-    })),
-    re_path('^info/(?P<pk>\d+)/review/recently/(?P<unit>\w+)/(?P<value>(\-|\+)?\d+(\.\d+)?)/$',
-         views.UserModelViewSet.as_view({'get': 'recently_unitable'})),
-    path('info/<int:pk>/review/recently/<str:unit>/<str:value>',
+    # re_path('^info/(?P<pk>\d+)/review/(?P<examtype>\w+)/$', views.UserModelViewSet.as_view({
+    #     "get": "review_list"
+    # })),
+    # path('info/<int:pk>/review/', views.UserModelViewSet.as_view({
+    #     "get": "review"
+    # })),
+    re_path('^info/(?P<pk>\d+)/review/(?P<unit>\w+)/(?P<value>(\-|\+)?\d+(\.\d+)?)/$',
          views.UserModelViewSet.as_view({'get': 'recently_unitable'})),
     path('info/<int:pk>/rank/', views.UserModelViewSet.as_view({
         "get": "rank"
@@ -88,6 +86,10 @@ urlpatterns = [
     path('info/<int:pk>/progress/<str:examtype>/', views.UserModelViewSet.as_view({
         "get": "progress"
     }), name="progress"),
+    # path('info/<int:pk>/review/<str:examtype>/recently/<str:unit>/<str:value>',
+    #      views.UserModelViewSet.as_view({'get': 'recently_unitable'})),
+    path('info/<int:pk>/review/recently/',
+         views.UserModelViewSet.as_view({'get': 'recently_unitable'})),
     # path('info/<int:pk>/history/', views.WSHModelViewSet.as_view())
 
 ]

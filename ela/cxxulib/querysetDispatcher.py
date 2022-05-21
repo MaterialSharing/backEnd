@@ -18,6 +18,9 @@ class QuerysetDispatcher:
     queryDispatcher=QueryDispatcher()#after that ,could you use queryDispatcher.method()
     """
 
+    # @staticmethod
+    # 静态方法没有self参数(或者类似@类方法的cls参数)，所以不需要实例化
+    @classmethod
     def get_queryset_study(self, examtype="4"):
         """使用的时候注意examtype 关键字参数不要以位置参数的形式传递!!!"""
         print("@examtype:", examtype)

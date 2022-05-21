@@ -2,6 +2,9 @@ import random as rand
 
 
 class Randoms:
+    # @classmethod
+    # 我们将这个类的实例化方法称为类方法，而不是普通的函数。(这样可以类似java静态方法那样直接通过类名调用)
+    @staticmethod
     def get_range_randoms(low: int = 20, high: int = 100, size: int = 10, contain_high: int = 0,
                           sorted: int = 1) :
         '''

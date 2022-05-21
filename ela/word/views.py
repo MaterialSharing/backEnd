@@ -46,7 +46,7 @@ def index(request):
 
 
 class IndexAPIView(APIView):
-    def get(self,request):
+    def get(self, request):
         5 / 0
         # ????
         return Response("Words!_drf")
@@ -73,7 +73,7 @@ class WordAPIView(View):
             print(word)
             word_list.append({
                 "spelling": word.spelling,
-                "phnetic": word.phonetic,
+                "phonetic": word.phonetic,
                 "explains": word.explains
             })
         # print(word)
@@ -83,6 +83,22 @@ class WordAPIView(View):
         return django.http.JsonResponse(word_list, safe=False, json_dumps_params={"ensure_ascii": False})
 
 
+class WordDemoTestAPIView(APIView):
+
+    def get(self, req):
+        words = Word.objects.all()[:1]
+        # data=WordModelSerializer(words, many=True).data
+        # data_str=str(data)[:10]
+        word1=words[0]
+        data1={
+            "spelling":word1.spelling,
+            "phnetic":word1.phonetic,
+            "explains":word1.explains
+        }
+        print(data1)
+        # return Res("WordDemoTestView@@@!"+data1)
+        return Res(data1)
+        # return Res(str(data))
 class WordModelViewSet(ModelViewSet):
     queryset = wob.all()
     serializer_class = WordModelSerializer

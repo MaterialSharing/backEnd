@@ -4,7 +4,8 @@ from rest_framework.routers import SimpleRouter
 from . import views
 
 # from .views import Review
-
+# 启用命名空间
+app_name = 'improver'
 urlpatterns = [
     path('', views.index, name='index'),
     # path('review/<int:size>', Review.as_view(), name='sized_review'),
@@ -34,9 +35,9 @@ urlpatterns = [
     # path('neep/refresh/', views.NeepStudyModelViewSet.as_view({
     #     "put": "refresh"
     # })),
-    path('<str:examtype>/refresh/', views.RefresherModelViewSet.as_view({
+    path('study/<str:examtype>/', views.RefresherModelViewSet.as_view({
         "put": "refresh"
-    }))
+    })),
 ]
 
 router = SimpleRouter()
@@ -47,8 +48,8 @@ router.register("neep", views.NeepStudyModelViewSet, basename="neep")
 router.register("neep_detail", views.NeepStudyDetailViewSet)
 router.register("neep/detail", views.NeepStudyDetailViewSet)
 # 查看学习记录
-router.register("cet4", views.Cet4StudyModelViewSet)
-router.register("cet6", views.Cet6StudyModelViewSet)
+router.register("cet4", views.Cet4StudyModelViewSet,basename="cet4")
+router.register("cet6", views.Cet6StudyModelViewSet,basename="cet6")
 
 # 将生成的路由显示的添加到urlpatterns
 urlpatterns += router.urls

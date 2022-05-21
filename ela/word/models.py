@@ -23,6 +23,7 @@ class Word(models.Model):
     def __str__(self):
         s = self
         return str([
+            s.wid,
             s.spelling,
             s.phonetic,
             s.plurality,

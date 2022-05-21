@@ -21,8 +21,14 @@ class IndexView(generic.ListView):
     context_object_name = 'latest_question_list'
 
     # 重写get_queryset方法
+    #
     def get_queryset(self):
-        """Return the last five published questions."""
+        """Return the last five published questions.
+        父类总的get_queryset()
+         Return the list of items for this view.
+         The return value must be an iterable and may be an instance of
+         `QuerySet` in which case `QuerySet` specific behavior will be enabled.
+        """
         return Question.objects.order_by('-pub_date')[:5]
 
 

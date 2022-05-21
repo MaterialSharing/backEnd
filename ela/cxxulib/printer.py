@@ -1,6 +1,7 @@
 
-def print1(iterable,is_dict=0):
+def print1(prompt_str="",iterable="the iterable",is_dict=0):
     cnt=0
+    print(prompt_str,end="")
     if(is_dict):
         iterable=iterable.items()
         # for item in iterable.items():

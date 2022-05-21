@@ -16,7 +16,7 @@ client = APIClient()
 
 # pmg test scoreImprover.tests.test_urls.ImproverUrlsTestCase
 class ImproverUrlsTestCase(TestCase):
-
+    # 一般的,由DRF生成的api路由,只要一个没有问题,那么其余4个都不会有问题(尤其指的是ModelViewSet&register注册的路由)
     def test_neep_list(self):
         url = reverse('improver:neep-list')
         self.assertEqual(url, '/improver/neep/')
@@ -40,3 +40,13 @@ class ImproverUrlsTestCase(TestCase):
     def test_cet6_detail(self):
         url = reverse('improver:cet6-detail', args=["1"])
         self.assertEqual(url, '/improver/cet6/1/')
+
+    # 下面测试自定义的零碎路由
+    # pmg test scoreImprover.tests.test_urls.ImproverUrlsTestCase.test_sized_review --keepdb
+    def test_sized_review(self):
+        url = reverse('improver:sized_review', args=["cet4", "10"])
+        self.assertEqual(url, '/improver/review/cet4/10/')
+        url = reverse('improver:sized_review', args=["cet6", "10"])
+        self.assertEqual(url, '/improver/review/cet6/10/')
+        url = reverse('improver:sized_review', args=["neep", "10"])
+        self.assertEqual(url, '/improver/review/neep/10/')

@@ -22,14 +22,13 @@ from rest_framework.viewsets import ModelViewSet, ViewSet, GenericViewSet, ReadO
 from rest_framework.mixins import ListModelMixin, CreateModelMixin, UpdateModelMixin, DestroyModelMixin, \
     RetrieveModelMixin
 
+from cxxulib import querysetDispatcher
+from cxxulib.querysetDispatcher import QuerysetDispatcher
 from scoreImprover.serializer import NeepStudyModelSerializer
 from scoreImprover.views import neep_study_ob
 from user.models import User, WordStar, WordSearchHistory
 from rest_framework import serializers, status
 from user.serializer import UserSerializer, UserModelSerializer, WordStarModelSerializer, WSHModelSerializer
-
-# from django.urls
-# Create your views here.
 from word.paginations import DIYPagination
 
 uob = User.objects
@@ -876,10 +875,13 @@ class UserModelViewSet(ModelViewSet):
 
     def progress(self, req, pk, examtype):
         progress = 0
-        if (examtype == "neep"):
-            progress = neep_study_ob.filter(user=pk).count()
+        # if (examtype == "neep"):
+        querysetDispatcher=QuerysetDispatcher()
+        study_ob = querysetDispatcher.get_queryset_study(examtype=examtype)
+        progress = study_ob.filter(user=pk).count()
+
         # & neep_study_ob.filter(examtype=neep)
-        return Res({"examtyep": examtype, "progress": progress})
+        return Res({"user": pk, "examtype": examtype, "progress": progress})
 
     def rank(self, req, pk):
         signin_pk: int = self.queryset.get(pk=pk).signin
@@ -915,7 +917,7 @@ class UserModelViewSet(ModelViewSet):
         # # using them without actually having to pull them out of the database into Python memory.
         # user = uob.get(pk=pk)
         """方式2:对queryset:F()&update()"""
-        user=uob.filter(pk=pk) # 这里的user是一个QuerySet
+        user = uob.filter(pk=pk)  # 这里的user是一个QuerySet
         user.update(signin=F('signin') + 1)
         user = uob.get(pk=pk)
 

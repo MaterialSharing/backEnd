@@ -17,7 +17,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from cxxulib.printer import print1
 from scoreImprover.models import NeepStudy, Cet4Study, Cet6Study
-from cxxulib import Randoms
+from cxxulib import randoms
 from scoreImprover.serializer import NeepStudyModelSerializer, NeepStudyDetailModelSerializer, Cet4StudyModelSerializer, \
     Cet6StudyModelSerializer
 from word.models import WordNotes, Cet4WordsReq, Cet6WordsReq, NeepWordsReq

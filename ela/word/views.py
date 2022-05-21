@@ -322,11 +322,11 @@ class WordSumModelViewSet(APIView):
 
     def get(self, req, examtype):
         queryset = c4ob
-        if (examtype == "6"):
+        if (examtype == "cet6"):
             queryset = c6ob
-        elif (examtype == "8"):
+        elif (examtype == "neep"):
             queryset = neepob
         sum = queryset.all().count()
         print(sum)
         # return Res({examtype: queryset.all().count()})
-        return Res({examtype: sum})
+        return Res({"examtype": examtype, "sum": sum})

@@ -87,7 +87,7 @@ urlpatterns = [
     })),
     path('info/<int:pk>/progress/<str:examtype>/', views.UserModelViewSet.as_view({
         "get": "progress"
-    })),
+    }), name="progress"),
     # path('info/<int:pk>/history/', views.WSHModelViewSet.as_view())
 
 ]
@@ -169,8 +169,8 @@ router = SimpleRouter()
 # router.register("user_GenericViewSet", views.UserGenericViewSet, basename="user_GenericViewSet")
 # router.register("user_ModelViewSet", views.UserModelViewSet, basename="ModelViewSetReg")
 router.register("info", views.UserModelViewSet, basename="info")
-router.register("history", views.WSHModelViewSet, basename="word_search_history")
-router.register("star", views.WordStarModelViewSet, basename="word_star")
+router.register("history", views.WSHModelViewSet, basename="history")
+router.register("star", views.WordStarModelViewSet, basename="star")
 
 # print(f"@router.urls={router.urls}")
 urlpatterns += router.urls

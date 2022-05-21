@@ -9,7 +9,7 @@ app_name = 'improver'
 urlpatterns = [
     path('', views.index, name='index'),
     # path('review/<int:size>', Review.as_view(), name='sized_review'),
-    path('review/<str:examtype>/<int:size>', views.RandomInspectionModelViewSet.as_view(
+    path('review/<str:examtype>/<int:size>/', views.RandomInspectionModelViewSet.as_view(
         {
             "get": "get_words_random"
         }

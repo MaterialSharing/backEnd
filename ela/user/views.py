@@ -864,24 +864,45 @@ class UserModelViewSet(ModelViewSet):
         print("@params:", params_d)
         examtype = params_d.get("examtype", "neep")
         # timedelta的指定元素
+        # 指定默认值
         unit = "days"
         value = 8
         examtype = "neep"
+
+        # 一般情况下(用户要么传入非空值/要么不传入对应参数),那么只需要像下面这样写
         # unit = params_d.get("unit", "days")
         # value = params_d.get("value", 8)
-        value = float(value)
-        for key in params_d:
-            value_d = params_d[key]
-            print("@value,type",type(value_d))
-            # print("key:value",key,value_d)
-            if (len(value_d)):
-                print("@value len:",len(value_d))
-                if (key == "unit"):
-                    unit = value_d
-                elif (key == "value"):
-                    value = float(value_d)
-                elif (key == "examtype"):
-                    examtype = value_d
+        # 为了增强robust,做了如下讨论
+        # 下面讨论根据用户传入的各种情况对默认更新或者不更新
+        # 方案1:
+        # value = float(value)
+        # for key in params_d:
+        #     value_d = params_d[key]
+        #     print("@value,type",type(value_d))
+        #     # print("key:value",key,value_d)
+        #     if (len(value_d)):
+        #         print("@value len:",len(value_d))
+        #         if (key == "unit"):
+        #             unit = value_d
+        #         elif (key == "value"):
+        #             value = float(value_d)
+        #         elif (key == "examtype"):
+        #             examtype = value_d
+        # 方案2:
+        # 如果传入的query参数为空("")(一般是apifox中自动添加的无值参数),或者不传入该参数,那么默认为days
+        # 换句话说,如果有query参数被传入,且传入的关键query参数是非空值,那么才将默认值覆盖掉
+        # 准备第二套值(不直接影响前面的默认值组)
+        unit_tmp = params_d.get("unit")
+        value_tmp = params_d.get("value")
+        examtype_tmp = params_d.get("examtype")
+        if (unit_tmp):
+            unit = unit_tmp
+        if (value_tmp):
+            value = float(value_tmp)
+        if (examtype_tmp):
+            examtype = examtype_tmp
+        # unit = params_d.get("unit", "days")
+        # value = params_d.get("value", 8)
 
         print("@params:", unit, value, examtype)
 
@@ -962,9 +983,12 @@ class UserModelViewSet(ModelViewSet):
         # return Res({"msg": f"{ser.data}"})
         return Res(ser.data)
 
-    def review_list(self, req, examtype, pk):
-        if (examtype == "neep"):
-            queryset = neep_study_ob.filter(familiarity__lte=4) & neep_study_ob.filter(user=pk)
+    def review_list(self, req, pk, examtype="neep"):
+        """ 获取复习列表(全局) """
+        study_ob = QuerysetDispatcher.get_queryset_study(examtype=examtype)
+        queryset = study_ob.filter(familiarity__lte=4) # 只查询不熟的
+        queryset=queryset.filter(user=pk)
+        if (len(queryset)):
             ser = NeepStudyModelSerializer(instance=queryset, many=True)
             return Response(ser.data)
         return Response("empty...")

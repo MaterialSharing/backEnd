@@ -23,15 +23,15 @@ urlpatterns = [
     # 注册路由的时候纪要注意url拼写,也要注意是否是对应的视图类(视图函数)/ModelViewSet(特别是由多个类似名字的序列化器)
     # apifox的测试连接中,对于put/post,需要注意结尾的斜杠,应该要加上,或者总是加上
     # 如果找不到页面,可以看后台终端的输出,对于失败的请求会给出详细错误
-    path('neep/create_unique', views.NeepStudyModelViewSet.as_view({
-        "put": "create_unique"
-    })),
-    re_path('^neep/recently/(?P<days>(\-|\+)?\d+(\.\d+)?)$', views.NeepStudyModelViewSet.as_view({
-        "get": "recently"
-    })),
-    re_path('^neep/timedelta/(?P<unit>\w+)/(?P<value>(\-|\+)?\d+(\.\d+)?)$', views.NeepStudyModelViewSet.as_view({
-        "get": "recently_unitable"
-    })),
+    # path('neep/create_unique', views.NeepStudyModelViewSet.as_view({
+    #     "put": "create_unique"
+    # })),
+    # re_path('^neep/recently/(?P<days>(\-|\+)?\d+(\.\d+)?)$', views.NeepStudyModelViewSet.as_view({
+    #     "get": "recently"
+    # })),
+    # re_path('^neep/timedelta/(?P<unit>\w+)/(?P<value>(\-|\+)?\d+(\.\d+)?)$', views.NeepStudyModelViewSet.as_view({
+    #     "get": "recently_unitable"
+    # })),
     # path('neep/refresh/', views.NeepStudyModelViewSet.as_view({
     #     "put": "refresh"
     # })),

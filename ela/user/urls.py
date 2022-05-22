@@ -68,28 +68,35 @@ urlpatterns = [
     # re_path('^user_RetrieveUpdateDestroy/(?P<pk>\d+)$', views.UserRetrieveUpdateDestroyAPIView.as_view()),
     path('info/<int:pk>/signin/', views.UserModelViewSet.as_view({
         "put": "signin"
-    })),
+    }), name='signin'),
     # path('info/<int:pk>/review/<str:examtype>/list',
     # 注意re_path不支持类型转换器(<int:pk>)这类写法在re_path中会失效,导致无法正确解析路由
     # 不要混用正则和类型转换器!
-    # re_path('^info/(?P<pk>\d+)/review/(?P<examtype>\w+)/$', views.UserModelViewSet.as_view({
-    #     "get": "review_list"
-    # })),
+    re_path('^info/(?P<pk>\d+)/review/(?P<examtype>\w+)/$',
+            views.UserModelViewSet.as_view({
+                "get": "review_list"
+            }),
+            name="review-list"
+            ),
+    path('info/<int:pk>/review/recently/',
+         views.UserModelViewSet.as_view({'get': 'recently_unitable'}),
+         name='review_recently'),
     # path('info/<int:pk>/review/', views.UserModelViewSet.as_view({
     #     "get": "review"
     # })),
-    re_path('^info/(?P<pk>\d+)/review/(?P<unit>\w+)/(?P<value>(\-|\+)?\d+(\.\d+)?)/$',
-         views.UserModelViewSet.as_view({'get': 'recently_unitable'})),
+    # re_path('^info/(?P<pk>\d+)/review/(?P<unit>\w+)/(?P<value>(\-|\+)?\d+(\.\d+)?)/$',
+    #         views.UserModelViewSet.as_view({'get': 'recently_unitable'})),
     path('info/<int:pk>/rank/', views.UserModelViewSet.as_view({
         "get": "rank"
-    })),
-    path('info/<int:pk>/progress/<str:examtype>/', views.UserModelViewSet.as_view({
-        "get": "progress"
-    }), name="progress"),
+    }), name="rank"),
+    path('info/<int:pk>/progress/<str:examtype>/',
+         views.UserModelViewSet.as_view({
+             "get": "progress"
+         }),
+         name="progress"),
     # path('info/<int:pk>/review/<str:examtype>/recently/<str:unit>/<str:value>',
     #      views.UserModelViewSet.as_view({'get': 'recently_unitable'})),
-    path('info/<int:pk>/review/recently/',
-         views.UserModelViewSet.as_view({'get': 'recently_unitable'})),
+
     # path('info/<int:pk>/history/', views.WSHModelViewSet.as_view())
 
 ]

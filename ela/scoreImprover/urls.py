@@ -38,7 +38,10 @@ urlpatterns = [
     # path('<str:examtype>/', views.NeepStudyModelViewSet.as_view(), name='neep_study'),
     path('study/<str:examtype>/', views.RefresherModelViewSet.as_view({
         "put": "refresh"
-    }),name = "refresh"),
+    }), name="refresh"),
+    path('study/<str:examtype>/familiarity/<str:change>/', views.RefresherModelViewSet.as_view({
+        "put": "familiarity_change1"
+    }), name="familiarity_change1")
 ]
 
 router = SimpleRouter()
@@ -51,8 +54,8 @@ router.register("neep/detail", views.NeepStudyDetailViewSet)
 router.register("study/neep/detail", views.NeepStudyDetailViewSet)
 
 # 查看学习记录
-router.register("cet4", views.Cet4StudyModelViewSet,basename="cet4")
-router.register("cet6", views.Cet6StudyModelViewSet,basename="cet6")
+router.register("cet4", views.Cet4StudyModelViewSet, basename="cet4")
+router.register("cet6", views.Cet6StudyModelViewSet, basename="cet6")
 
 # 将生成的路由显示的添加到urlpatterns
 urlpatterns += router.urls

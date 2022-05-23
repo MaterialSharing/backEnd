@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 
 from scoreImprover.models import Cet4Study, Cet6Study, NeepStudy
+from scoreImprover.serializer import Cet4StudyModelSerializer, Cet6StudyModelSerializer, NeepStudyModelSerializer
 from word.serializer import Cet4WordsReqModelSerializer, Cet6WordsReqModelSerializer, NeepWordsReqModelSerializer
 from word.views import c4ob, c6ob, neepob
 
@@ -34,6 +35,7 @@ class QuerysetDispatcher:
         print("@dispatcher:queryset_study:", queryset)
         return queryset
 
+    @classmethod
     def get_queryset_reqs(self, examtype="4"):
         # 考纲表manager
         queryset = c4ob
@@ -46,11 +48,22 @@ class QuerysetDispatcher:
         print("@dispatcher:queryset_reqs:", queryset)
         return queryset
 
+    @classmethod
     def get_serializer_class_reqs(self, examtype="4"):
         ser = Cet4WordsReqModelSerializer
         if (examtype == "cet6"):
             ser = Cet6WordsReqModelSerializer
         elif (examtype == "neep"):
             ser = NeepWordsReqModelSerializer
+        print("@dispatcher:", ser)
+        return ser
+
+    @classmethod
+    def get_serializer_class_study(self, examtype="4"):
+        ser = Cet4StudyModelSerializer
+        if (examtype == "cet6"):
+            ser = Cet6StudyModelSerializer
+        elif (examtype == "neep"):
+            ser = NeepStudyModelSerializer
         print("@dispatcher:", ser)
         return ser

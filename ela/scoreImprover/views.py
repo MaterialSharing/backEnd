@@ -2,20 +2,21 @@ from collections import OrderedDict
 from datetime import timedelta
 
 from deprecated.classic import deprecated
-from django.db.models import QuerySet
+from django.db.models import QuerySet, F
 from django.shortcuts import render
 from django.http import HttpResponse
 # Create your views here.
 from django.utils import timezone
 from django.views import View
 from rest_framework import status
-from rest_framework.generics import GenericAPIView, ListAPIView
+from rest_framework.generics import GenericAPIView, ListAPIView, get_object_or_404
 from rest_framework.mixins import ListModelMixin
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from cxxulib.printer import print1
+from cxxulib.querysetDispatcher import QuerysetDispatcher
 from cxxulib.randoms import Randoms
 from scoreImprover.models import NeepStudy, Cet4Study, Cet6Study
 from cxxulib import randoms
@@ -282,8 +283,8 @@ class RefresherModelViewSet(ModelViewSet):
             # print("@req.data:", req.data)
 
             ser.is_valid()
-            errors=ser.errors
-            print("@errors:",errors)
+            errors = ser.errors
+            print("@errors:", errors)
             # return Res("pass..dubuging...")
             instance = ser.save()
             # 如果需要查看被序列化器有效接受的字段,可以再save()方法前查看data属性
@@ -302,7 +303,41 @@ class RefresherModelViewSet(ModelViewSet):
             # print()
             print("@extra_d", extra_d)
             return Res(extra_d, status=status.HTTP_201_CREATED)
-            return self.create(req)
+            # return self.create(req)
+
+    def familiarity_change1(self, req, examtype, change="add"):
+        """
+        实现熟悉度的增加/减少
+        :param req: 
+        :type req: 
+        :param examtype: 
+        :type examtype: 
+        :param change: add/sub
+        :type change: int
+        :return: 
+        :rtype: 
+        """
+        # params=req.query_params(这是获取query_参数)
+        # 获取请求体参数
+        data = req.data
+        user = data.get("user")
+        wid = data.get("wid")
+        queryset = QuerysetDispatcher.get_queryset_study(examtype=examtype)
+        # study=get_object_or_404(model,user=user,wid=wid)
+        # study = queryset.get(user=user, wid=wid)
+        queryset = queryset.filter(user=user, wid=wid)
+        # 由于前期测试数据较为随意,故而使用first()
+        study = queryset.first()
+        # study=queryset[0]
+        if (change == "add"):
+            study.familiarity = F('familiarity') + 1
+        elif (change == "sub"):
+            study.familiarity = F('familiarity') - 1
+        study.save()
+        study = queryset.filter(user=user, wid=wid).first()
+        ser = QuerysetDispatcher.get_serializer_class_study(examtype=examtype)
+        data = ser(instance=study).data
+        return Res(data)
 
 
 # class Review(ListAPIView):
@@ -322,43 +357,43 @@ class RefresherModelViewSet(ModelViewSet):
 #         return Response(ser.data)
 
 # def list(self):
-class QueryDispatcher:
-    def get_queryset_study(self, examtype="4"):
-        queryset = cet4_study_ob
-        if (examtype == "cet6"):
-            queryset = cet6_study_ob
-        elif (examtype == "neep"):
-            queryset = neep_study_ob
-        # sum = queryset.all().count()
-        # print(sum)
-        print("@dispatcher:queryset_study:", queryset)
-        return queryset
-
-    def get_queryset_reqs(self, examtype="4"):
-        # 考纲表manager
-        queryset = c4ob
-        if (examtype == "cet6"):
-            queryset = c6ob
-        elif (examtype == "neep"):
-            queryset = neepob
-        # sum = queryset.all().count()
-        # print(sum)
-        print("@dispatcher:queryset_reqs:", queryset)
-        return queryset
-
-    def get_serializer_class_reqs(self, examtype="4"):
-        ser = Cet4WordsReqModelSerializer
-        if (examtype == "cet6"):
-            ser = Cet6WordsReqModelSerializer
-        elif (examtype == "neep"):
-            ser = NeepWordsReqModelSerializer
-        print("@dispatcher:", ser)
-        return ser
+# class QuerysetDispatcher:
+#     def get_queryset_study(self, examtype="4"):
+#         queryset = cet4_study_ob
+#         if (examtype == "cet6"):
+#             queryset = cet6_study_ob
+#         elif (examtype == "neep"):
+#             queryset = neep_study_ob
+#         # sum = queryset.all().count()
+#         # print(sum)
+#         print("@dispatcher:queryset_study:", queryset)
+#         return queryset
+#
+#     def get_queryset_reqs(self, examtype="4"):
+#         # 考纲表manager
+#         queryset = c4ob
+#         if (examtype == "cet6"):
+#             queryset = c6ob
+#         elif (examtype == "neep"):
+#             queryset = neepob
+#         # sum = queryset.all().count()
+#         # print(sum)
+#         print("@dispatcher:queryset_reqs:", queryset)
+#         return queryset
+#
+#     def get_serializer_class_reqs(self, examtype="4"):
+#         ser = Cet4WordsReqModelSerializer
+#         if (examtype == "cet6"):
+#             ser = Cet6WordsReqModelSerializer
+#         elif (examtype == "neep"):
+#             ser = NeepWordsReqModelSerializer
+#         print("@dispatcher:", ser)
+#         return ser
 
 
 class RandomInspectionModelViewSet(ModelViewSet):
-    get_queryset = QueryDispatcher.get_queryset_reqs
-    get_serializer_class = QueryDispatcher.get_serializer_class_reqs
+    get_queryset = QuerysetDispatcher.get_queryset_reqs
+    get_serializer_class = QuerysetDispatcher.get_serializer_class_reqs
 
     def get_words_random(self, req, examtype, size):
         # size = 5

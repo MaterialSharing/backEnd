@@ -90,7 +90,7 @@ class NeepWordsReq(models.Model):
 
 class WordNotes(models.Model):
     id = models.BigAutoField(primary_key=True)
-    uid = models.IntegerField(db_column='UID', blank=True, null=True)  # Field name made lowercase.
+    user = models.IntegerField(db_column='UID', blank=True, null=True)  # Field name made lowercase.
     spelling = models.CharField(db_column='spelling', max_length=255, blank=True,
                                 null=True)  # Field name made lowercase.
     content = models.CharField(max_length=255, blank=True, null=True)

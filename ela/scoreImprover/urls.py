@@ -35,9 +35,10 @@ urlpatterns = [
     # path('neep/refresh/', views.NeepStudyModelViewSet.as_view({
     #     "put": "refresh"
     # })),
+    # path('<str:examtype>/', views.NeepStudyModelViewSet.as_view(), name='neep_study'),
     path('study/<str:examtype>/', views.RefresherModelViewSet.as_view({
         "put": "refresh"
-    })),
+    }),name = "refresh"),
 ]
 
 router = SimpleRouter()
@@ -47,6 +48,8 @@ router = SimpleRouter()
 router.register("neep", views.NeepStudyModelViewSet, basename="neep")
 router.register("neep_detail", views.NeepStudyDetailViewSet)
 router.register("neep/detail", views.NeepStudyDetailViewSet)
+router.register("study/neep/detail", views.NeepStudyDetailViewSet)
+
 # 查看学习记录
 router.register("cet4", views.Cet4StudyModelViewSet,basename="cet4")
 router.register("cet6", views.Cet6StudyModelViewSet,basename="cet6")

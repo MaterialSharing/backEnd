@@ -42,7 +42,7 @@ class ImproverUrlsTestCase(TestCase):
         self.assertEqual(url, '/improver/cet6/1/')
 
     # 下面测试自定义的零碎路由
-    # pmg test scoreImprover.tests.test_urls.ImproverUrlsTestCase.test_sized_review --keepdb
+    # pmg test scoreImprover.tests.test_urls.ImproverUrlsTestCase --keepdb
     def test_sized_review(self):
         url = reverse('improver:sized_review', args=["cet4", "10"])
         self.assertEqual(url, '/improver/review/cet4/10/')
@@ -50,3 +50,7 @@ class ImproverUrlsTestCase(TestCase):
         self.assertEqual(url, '/improver/review/cet6/10/')
         url = reverse('improver:sized_review', args=["neep", "10"])
         self.assertEqual(url, '/improver/review/neep/10/')
+
+    def test_study_refresh(self):
+        url = reverse('improver:refresh', args=["cet4"])
+        self.assertEqual(url, '/improver/study/cet4/')

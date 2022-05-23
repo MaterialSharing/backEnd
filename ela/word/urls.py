@@ -25,6 +25,15 @@ urlpatterns = [
         "get": "fuzzy_match"
     }), name="fuzzy"),
     path('sum/<str:examtype>/', views.WordSumModelViewSet.as_view(), name="sum"),
+    path('avg-difficulty/<str:spelling>/',
+         views.WordNotesModelViewSet.as_view(
+             {"get": "get_avg_difficulty"}),
+         name="avg_difficulty"),
+
+    # path('note/difficulty-rate/', views.WordNotesModelViewSet.as_view({"get": "difficulty_rate"}),
+    #      name="difficulty_rate"),
+    path('avg-familiarity/<str:spelling>/', views.WordNotesModelViewSet.as_view({"get": "get_avg_familiarity"}),
+         name="avg_familiarity"),
     path('test/', views.WordDemoTestAPIView.as_view(), name='test'),
 
 ]
@@ -34,8 +43,8 @@ router = DefaultRouter()
 # The default basic root view for DefaultRouter
 # http://127.0.0.1:8000/word/  访问改路由,您可以获得DRF提供的隶属于本模块的且被register注册过的若干模块的路由(url)
 # 关于drf的reverse()解析,注意下方的basename参数
-#basename参数仅仅指定了路由的前缀,而不完整的路由别名(因为,register一次性会产生5条路由,每个路由的别名都是基于basename参数的)
-#根据CRUD操作,完整的路由应该是basename-list,basename-create,basename-retrieve,basename-update,basename-destroy
+# basename参数仅仅指定了路由的前缀,而不完整的路由别名(因为,register一次性会产生5条路由,每个路由的别名都是基于basename参数的)
+# 根据CRUD操作,完整的路由应该是basename-list,basename-create,basename-retrieve,basename-update,basename-destroy
 # 注意,这里的basename和score improver模块中的路由有点类似,容易重复(可以考虑启用命命名空间)
 router.register("dict", views.WordModelViewSet, basename="dict")
 # router.register("word_matcher",views.WordMatcherViewSet)

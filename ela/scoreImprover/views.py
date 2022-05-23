@@ -13,9 +13,10 @@ from rest_framework.generics import GenericAPIView, ListAPIView
 from rest_framework.mixins import ListModelMixin
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from cxxulib.printer import print1
+from cxxulib.randoms import Randoms
 from scoreImprover.models import NeepStudy, Cet4Study, Cet6Study
 from cxxulib import randoms
 from scoreImprover.serializer import NeepStudyModelSerializer, NeepStudyDetailModelSerializer, Cet4StudyModelSerializer, \
@@ -92,10 +93,17 @@ class NeepStudyModelViewSet(ModelViewSet):
 
         # return self.create(req)
 
+    @deprecated("the more Generic method is in the RefresherModelViewSet")
     def refresh(self, req):
-        wid = req.data.get("wid")
-        user = req.data.get("user")
+        # wid&wid_id
+        # uid&uid_id
+        wid = req.data.get("wid_id")
+        user = req.data.get("user_id")
+        print("req.data", req.data)
+
         queryset = neep_study_ob.filter(wid=wid) & neep_study_ob.filter(user=user)
+        print("@queryset", queryset)
+
         # if queryset.count():
         #     instance = queryset[0]
         #     ser = self.serializer_class(instance=instance, data=req.data)
@@ -111,9 +119,20 @@ class NeepStudyModelViewSet(ModelViewSet):
             # 单纯的对一个未修改的对象执行一次save()操作,也可以触发modified 条件,以便于自动更新时间字段(auto_now=True)
             instance.save()
             # ser = self.serializer_class(instance=instance, data=req.data)
-            return Res(self.serializer_class(instance=instance).data, status=status.HTTP_201_CREATED)
+            ser = self.serializer_class(instance=instance)
+            # 序列化需要被更新的对象
+            data = ser.data
+            return Res(data, status=status.HTTP_201_CREATED)
+
+            # drf 方案
+            # 先通过get_serializer()拿到构造函数器(对象),将构造器对象作为函数进行调用,
+            # 传入data=req.data;
+            # ser=self.get_serializer()(data=req.data)
+            # ser.save()
+
         else:
             # ser = self.serializer_class(data=req.data)
+            # drf CreateModelMixin.create()
             return self.create(req)
         # return Res(ser.data)
 
@@ -214,9 +233,11 @@ class RefresherModelViewSet(ModelViewSet):
         # 根据参数examtype计算出需要使用的模型Manager
         queryset = self.get_queryset(examtype=examtype)
         queryset = queryset.filter(wid=wid) & queryset.filter(user=user)
+        print("@@refresh:queryset:", queryset)
         # if queryset.count():
         #     instance = queryset[0]
-        #     ser = self.serializer_class(instance=instance, data=req.data)
+        #     ser = self.serializer_class(instance=instance, data=req.data)#wrong!
+        #     ser = self.serializer_class()(instance=instance,data=req.data)
         #     ser.is_valid()
         #     ser.save()
         #     return Res(ser.data)
@@ -244,6 +265,7 @@ class RefresherModelViewSet(ModelViewSet):
             return Res(extra_d, status=status.HTTP_201_CREATED)
             # return Res(ser(instance=instance).data, status=status.HTTP_201_CREATED)
         else:
+            # return Res("pass..dubuging...")
             # ser = self.serializer_class(data=req.data)
             print("@self.serializer_class:", self.serializer_class)
             print("下一行执行self.create(req)")
@@ -257,8 +279,19 @@ class RefresherModelViewSet(ModelViewSet):
             #         kwargs.setdefault('context', self.get_serializer_context())
             #         return serializer_class(*args, **kwargs)
             ser = ser(data=req.data)
+            # print("@req.data:", req.data)
+
             ser.is_valid()
+            errors=ser.errors
+            print("@errors:",errors)
+            # return Res("pass..dubuging...")
             instance = ser.save()
+            # 如果需要查看被序列化器有效接受的字段,可以再save()方法前查看data属性
+            # 如果检测完毕,就将其注释掉,或者调整到下一行/或者克隆一个对象查看
+            print("@ser.data:", ser.data)
+            print("@instance:", instance)
+            # return Res("pass..dubuging...")
+
             # 注意,不是所有对象都可以转化(序列化)为Json
             # 应该尽量使用基础类型,必要的时候,可以使用str()将任意类型对象转换为字符串后再塞入包装
             tip_d = {"examtype": examtype, "ser": str(type(ser))}
@@ -268,7 +301,7 @@ class RefresherModelViewSet(ModelViewSet):
             extra_d = dict(**ser.data, **tip_d)
             # print()
             print("@extra_d", extra_d)
-            return Res(extra_d)
+            return Res(extra_d, status=status.HTTP_201_CREATED)
             return self.create(req)
 
 
@@ -336,7 +369,7 @@ class RandomInspectionModelViewSet(ModelViewSet):
         ser = self.get_serializer_class(examtype=examtype)
         queryset = self.get_queryset(examtype=examtype)
         upper = queryset.count()
-        random_words_pks = Randoms.Randoms.get_range_randoms(low=0, high=upper, contain_high=1, size=size)
+        random_words_pks = Randoms.get_range_randoms(low=0, high=upper, contain_high=1, size=size)
 
         print("尝试调用get_queryset(my code)..")
         print("@queryset:", queryset, queryset.count())
@@ -371,7 +404,7 @@ class RandomInspectionModelViewSet(ModelViewSet):
         return Response(ser.data)
 
 
-class NeepStudyDetailViewSet(ModelViewSet):
+class NeepStudyDetailViewSet(ReadOnlyModelViewSet):
     queryset = neep_study_ob.all()
     serializer_class = NeepStudyDetailModelSerializer
     # pass

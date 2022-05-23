@@ -1,34 +1,23 @@
-import json
-from warnings import filters
-
 import django.http
 from deprecated.classic import deprecated
-from django.db.models import Q
-from django.shortcuts import render
-
+from django.db.models import Avg
 # Create your views here.
 from django.http import HttpResponse
 from django.views import View
-
 # import ela.word.models
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.decorators import action
-from rest_framework import filters, status
-from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 # from user.views import Res
-from .paginations import DIYPagination
-from .models import Word
-
-import word.models
-from .serializer import WordModelSerializer, WordMatcherModelSerializer
+from scoreImprover.models import NeepStudy, Cet4Study, Cet6Study
 from word.models import WordNotes, Cet4WordsReq, Cet6WordsReq, NeepWordsReq, WordMatcher
 from word.serializer import NeepWordsReqModelSerializer, WordNotesModelSerializer, Cet4WordsReqModelSerializer, \
     Cet6WordsReqModelSerializer
+from .models import Word
+from .paginations import DIYPagination
+from .serializer import WordModelSerializer, WordMatcherModelSerializer
 
 wob = Word.objects
 wmob = WordMatcher.objects
@@ -89,17 +78,22 @@ class WordDemoTestAPIView(APIView):
         words = Word.objects.all()[:1]
         # data=WordModelSerializer(words, many=True).data
         # data_str=str(data)[:10]
-        word1=words[0]
-        data1={
-            "spelling":word1.spelling,
-            "phnetic":word1.phonetic,
-            "explains":word1.explains
+        word1 = words[0]
+        data1 = {
+            "spelling": word1.spelling,
+            "phnetic": word1.phonetic,
+            "explains": word1.explains
         }
         print(data1)
         # return Res("WordDemoTestView@@@!"+data1)
         return Res(data1)
         # return Res(str(data))
-class WordModelViewSet(ModelViewSet):
+
+
+# 由于词库模型中的数据不需要通过接口来修改(保证安全和数据正确)，所以不需要提供修改接口
+# 我们可以使用ModelViewSet的子类来实现部分接口的限制,仅开放读的接口
+# class WordModelViewSet(ModelViewSet):
+class WordModelViewSet(ReadOnlyModelViewSet):
     queryset = wob.all()
     serializer_class = WordModelSerializer
     # 过滤+排序,统一配置(要么都局部/要么都在setting中全局配置,才可以同是生效
@@ -130,7 +124,7 @@ class WordModelViewSet(ModelViewSet):
         # .renderer_context({"test_moreinf":"good!!!"})
 
 
-class WordMatcherViewSet(ModelViewSet):
+class WordMatcherViewSet(ReadOnlyModelViewSet):
     """ 模糊匹配数据库"""
     queryset = wmob.all()
     serializer_class = WordMatcherModelSerializer
@@ -273,8 +267,33 @@ class WordNotesModelViewSet(ModelViewSet):
     serializer_class = WordNotesModelSerializer
 
     #     指定需要开放的可排序/可过滤字段
-    filter_fields = ["spelling", "difficulty_rate", "uid"]
-    ordering_fields = ['spelling', 'uid']
+    filter_fields = ["spelling", "difficulty_rate", "user"]
+    ordering_fields = ['spelling', 'user']
+
+    def get_avg_difficulty(self, req, spelling):
+        # 使用spelling参数,可以更加通用
+        # 获取关于spelling的批注记录
+        queryset = self.get_queryset().filter(spelling=spelling)
+        # 获得计算字段avg
+        # 关于聚合查询(统计查询):https://docs.djangoproject.com/en/4.0/topics/db/aggregation/
+        avg_difficulty = queryset.aggregate(Avg('difficulty_rate'))
+        print("@avg_difficulty:", avg_difficulty)
+        print("@avg_difficulty.get('difficulty_rate__avg'):", avg_difficulty.get('difficulty_rate__avg'))
+        # 了解Response对象:https://www.django-rest-framework.org/api-guide/responses/
+        # 总的来说,Response对象是一个继承与HttpResponse的对象(间接继承),可以直接返回
+        # data参数可以接受任意类型的python原生数据类型(譬如str,int,float,boolean,dict,and so on),但是最好是字典类型
+        # 如果想要被返回的对象不是基础类型,就需要通过拆解(或者说序列化)成基本的数据类型.
+        data = {"spelling": spelling, "avg_difficulty": avg_difficulty.get('difficulty_rate__avg')}
+        return Res(data=data)
+
+    def get_avg_familiarity(self, req, spelling):
+        # queryset = self.get_queryset().filter(spelling=spelling)
+        queryset = NeepStudy.objects.filter(wid__spelling=spelling)
+        queryset = Cet4Study.objects.filter(wid__spelling=spelling)
+        queryset = Cet6Study.objects.filter(wid__spelling=spelling)
+        avg_familiarity_queryset = queryset.aggregate(Avg('familiarity'))
+        data = {"spelling": spelling, "avg_familiarity": avg_familiarity_queryset.get('familiarity__avg')}
+        return Res(data=data)
 
 
 class Cet4WordsModelViewSet(ModelViewSet):
@@ -306,12 +325,12 @@ class Cet4WordsModelViewSet(ModelViewSet):
     ordering_fields = ['spelling', 'wordorder']
 
 
-class Cet6WordsModelViewSet(ModelViewSet):
+class Cet6WordsModelViewSet(ReadOnlyModelViewSet):
     queryset = c6ob.all()
     serializer_class = Cet6WordsReqModelSerializer
 
 
-class NeepWordsModelViewSet(ModelViewSet):
+class NeepWordsModelViewSet(ReadOnlyModelViewSet):
     queryset = neepob.all()
     serializer_class = NeepWordsReqModelSerializer
 
@@ -322,7 +341,7 @@ class WordSumModelViewSet(APIView):
 
     def get(self, req, examtype):
         queryset = c4ob
-        if (examtype == "cet6"):
+        if examtype == "cet6":
             queryset = c6ob
         elif (examtype == "neep"):
             queryset = neepob

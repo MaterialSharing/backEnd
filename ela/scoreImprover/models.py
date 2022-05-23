@@ -5,7 +5,8 @@ from django.utils import timezone
 import datetime
 
 from user.models import User
-from word.models import NeepWordsReq
+from word.models import NeepWordsReq, Cet4WordsReq, Cet6WordsReq
+from word.serializer import Cet4WordsReqModelSerializer
 
 
 class NeepStudy(models.Model):
@@ -58,7 +59,7 @@ class NeepStudy(models.Model):
 class Cet4Study(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-    wid = models.ForeignKey(NeepWordsReq, on_delete=models.DO_NOTHING)
+    wid = models.ForeignKey(Cet4WordsReq, on_delete=models.DO_NOTHING)
     last_see_datetime = models.DateTimeField(auto_now=True, null=True)
     familiarity = models.IntegerField(default=0, help_text="熟练度")
 
@@ -71,11 +72,28 @@ class Cet4Study(models.Model):
         return str(
             f"[s.id={s.id}, s.uid={s.user},s.wid={s.wid}, s.last_see_datetime={s.last_see_datetime}, s.familiarity={s.familiarity}]")
 
+    # 以下属性方法可以再序列化器中使用(显示的声明再field=[]中)
+    # 注意,fields="__all__"不会包含这些属性方法
+    @property
+    def spelling(self):
+        return self.wid.spelling
+
+    @property
+    def user_name(self):
+        return self.user.name
+
+    # @property
+    # def wid_obj(self):
+    #     # 盗用values()获取字典(而不是queryset)
+    #     # return self.wid.values()
+    #     # ser=Cet4WordsReqModelSerializer(instance=self.wid).data
+    #     # return ser.data
+    #     return self.wid.spelling
 
 class Cet6Study(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-    wid = models.ForeignKey(NeepWordsReq, on_delete=models.DO_NOTHING)
+    wid = models.ForeignKey(Cet6WordsReq, on_delete=models.DO_NOTHING)
     last_see_datetime = models.DateTimeField(auto_now=True, null=True)
     familiarity = models.IntegerField(default=0, help_text="熟练度")
 
@@ -88,6 +106,13 @@ class Cet6Study(models.Model):
         return str(
             f"[s.id={s.id}, s.uid={s.user},s.wid={s.wid}, s.last_see_datetime={s.last_see_datetime}, s.familiarity={s.familiarity}]")
 
+    @property
+    def spelling(self):
+        return self.wid.spelling
+
+    @property
+    def user_name(self):
+        return self.user.name
 
 class LongSentences(models.Model):
     sid = models.IntegerField(db_column='SID', primary_key=True)  # Field name made lowercase.

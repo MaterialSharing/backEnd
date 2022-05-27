@@ -1,5 +1,6 @@
 from deprecated.classic import deprecated
 from rest_framework import serializers
+from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 
 from user.models import User, WordSearchHistory, WordStar
@@ -163,8 +164,14 @@ class UserModelSerializer(serializers.ModelSerializer):
     # 但是如果需求比较复杂,就需要重写对应的方法(override)
     # 譬如说,我们要加密用户上传上来的密码,然后在入库
     # 重写也一般是基于被继承的函数添加一些东系(譬如数据加密,然后在调用父类的被重载函数)
+
     # def create(self, validated_data):
-    #     pass
+    #     print("@in UserModelSerializer:",self.__class__.__name__)
+    #     # pass
+    #     return Response("test create!")
+
+
+
 
 
 # 单词收藏序列化器

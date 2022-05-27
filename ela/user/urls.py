@@ -1,9 +1,18 @@
-from django.urls import URLPattern, path, re_path
-from rest_framework.routers import DefaultRouter, SimpleRouter
+from django.urls import path, re_path
+from rest_framework.routers import DefaultRouter
 
-from . import views
-from .serializer import WSHModelSerializer
-from .views import WSHModelViewSet
+# 由于我中途将这个模块拆分出来，所以这里的view要小心导入
+# import user.views.User
+# from . import views
+
+# from .views import WSHModelViewSet
+import user
+from user import views
+from user.views import star
+from user.views.history import WSHModelViewSet
+from user.views.star import WordStarModelViewSet
+from user.views.user import UserModelViewSet
+from user.views.user_basic import UserView
 
 '''
 低级错误检测
@@ -22,11 +31,11 @@ urlpatterns=[
 '''
 # 原生开发api(基于通用视图集)所配置的路由:
 urlpatterns = [
-    path('', views.UserView.as_view(), name='userPost'),
+    path('', UserView.as_view(), name='userPost'),
     # regex array without regexp
     # re_path(r'^(?P<pk>)$',views.UserApiView.as_view(),name='userCheck'),
-    re_path(r'^user/$', views.UserView.as_view(), name='userCheck'),
-    re_path(r'^(?P<pk>\d+)/$', views.UserView.as_view(), name='userCheck'),
+    re_path(r'^user/$', UserView.as_view(), name='userCheck'),
+    re_path(r'^(?P<pk>\d+)/$', UserView.as_view(), name='userCheck'),
 ]
 
 # 废弃原生开发
@@ -66,31 +75,32 @@ urlpatterns = [
     # re_path('user_ListCreate/', views.UserListCreateAPIView.as_view()),
     # re_path('^user_RetrieveUpdate/(?P<pk>\d+)$', views.UserRetrieveUpdateAPIView.as_view()),
     # re_path('^user_RetrieveUpdateDestroy/(?P<pk>\d+)$', views.UserRetrieveUpdateDestroyAPIView.as_view()),
-    path('info/<int:pk>/signin/', views.UserModelViewSet.as_view({
+    path('info/<int:pk>/signin/', UserModelViewSet.as_view({
         "put": "signin"
     }), name='signin'),
     # path('info/<int:pk>/review/<str:examtype>/list',
     # 注意re_path不支持类型转换器(<int:pk>)这类写法在re_path中会失效,导致无法正确解析路由
     # 不要混用正则和类型转换器!
-    re_path('^info/(?P<pk>\d+)/review/(?P<examtype>\w+)/$',
-            views.UserModelViewSet.as_view({
+    re_path('^info/(?P<pk>\d+)/review/global/(?P<examtype>\w+)/$',
+            UserModelViewSet.as_view({
                 "get": "review_list"
             }),
             name="review-list"
             ),
+    # 小心不要被前面的类似路由所覆盖,这样是没有机会访问到为与后面的路由.
     path('info/<int:pk>/review/recently/',
-         views.UserModelViewSet.as_view({'get': 'recently_unitable'}),
+         UserModelViewSet.as_view({'get': 'recently_unitable'}),
          name='review_recently'),
     # path('info/<int:pk>/review/', views.UserModelViewSet.as_view({
     #     "get": "review"
     # })),
     # re_path('^info/(?P<pk>\d+)/review/(?P<unit>\w+)/(?P<value>(\-|\+)?\d+(\.\d+)?)/$',
     #         views.UserModelViewSet.as_view({'get': 'recently_unitable'})),
-    path('info/<int:pk>/rank/', views.UserModelViewSet.as_view({
+    path('info/<int:pk>/rank/', UserModelViewSet.as_view({
         "get": "rank"
     }), name="rank"),
     path('info/<int:pk>/progress/<str:examtype>/',
-         views.UserModelViewSet.as_view({
+         UserModelViewSet.as_view({
              "get": "progress"
          }),
          name="progress"),
@@ -169,17 +179,17 @@ urlpatterns = [
 # )),
 
 # 简单路由
-router = SimpleRouter()
+# router = SimpleRouter()
 # 提供(生成)更多的路由
 # DefaultRouter与SimpleRouter的区别是,DefaultRouter会多附带一个默认的API根视图，返回一个包含所有列表视图的超链接响应数据。
-# router=DefaultRouter()
+router = DefaultRouter()
 """ """
 # 注册路由(该操作会将基于ViewSet的视图集视图类生成对应的一系列路由)
 # router.register("user_GenericViewSet", views.UserGenericViewSet, basename="user_GenericViewSet")
 # router.register("user_ModelViewSet", views.UserModelViewSet, basename="ModelViewSetReg")
-router.register("info", views.UserModelViewSet, basename="info")
-router.register("history", views.WSHModelViewSet, basename="history")
-router.register("star", views.WordStarModelViewSet, basename="star")
+router.register("info", UserModelViewSet, basename="info")
+router.register("history", WSHModelViewSet, basename="history")
+router.register("star", WordStarModelViewSet, basename="star")
 
 # print(f"@router.urls={router.urls}")
 urlpatterns += router.urls

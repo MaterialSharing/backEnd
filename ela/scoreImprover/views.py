@@ -392,8 +392,8 @@ class RefresherModelViewSet(ModelViewSet):
 
 
 class RandomInspectionModelViewSet(ModelViewSet):
-    get_queryset = QuerysetDispatcher.get_queryset_reqs
-    get_serializer_class = QuerysetDispatcher.get_serializer_class_reqs
+    get_queryset = QuerysetDispatcher.get_queryset_req
+    get_serializer_class = QuerysetDispatcher.get_serializer_class_req
 
     def get_words_random(self, req, examtype, size):
         # size = 5

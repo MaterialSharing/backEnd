@@ -270,6 +270,7 @@ class WordNotesModelViewSet(ModelViewSet):
     filter_fields = ["spelling", "difficulty_rate", "user"]
     ordering_fields = ['spelling', 'user']
 
+
     def get_avg_difficulty(self, req, spelling):
         # 使用spelling参数,可以更加通用
         # 获取关于spelling的批注记录

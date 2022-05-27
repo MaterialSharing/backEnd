@@ -10,7 +10,16 @@ from django.forms import forms
 
 class User(models.Model):
     uid = models.AutoField(primary_key=True, help_text="Unique ID")
-    name = models.CharField(max_length=50, default='name_id', help_text="User's name")
+    name = models.CharField(max_length=250, default='name_id', help_text="User's name")
+    # 登录密码字段,体验加密
+    # 不宜明文保存密码
+    # password = models.CharField(max_length=50, default='123', help_text="User's password")
+    # 密码hash字段
+    password_hash = models.CharField(max_length=250, default='123', help_text="User's password_hash")
+    # 加盐加密字段
+    password_salt = models.CharField(max_length=250, default='123', help_text="User's password_salt")
+    status = models.IntegerField(default=0,
+                                 help_text="User's status(admin or normal user,even the disabled or deleted user(not real delete,just modify the status.)")
     signin = models.IntegerField(db_column='signIn', default=0,
                                  help_text="the sign in days >=0")
     openid = models.CharField(max_length=150, null=True, default=None, unique=True, help_text="User's openid")

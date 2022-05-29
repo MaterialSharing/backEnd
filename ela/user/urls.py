@@ -10,8 +10,9 @@ import user
 from user import views
 from user.views import star
 from user.views.history import WSHModelViewSet
+from user.views.login import Login
 from user.views.star import WordStarModelViewSet
-from user.views.user import UserModelViewSet
+from user.views.user import UserModelViewSet, UserRegisterModelViewSet
 from user.views.user_basic import UserView
 
 '''
@@ -104,9 +105,20 @@ urlpatterns = [
              "get": "progress"
          }),
          name="progress"),
+    path('info/<int:pk>/schedule/', UserModelViewSet.as_view({
+        "get": "schedule"
+    }), name="schedule"),
+    path('login/', Login.as_view({
+        "get": "login"
+    }), name="login"),
+    path('dologin/', Login.as_view({
+        "post": "dologin"
+    }), name="dologin"),
+    path('logout/', Login.as_view({
+        "delete": "logout"
+    }), name="logout"),
     # path('info/<int:pk>/review/<str:examtype>/recently/<str:unit>/<str:value>',
     #      views.UserModelViewSet.as_view({'get': 'recently_unitable'})),
-
     # path('info/<int:pk>/history/', views.WSHModelViewSet.as_view())
 
 ]
@@ -188,6 +200,7 @@ router = DefaultRouter()
 # router.register("user_GenericViewSet", views.UserGenericViewSet, basename="user_GenericViewSet")
 # router.register("user_ModelViewSet", views.UserModelViewSet, basename="ModelViewSetReg")
 router.register("info", UserModelViewSet, basename="info")
+router.register("register",UserRegisterModelViewSet,basename='register')
 router.register("history", WSHModelViewSet, basename="history")
 router.register("star", WordStarModelViewSet, basename="star")
 

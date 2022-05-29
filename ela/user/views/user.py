@@ -12,6 +12,7 @@ from django.utils import timezone
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.decorators import action
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
@@ -19,7 +20,8 @@ from cxxulib.querysetDispatcher import QuerysetDispatcher
 from cxxulib.static_values import uob, Res
 from scoreImprover.serializer import NeepStudyModelSerializer
 from scoreImprover.views import neep_study_ob
-from user.serializer import UserModelSerializer
+from user.models import User
+from user.serializer import UserModelSerializer, UserRegisterModelSerializer
 
 
 class UserModelViewSet(ModelViewSet):
@@ -209,37 +211,6 @@ class UserModelViewSet(ModelViewSet):
             return Response(ser.data)
         return Response("empty...")
 
-    # 在序列化器中重写create 方法
-    def create(self, request, *args, **kwargs):
-        # 首先通过打印判断此类下的drf的create方法会调用序列化器中的create方法还是viewset中的create方法.
-        print("@create :: class:", self.__class__.__name__)
-        # 对传入的密码进行加密处理:
-        # 使用make_password()得到加密后的串这种方式不如自己编写来的可控,尽管它足够安全和方便
-        # 着主要体现在盐值的设置上,这个盐值是随机生成的,即使相同的密码加密后的结果是不同的
-        # 为了方便验证的进行,我们需要保存盐值,以便进行验证
-        # password_hash = make_password(request.data.get("password"))
-        md5 = hashlib.md5()
-        salt = random.randint(1000, 9999)
-        password_salted_str = str(salt) + request.data.get("password","123")
-        password_salted_bytes = password_salted_str.encode("utf-8")
-        md5.update(password_salted_bytes)
-        # 得到字符串形式的加密结果
-        password_hash = md5.hexdigest()
-
-        # 查看make_password加密效果(部分结果)
-        print("@create :: passoword_hash:", password_hash[:10])
-        data = request.data
-        print("@request.data:", data, type(data))
-        data["password"] = password_hash
-        print(data)
-        # request.data = data
-        request.data["password_hash"] = password_hash
-        print("@request.data:", request.data, request)
-        res = super().create(request)
-        # Response(的status是位置参数)
-        return Res(res.data,status.HTTP_201_CREATED)
-        return Res("test create")
-
     #     pass
 
     # action装饰可以提供基于CRUD的extra actions(DRF的界面中也会体现出
@@ -290,3 +261,50 @@ class UserModelViewSet(ModelViewSet):
         ser = UserModelSerializer(instance=query, many=True)
         return Res(ser.data)
         return Response(req.query_params)
+
+    def schedule(self, req, pk=1):
+        # self.retrieve(req,pk)
+        schedule = get_object_or_404(User, pk=pk).schedule
+        # return Response({"msg": "schedault"})
+        return Response({"user": pk, "schedule": schedule})
+
+
+class UserRegisterModelViewSet(ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserRegisterModelSerializer
+
+    # 可以指定action的url段
+    # http://
+    # 在序列化器中重写create 方法
+    def create(self, request, *args, **kwargs):
+        # 首先通过打印判断此类下的drf的create方法会调用序列化器中的create方法还是viewset中的create方法.
+        print("@create :: class:", self.__class__.__name__)
+        # 对传入的密码进行加密处理:
+        # 使用make_password()得到加密后的串这种方式不如自己编写来的可控,尽管它足够安全和方便
+        # 着主要体现在盐值的设置上,这个盐值是随机生成的,即使相同的密码加密后的结果是不同的
+        # 为了方便验证的进行,我们需要保存盐值,以便进行验证
+        # password_hash = make_password(request.data.get("password"))
+        md5 = hashlib.md5()
+        password_salt = random.randint(1000, 9999)
+        print("@salt=", password_salt)
+        password_salted_str = str(password_salt) + request.data.get("password", "123")
+        print("@password_salted_str=", password_salted_str)
+        password_salted_bytes = password_salted_str.encode("utf-8")
+        md5.update(password_salted_bytes)
+        # 得到字符串形式的加密结果
+        password_hash = md5.hexdigest()
+
+        # 查看make_password加密效果(部分结果)
+        # print("@create :: passoword_hash:", password_hash[:10])
+        # data = request.data
+        # print("@request.data:", data, type(data))
+        # data["password_hash"] = password_hash
+        # print(data)
+        # request.data = data
+        request.data["password_hash"] = password_hash
+        request.data["password_salt"] = password_salt
+        # print("@request.data:", request.data, request)
+        res = super().create(request)
+        # Response(的status是位置参数)
+        return Res(res.data, status.HTTP_201_CREATED)
+        return Res("test create")

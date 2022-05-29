@@ -2,6 +2,7 @@ from deprecated.classic import deprecated
 from rest_framework import serializers
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
+from rest_framework.viewsets import ModelViewSet
 
 from user.models import User, WordSearchHistory, WordStar
 
@@ -119,7 +120,8 @@ class UserModelSerializer(serializers.ModelSerializer):
     class Meta:
         # ModelSerialzier内部会使用到Meta内类中的model字段来获取模型进行分析
         model = User
-        fields = "__all__"
+        # fields = "__all__"
+        exclude = ['password_hash', 'password_salt']
         # 如果需要包含模型之外的字段,在上方单独定义字段
         # fields = ["uid", "name", "signin", "nickname","user_word_star" ]  # "nickname"
         # 注意,属性方法被fields="__all__"囊括,您需要显式的将字段卸载fields
@@ -171,7 +173,11 @@ class UserModelSerializer(serializers.ModelSerializer):
     #     return Response("test create!")
 
 
-
+# 创建仅用于处理用户注册的序列化器
+class UserRegisterModelSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = "__all__"
 
 
 # 单词收藏序列化器
@@ -179,14 +185,12 @@ class WordStarModelSerializer(ModelSerializer):
     class Meta:
         model = WordStar
         # fields = ["id", "spelling", "user_name","user_signin"]
-        fields=["id","user_id","spelling"]
+        fields = ["id", "user_id", "spelling"]
         fields = "__all__"
-        #在主表(外键引用者)中指定外键关联深度(被反向查询的深度)
+        # 在主表(外键引用者)中指定外键关联深度(被反向查询的深度)
         # depth = 1
         # 后面指定的值会覆盖前面的值(与return不同)
         depth = 0
-
-
 
 
 class WSHModelSerializer(ModelSerializer):

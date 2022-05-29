@@ -26,6 +26,7 @@ class User(models.Model):
     examdate = models.DateField(db_column='examDate', default='1970-01-01', help_text="User's exam date")
     examtype = models.CharField(db_column='examType', max_length=1, default="4")
     signupdate = models.DateField(db_column='signUpDate', auto_now_add=True, help_text="User's sign up date")
+    schedule = models.IntegerField(default=30, help_text="User's schedule")
 
     # signupdate = models.DateField(db_column='signUpDate', default='1970-01-01')
     # 使用微信授权登录,不设密码字段?
@@ -39,6 +40,10 @@ class User(models.Model):
     def __str__(self):
         s = self
         return str([s.uid, s.name, s.signin, s.examdate, s.examtype, s.signupdate])
+
+    @property
+    def schedule_week(self):
+        return self.schedule * 7
 
     # @property
     # def user_name(self):

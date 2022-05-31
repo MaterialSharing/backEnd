@@ -71,3 +71,11 @@ class Login(ModelViewSet):
         key = 'cxxu'
         del request.session[key]
         return Res("logout!")
+
+    def fetch_user(self, req):
+        sess = req.session
+        print("session=", sess)
+        # print("session.keys=", sess.keys())
+        print("session.cxxu=", sess.get('cxxu'))
+        # return Response({"msg": "fetch_user"})
+        return Res(sess.get('cxxu'))

@@ -269,6 +269,7 @@ class UserModelViewSet(ModelViewSet):
         return Response({"user": pk, "schedule": schedule})
 
 
+
 class UserRegisterModelViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserRegisterModelSerializer
@@ -287,7 +288,9 @@ class UserRegisterModelViewSet(ModelViewSet):
         md5 = hashlib.md5()
         password_salt = random.randint(1000, 9999)
         print("@salt=", password_salt)
-        password_salted_str = str(password_salt) + request.data.get("password", "123")
+        password=request.data.get("password")
+        password_salted_str = str(password_salt) + password
+        print("@password",password)
         print("@password_salted_str=", password_salted_str)
         password_salted_bytes = password_salted_str.encode("utf-8")
         md5.update(password_salted_bytes)

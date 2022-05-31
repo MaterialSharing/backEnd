@@ -117,6 +117,9 @@ urlpatterns = [
     path('logout/', Login.as_view({
         "delete": "logout"
     }), name="logout"),
+    path('fetch-user/', Login.as_view({
+        "get": "fetch_user"
+    }), name="fetch_user"),
     # path('info/<int:pk>/review/<str:examtype>/recently/<str:unit>/<str:value>',
     #      views.UserModelViewSet.as_view({'get': 'recently_unitable'})),
     # path('info/<int:pk>/history/', views.WSHModelViewSet.as_view())

@@ -17,9 +17,8 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from cxxulib.querysetDispatcher import QuerysetDispatcher
-from cxxulib.static_values import uob, Res
+from cxxulib.static_values import uob, Res, neep_study_ob
 from scoreImprover.serializer import NeepStudyModelSerializer
-from scoreImprover.views import neep_study_ob
 from user.models import User
 from user.serializer import UserModelSerializer, UserRegisterModelSerializer
 

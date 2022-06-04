@@ -1,12 +1,31 @@
-from django.db import models
+import datetime
 
+from django.db import models
 # Create your models here.
 from django.utils import timezone
-import datetime
 
 from user.models import User
 from word.models import NeepWordsReq, Cet4WordsReq, Cet6WordsReq
-from word.serializer import Cet4WordsReqModelSerializer
+
+
+class Study(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    wid = models.ForeignKey(NeepWordsReq, on_delete=models.DO_NOTHING)
+    last_see_datetime = models.DateTimeField(auto_now=True, null=True)
+    familiarity = models.IntegerField(default=0, help_text="熟练度")
+    examtype = models.CharField(db_column='examType', max_length=1, default="4")
+
+    # 通过计算的得到学习进度
+    # study_progress = models.IntegerField()
+    class Meta:
+        managed = True
+        db_table = 'study'
+
+    def __str__(self):
+        s = self
+        return str(
+            f"[s.id={s.id}, s.uid={s.user},s.wid={s.wid},s.examtype={s.examtype} ,s.last_see_datetime={s.last_see_datetime}, s.familiarity={s.familiarity}]")
 
 
 class NeepStudy(models.Model):
@@ -90,6 +109,7 @@ class Cet4Study(models.Model):
     #     # return ser.data
     #     return self.wid.spelling
 
+
 class Cet6Study(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
@@ -113,6 +133,7 @@ class Cet6Study(models.Model):
     @property
     def user_name(self):
         return self.user.name
+
 
 class LongSentences(models.Model):
     sid = models.IntegerField(db_column='SID', primary_key=True)  # Field name made lowercase.

@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 
-from scoreImprover.models import Cet4Study, Cet6Study, NeepStudy
+from scoreImprover.models import Cet4Study, Cet6Study, NeepStudy, Study
 from user.models import User, WordSearchHistory, WordStar
 from word.models import Cet4WordsReq, Cet6WordsReq, NeepWordsReq
 
@@ -15,3 +15,5 @@ wsob = WordStar.objects  # type: WordStar
 cet4_study_ob = Cet4Study.objects
 cet6_study_ob = Cet6Study.objects
 neep_study_ob = NeepStudy.objects
+study_ob = Study.objects
+

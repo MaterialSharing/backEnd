@@ -1,36 +1,10 @@
 # from django.shortcuts import render
-import hashlib
-import json
-import random
-from datetime import timedelta
 
-import django.http
-from deprecated.classic import deprecated
-from django.contrib.auth.hashers import make_password
-from django.db.models import F
-from django.http import HttpResponse
-from django.http import JsonResponse
-from django.utils import timezone
-from django.views import View
-from rest_framework import status
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework.decorators import action
-from rest_framework.filters import OrderingFilter
-from rest_framework.generics import GenericAPIView, ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView, \
-    RetrieveUpdateDestroyAPIView
-from rest_framework.mixins import ListModelMixin, CreateModelMixin, UpdateModelMixin, DestroyModelMixin, \
-    RetrieveModelMixin
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet, ViewSet, GenericViewSet, ReadOnlyModelViewSet
+from rest_framework.viewsets import ModelViewSet
 
-from cxxulib.querysetDispatcher import QuerysetDispatcher
-from cxxulib.static_values import uob, Res
-from scoreImprover.serializer import NeepStudyModelSerializer
-from scoreImprover.views import neep_study_ob
-from user.models import User, WordStar, WordSearchHistory
-from user.serializer import UserSerializer, UserModelSerializer, WordStarModelSerializer, WSHModelSerializer
-from word.paginations import DIYPagination
+from user.models import User, WordStar
+from user.serializer import WordStarModelSerializer
 
 uob = User.objects
 Res = Response

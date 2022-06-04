@@ -2,31 +2,20 @@ from collections import OrderedDict
 from datetime import timedelta
 
 from deprecated.classic import deprecated
-from django.db.models import QuerySet, F
-from django.shortcuts import render
+from django.db.models import F
 from django.http import HttpResponse
 # Create your views here.
 from django.utils import timezone
-from django.views import View
 from rest_framework import status
-from rest_framework.generics import GenericAPIView, ListAPIView, get_object_or_404
-from rest_framework.mixins import ListModelMixin
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
-from cxxulib.printer import print1
 from cxxulib.querysetDispatcher import QuerysetDispatcher
 from cxxulib.randoms import Randoms
-from scoreImprover.models import NeepStudy, Cet4Study, Cet6Study
-from cxxulib import randoms
+from cxxulib.static_values import neep_study_ob, Res, cet4_study_ob, cet6_study_ob
+from scoreImprover.models import NeepStudy, Cet4Study, Cet6Study, Study
 from scoreImprover.serializer import NeepStudyModelSerializer, NeepStudyDetailModelSerializer, Cet4StudyModelSerializer, \
     Cet6StudyModelSerializer
-from word.models import WordNotes, Cet4WordsReq, Cet6WordsReq, NeepWordsReq
-from word.serializer import NeepWordsReqModelSerializer, WordNotesModelSerializer, Cet4WordsReqModelSerializer, \
-    Cet6WordsReqModelSerializer
-from word.views import wob, c4ob, neepob, c6ob
-from word.serializer import WordModelSerializer
 
 
 def index(request):
@@ -39,11 +28,12 @@ def index(request):
 #
 #     def get(self):
 # class ListAPIView(mixins.ListModelMixin, GenericAPIView)
-Res = Response
-
-cet4_study_ob = Cet4Study.objects
-cet6_study_ob = Cet6Study.objects
-neep_study_ob = NeepStudy.objects
+# Res = Response
+#
+# cet4_study_ob = Cet4Study.objects
+# cet6_study_ob = Cet6Study.objects
+# neep_study_ob = NeepStudy.objects
+# study_ob = Study.objects
 
 
 class NeepStudyModelViewSet(ModelViewSet):
@@ -160,6 +150,7 @@ class NeepStudyModelViewSet(ModelViewSet):
     #
     #     return Res(self.serializer_class(instance=queryset, many=True).data)
 
+    @deprecated("为了通用性,已将功能转移到RandomInspect..类中实现")
     def recently_old(self, req, days):
         # return neep_study_ob
         queryset = self.get_queryset().all()
@@ -436,7 +427,7 @@ class RandomInspectionModelViewSet(ModelViewSet):
         #     tip_od[key] = ser_data[key]
         # return Res("testing")
         return Res(extra_od)
-        return Response(ser.data)
+        # return Response(ser.data)
 
 
 class NeepStudyDetailViewSet(ReadOnlyModelViewSet):

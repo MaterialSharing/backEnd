@@ -1,15 +1,16 @@
 from rest_framework.response import Response
 
+from cxxulib.static_values import neep_study_ob, cet6_study_ob, cet4_study_ob
 from scoreImprover.models import Cet4Study, Cet6Study, NeepStudy
 from scoreImprover.serializer import Cet4StudyModelSerializer, Cet6StudyModelSerializer, NeepStudyModelSerializer
 from word.serializer import Cet4WordsReqModelSerializer, Cet6WordsReqModelSerializer, NeepWordsReqModelSerializer
 from word.views import c4ob, c6ob, neepob
 
-Res = Response
 
-cet4_study_ob = Cet4Study.objects
-cet6_study_ob = Cet6Study.objects
-neep_study_ob = NeepStudy.objects
+# Res = Response
+# cet4_study_ob = Cet4Study.objects
+# cet6_study_ob = Cet6Study.objects
+# neep_study_ob = NeepStudy.objects
 
 
 class QuerysetDispatcher:

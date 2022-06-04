@@ -1,6 +1,7 @@
 import hashlib
 
 from django.shortcuts import redirect
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
 from rest_framework.reverse import reverse
@@ -70,7 +71,7 @@ class Login(ModelViewSet):
         # pass
         key = 'cxxu'
         del request.session[key]
-        return Res("logout!")
+        return Res({"msg":"logout!"},status.HTTP_204_NO_CONTENT)
 
     def fetch_user(self, req):
         sess = req.session

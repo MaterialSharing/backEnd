@@ -310,7 +310,7 @@ class UserModelViewSet(ModelViewSet):
             query = uob.all()
         ser = UserModelSerializer(instance=query, many=True)
         return Res(ser.data)
-        return Response(req.query_params)
+        # return Response(req.query_params)
 
     def schedule(self, req, pk=1):
         # self.retrieve(req,pk)

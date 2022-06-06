@@ -28,27 +28,31 @@ class StudyModelViewSet(ModelViewSet):
             return Res({"msg": "examtype required!"})
         print("@@refresh:刚刚捕获到请求...by:", self.__class__.__name__)
         wid = req.data.get("wid")
-        user = req.data.get("user")
+        # user = req.data.get("user")
+        user = req.session.get("cxxu").get("uid")
         # 根据参数examtype计算出需要使用的模型Manager
         queryset = self.get_queryset()
-        queryset = queryset.filter(wid=wid) & queryset.filter(user=user)
-        queryset = queryset & queryset.filter(examtype=examtype)
+
+        queryset = queryset.filter(wid=wid)
+        queryset = queryset.filter(user=user)
+        queryset = queryset.filter(examtype=examtype)
         # queryset=queryset.first()
         print("@@refresh:queryset:", queryset)
-
         ser = self.get_serializer_class()
+        # ser = self.get_serializer_class()
         # 最佳位置?
-        self.serializer_class = ser
-
+        # self.serializer_class = ser
+        # return Res("debugin...")
         if queryset.count():  # 原生方案
             instance = queryset[0]
             print("当前条目已经存在,于对应数据库,仅执行修改操作..", instance)
             instance.save()
+            # 在返回结果中添加额外信息(optional)
             # ser = self.serializer_class(instance=instance, data=req.data)
             tip_d = {"msg": "modify the existed obj", "ser": str(type(ser))}
             # print(tip_d)
             # print(ser(instance=instance).data)
-            extra_d = dict(**ser(instance=instance).data)
+            # extra_d = dict(**ser(instance=instance).data)
             extra_d = dict(**ser(instance=instance).data, **tip_d)
             print("extra_d:", extra_d)
             # return Res("debuging..")
@@ -56,10 +60,12 @@ class StudyModelViewSet(ModelViewSet):
             return Res(extra_d, status=status.HTTP_201_CREATED)
             # return Res(ser(instance=instance).data, status=status.HTTP_201_CREATED)
         else:
-            # return Res("pass..dubuging...")
             # ser = self.serializer_class(data=req.data)
             print("@self.serializer_class:", self.serializer_class)
             print("下一行执行self.create(req)")
+            print("@req.data:", req.data,type(req.data))
+            # return Res("pass..dubuging...")
+            req.data["user"]=user
             ser = ser(data=req.data)
             # print("@req.data:", req.data)
 

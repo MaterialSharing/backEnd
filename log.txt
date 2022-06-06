@@ -1,0 +1,270 @@
+[webhook] 2022/06/06 13:09:12 version 2.5.0 starting
+[webhook] 2022/06/06 13:09:12 setting up os signal watcher
+[webhook] 2022/06/06 13:09:12 attempting to load hooks from hooks.json
+[webhook] 2022/06/06 13:09:12 found 1 hook(s) in file
+[webhook] 2022/06/06 13:09:12 	loaded: deploy
+[webhook] 2022/06/06 13:09:12 serving hooks on http://0.0.0.0:9000/hooks/{id}
+[webhook] 2022/06/06 13:09:12 os signal watcher ready
+[webhook] 2022/06/06 13:10:18 Started POST /hooks/deploy
+[webhook] 2022/06/06 13:10:18 deploy got matched
+[webhook] 2022/06/06 13:10:19 deploy hook triggered successfully
+[webhook] 2022/06/06 13:10:19 Completed 200 OK in 258.707733ms
+[webhook] 2022/06/06 13:10:19 executing ./deploy.sh (./deploy.sh) with arguments ["./deploy.sh"] and environment [] using /home/cxxu/backEnd/ as cwd
+[webhook] 2022/06/06 13:10:19 command output: On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+	modified:   backEnd/__pycache__/__init__.cpython-38.pyc
+	modified:   backEnd/__pycache__/urls.cpython-38.pyc
+	modified:   backEnd/__pycache__/wsgi.cpython-38.pyc
+	modified:   index/__pycache__/__init__.cpython-38.pyc
+	modified:   main/__pycache__/__init__.cpython-38.pyc
+	modified:   main/__pycache__/admin.cpython-38.pyc
+	modified:   main/__pycache__/apps.cpython-38.pyc
+	modified:   main/__pycache__/models.cpython-38.pyc
+	modified:   main/__pycache__/urls.cpython-38.pyc
+	modified:   main/__pycache__/views.cpython-38.pyc
+	modified:   polls/__pycache__/__init__.cpython-38.pyc
+	modified:   polls/__pycache__/admin.cpython-38.pyc
+	modified:   polls/__pycache__/apps.cpython-38.pyc
+	modified:   polls/__pycache__/models.cpython-38.pyc
+	modified:   polls/__pycache__/urls.cpython-38.pyc
+	modified:   polls/__pycache__/views.cpython-38.pyc
+	modified:   polls/migrations/__pycache__/__init__.cpython-38.pyc
+	modified:   scoreImprover/__pycache__/__init__.cpython-38.pyc
+	modified:   scoreImprover/__pycache__/admin.cpython-38.pyc
+	modified:   scoreImprover/__pycache__/apps.cpython-38.pyc
+	modified:   scoreImprover/__pycache__/models.cpython-38.pyc
+	modified:   scoreImprover/__pycache__/urls.cpython-38.pyc
+	modified:   scoreImprover/migrations_bak/__pycache__/__init__.cpython-38.pyc
+	modified:   user/__pycache__/__init__.cpython-38.pyc
+	modified:   user/__pycache__/admin.cpython-38.pyc
+	modified:   user/__pycache__/apps.cpython-38.pyc
+	modified:   user/__pycache__/models.cpython-38.pyc
+	modified:   user/__pycache__/urls.cpython-38.pyc
+	modified:   word/__pycache__/__init__.cpython-38.pyc
+	modified:   word/__pycache__/admin.cpython-38.pyc
+	modified:   word/__pycache__/apps.cpython-38.pyc
+	modified:   word/__pycache__/urls.cpython-38.pyc
+	modified:   word/__pycache__/views.cpython-38.pyc
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+	backEnd/__pycache__/exceptions.cpython-38.pyc
+	backEnd/__pycache__/settings.cpython-38.pyc
+	blogs/__pycache__/__init__.cpython-38.pyc
+	blogs/__pycache__/tests.cpython-38.pyc
+	blogs/migrations/__pycache__/__init__.cpython-38.pyc
+	cxxulib/__pycache__/__init__.cpython-38.pyc
+	cxxulib/__pycache__/printer.cpython-38.pyc
+	cxxulib/__pycache__/querysetDispatcher.cpython-38.pyc
+	cxxulib/__pycache__/randoms.cpython-38.pyc
+	cxxulib/__pycache__/static_values.cpython-38.pyc
+	cxxulib/__pycache__/test.cpython-38.pyc
+	deploy.sh
+	hooks.json
+	index/__pycache__/tests.cpython-38.pyc
+	log.txt
+	main/__pycache__/tests.cpython-38.pyc
+	main/migrations/__pycache__/__init__.cpython-38.pyc
+	polls/migrations/__pycache__/0001_initial.cpython-38.pyc
+	polls/migrations/__pycache__/0002_remove_question_test.cpython-38.pyc
+	polls/tests/__pycache__/__init__.cpython-38.pyc
+	query_scripts/__pycache__/inspectSerializer.cpython-38.pyc
+	scoreImprover/__pycache__/serializer.cpython-38.pyc
+	scoreImprover/migrations/__pycache__/0001_initial.cpython-38.pyc
+	scoreImprover/migrations/__pycache__/0002_alter_cet4study_wid_alter_cet6study_wid.cpython-38.pyc
+	scoreImprover/migrations/__pycache__/0003_study.cpython-38.pyc
+	scoreImprover/migrations/__pycache__/__init__.cpython-38.pyc
+	scoreImprover/views/__pycache__/__init__.cpython-38.pyc
+	scoreImprover/views/__pycache__/study.cpython-38.pyc
+	scoreImprover/views/__pycache__/study_separate.cpython-38.pyc
+	user/__pycache__/loginMiddleware.cpython-38.pyc
+	user/__pycache__/serializer.cpython-38.pyc
+	user/__pycache__/tests.cpython-38.pyc
+	user/migrations/__pycache__/0001_initial.cpython-38.pyc
+	user/migrations/__pycache__/0002_remove_user_test.cpython-38.pyc
+	user/migrations/__pycache__/0003_alter_user_examdate_alter_user_name_and_more.cpython-38.pyc
+	user/migrations/__pycache__/0004_alter_userinfo_examtype.cpython-38.pyc
+	user/migrations/__pycache__/0005_u.cpython-38.pyc
+	user/migrations/__pycache__/0006_delete_u_alter_user_examtype.cpython-38.pyc
+	user/migrations/__pycache__/0007_delete_userinfo.cpython-38.pyc
+	user/migrations/__pycache__/0008_alter_user_name_alter_user_signin.cpython-38.pyc
+	user/migrations/__pycache__/0009_delete_wordsearchhistory_and_more.cpython-38.pyc
+	user/migrations/__pycache__/0010_wordsearchhistory.cpython-38.pyc
+	user/migrations/__pycache__/0011_delete_feedback_delete_wordstar.cpython-38.pyc
+	user/migrations/__pycache__/0012_wordstar_feedback.cpython-38.pyc
+	user/migrations/__pycache__/0013_alter_wordsearchhistory_spelling_and_more.cpython-38.pyc
+	user/migrations/__pycache__/0014_testforeignkey.cpython-38.pyc
+	user/migrations/__pycache__/0015_delete_wordstar.cpython-38.pyc
+	user/migrations/__pycache__/0016_wordstar.cpython-38.pyc
+	user/migrations/__pycache__/0017_alter_user_signupdate.cpython-38.pyc
+	user/migrations/__pycache__/0018_user_openid.cpython-38.pyc
+	user/migrations/__pycache__/0019_alter_user_examdate_alter_user_name_and_more.cpython-38.pyc
+	user/migrations/__pycache__/0020_user_password_hash_user_password_salt.cpython-38.pyc
+	user/migrations/__pycache__/0021_user_status.cpython-38.pyc
+	user/migrations/__pycache__/0022_alter_user_name_alter_user_password_hash_and_more.cpython-38.pyc
+	user/migrations/__pycache__/0023_user_schedual.cpython-38.pyc
+	user/migrations/__pycache__/0024_remove_user_schedual_user_schedule.cpython-38.pyc
+	user/migrations/__pycache__/__init__.cpython-38.pyc
+	user/views/__pycache__/__init__.cpython-38.pyc
+	user/views/__pycache__/history.cpython-38.pyc
+	user/views/__pycache__/login.cpython-38.pyc
+	user/views/__pycache__/star.cpython-38.pyc
+	user/views/__pycache__/user.cpython-38.pyc
+	user/views/__pycache__/user_basic.cpython-38.pyc
+	word/__pycache__/models.cpython-38.pyc
+	word/__pycache__/paginations.cpython-38.pyc
+	word/__pycache__/serializer.cpython-38.pyc
+	word/__pycache__/test_dict.cpython-38.pyc
+	word/bak_migrations_bak/__pycache__/__init__.cpython-38.pyc
+	word/migrations/__pycache__/0001_initial.cpython-38.pyc
+	word/migrations/__pycache__/0002_rename_uid_wordnotes_user.cpython-38.pyc
+	word/migrations/__pycache__/__init__.cpython-38.pyc
+	word/tests/__pycache__/__init__.cpython-38.pyc
+	word/tests/__pycache__/test_forms.cpython-38.pyc
+	word/tests/__pycache__/test_models.cpython-38.pyc
+	word/tests/__pycache__/test_urls.cpython-38.pyc
+	word/tests/__pycache__/test_views.cpython-38.pyc
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+[webhook] 2022/06/06 13:10:19 finished handling deploy
+[webhook] 2022/06/06 13:23:48 Started CONNECT 
+[webhook] 2022/06/06 13:23:48 Completed 301 Moved Permanently in 46.946µs
+[webhook] 2022/06/06 13:23:58 Started GET /
+[webhook] 2022/06/06 13:23:58 Completed 404 Not Found in 54.495µs
+[webhook] 2022/06/06 14:12:45 Started POST /hooks/deploy
+[webhook] 2022/06/06 14:12:45 deploy got matched
+[webhook] 2022/06/06 14:12:47 deploy hook triggered successfully
+[webhook] 2022/06/06 14:12:47 Completed 200 OK in 1.302248446s
+[webhook] 2022/06/06 14:12:47 executing ./deploy.sh (./deploy.sh) with arguments ["./deploy.sh"] and environment [] using /home/cxxu/backEnd/ as cwd
+[webhook] 2022/06/06 14:12:47 command output: On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+	modified:   backEnd/__pycache__/__init__.cpython-38.pyc
+	modified:   backEnd/__pycache__/urls.cpython-38.pyc
+	modified:   backEnd/__pycache__/wsgi.cpython-38.pyc
+	modified:   index/__pycache__/__init__.cpython-38.pyc
+	modified:   main/__pycache__/__init__.cpython-38.pyc
+	modified:   main/__pycache__/admin.cpython-38.pyc
+	modified:   main/__pycache__/apps.cpython-38.pyc
+	modified:   main/__pycache__/models.cpython-38.pyc
+	modified:   main/__pycache__/urls.cpython-38.pyc
+	modified:   main/__pycache__/views.cpython-38.pyc
+	deleted:    nohup.out
+	modified:   polls/__pycache__/__init__.cpython-38.pyc
+	modified:   polls/__pycache__/admin.cpython-38.pyc
+	modified:   polls/__pycache__/apps.cpython-38.pyc
+	modified:   polls/__pycache__/models.cpython-38.pyc
+	modified:   polls/__pycache__/urls.cpython-38.pyc
+	modified:   polls/__pycache__/views.cpython-38.pyc
+	modified:   polls/migrations/__pycache__/__init__.cpython-38.pyc
+	modified:   scoreImprover/__pycache__/__init__.cpython-38.pyc
+	modified:   scoreImprover/__pycache__/admin.cpython-38.pyc
+	modified:   scoreImprover/__pycache__/apps.cpython-38.pyc
+	modified:   scoreImprover/__pycache__/models.cpython-38.pyc
+	modified:   scoreImprover/__pycache__/urls.cpython-38.pyc
+	modified:   scoreImprover/migrations_bak/__pycache__/__init__.cpython-38.pyc
+	modified:   user/__pycache__/__init__.cpython-38.pyc
+	modified:   user/__pycache__/admin.cpython-38.pyc
+	modified:   user/__pycache__/apps.cpython-38.pyc
+	modified:   user/__pycache__/models.cpython-38.pyc
+	modified:   user/__pycache__/urls.cpython-38.pyc
+	modified:   word/__pycache__/__init__.cpython-38.pyc
+	modified:   word/__pycache__/admin.cpython-38.pyc
+	modified:   word/__pycache__/apps.cpython-38.pyc
+	modified:   word/__pycache__/urls.cpython-38.pyc
+	modified:   word/__pycache__/views.cpython-38.pyc
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+	backEnd/__pycache__/exceptions.cpython-38.pyc
+	backEnd/__pycache__/settings.cpython-38.pyc
+	blogs/__pycache__/__init__.cpython-38.pyc
+	blogs/__pycache__/tests.cpython-38.pyc
+	blogs/migrations/__pycache__/__init__.cpython-38.pyc
+	cxxulib/__pycache__/__init__.cpython-38.pyc
+	cxxulib/__pycache__/printer.cpython-38.pyc
+	cxxulib/__pycache__/querysetDispatcher.cpython-38.pyc
+	cxxulib/__pycache__/randoms.cpython-38.pyc
+	cxxulib/__pycache__/static_values.cpython-38.pyc
+	cxxulib/__pycache__/test.cpython-38.pyc
+	deploy.sh
+	hooks.json
+	index/__pycache__/tests.cpython-38.pyc
+	log.txt
+	main/__pycache__/tests.cpython-38.pyc
+	main/migrations/__pycache__/__init__.cpython-38.pyc
+	polls/migrations/__pycache__/0001_initial.cpython-38.pyc
+	polls/migrations/__pycache__/0002_remove_question_test.cpython-38.pyc
+	polls/tests/__pycache__/__init__.cpython-38.pyc
+	query_scripts/__pycache__/inspectSerializer.cpython-38.pyc
+	scoreImprover/__pycache__/serializer.cpython-38.pyc
+	scoreImprover/migrations/__pycache__/0001_initial.cpython-38.pyc
+	scoreImprover/migrations/__pycache__/0002_alter_cet4study_wid_alter_cet6study_wid.cpython-38.pyc
+	scoreImprover/migrations/__pycache__/0003_study.cpython-38.pyc
+	scoreImprover/migrations/__pycache__/__init__.cpython-38.pyc
+	scoreImprover/views/__pycache__/__init__.cpython-38.pyc
+	scoreImprover/views/__pycache__/study.cpython-38.pyc
+	scoreImprover/views/__pycache__/study_separate.cpython-38.pyc
+	user/__pycache__/loginMiddleware.cpython-38.pyc
+	user/__pycache__/serializer.cpython-38.pyc
+	user/__pycache__/tests.cpython-38.pyc
+	user/migrations/__pycache__/0001_initial.cpython-38.pyc
+	user/migrations/__pycache__/0002_remove_user_test.cpython-38.pyc
+	user/migrations/__pycache__/0003_alter_user_examdate_alter_user_name_and_more.cpython-38.pyc
+	user/migrations/__pycache__/0004_alter_userinfo_examtype.cpython-38.pyc
+	user/migrations/__pycache__/0005_u.cpython-38.pyc
+	user/migrations/__pycache__/0006_delete_u_alter_user_examtype.cpython-38.pyc
+	user/migrations/__pycache__/0007_delete_userinfo.cpython-38.pyc
+	user/migrations/__pycache__/0008_alter_user_name_alter_user_signin.cpython-38.pyc
+	user/migrations/__pycache__/0009_delete_wordsearchhistory_and_more.cpython-38.pyc
+	user/migrations/__pycache__/0010_wordsearchhistory.cpython-38.pyc
+	user/migrations/__pycache__/0011_delete_feedback_delete_wordstar.cpython-38.pyc
+	user/migrations/__pycache__/0012_wordstar_feedback.cpython-38.pyc
+	user/migrations/__pycache__/0013_alter_wordsearchhistory_spelling_and_more.cpython-38.pyc
+	user/migrations/__pycache__/0014_testforeignkey.cpython-38.pyc
+	user/migrations/__pycache__/0015_delete_wordstar.cpython-38.pyc
+	user/migrations/__pycache__/0016_wordstar.cpython-38.pyc
+	user/migrations/__pycache__/0017_alter_user_signupdate.cpython-38.pyc
+	user/migrations/__pycache__/0018_user_openid.cpython-38.pyc
+	user/migrations/__pycache__/0019_alter_user_examdate_alter_user_name_and_more.cpython-38.pyc
+	user/migrations/__pycache__/0020_user_password_hash_user_password_salt.cpython-38.pyc
+	user/migrations/__pycache__/0021_user_status.cpython-38.pyc
+	user/migrations/__pycache__/0022_alter_user_name_alter_user_password_hash_and_more.cpython-38.pyc
+	user/migrations/__pycache__/0023_user_schedual.cpython-38.pyc
+	user/migrations/__pycache__/0024_remove_user_schedual_user_schedule.cpython-38.pyc
+	user/migrations/__pycache__/__init__.cpython-38.pyc
+	user/views/__pycache__/__init__.cpython-38.pyc
+	user/views/__pycache__/history.cpython-38.pyc
+	user/views/__pycache__/login.cpython-38.pyc
+	user/views/__pycache__/star.cpython-38.pyc
+	user/views/__pycache__/user.cpython-38.pyc
+	user/views/__pycache__/user_basic.cpython-38.pyc
+	word/__pycache__/models.cpython-38.pyc
+	word/__pycache__/paginations.cpython-38.pyc
+	word/__pycache__/serializer.cpython-38.pyc
+	word/__pycache__/test_dict.cpython-38.pyc
+	word/bak_migrations_bak/__pycache__/__init__.cpython-38.pyc
+	word/migrations/__pycache__/0001_initial.cpython-38.pyc
+	word/migrations/__pycache__/0002_rename_uid_wordnotes_user.cpython-38.pyc
+	word/migrations/__pycache__/__init__.cpython-38.pyc
+	word/tests/__pycache__/__init__.cpython-38.pyc
+	word/tests/__pycache__/test_forms.cpython-38.pyc
+	word/tests/__pycache__/test_models.cpython-38.pyc
+	word/tests/__pycache__/test_urls.cpython-38.pyc
+	word/tests/__pycache__/test_views.cpython-38.pyc
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+[webhook] 2022/06/06 14:12:47 finished handling deploy

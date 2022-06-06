@@ -92,6 +92,8 @@ urlpatterns = [
     path('info/<int:pk>/review/recently/',
          UserModelViewSet.as_view({'get': 'recently_unitable'}),
          name='review_recently'),
+    path('info/review/recently/', UserModelViewSet.as_view({'get': 'recently'})
+         , name='review'),
     # path('info/<int:pk>/review/', views.UserModelViewSet.as_view({
     #     "get": "review"
     # })),
@@ -205,7 +207,7 @@ router = DefaultRouter()
 # router.register("user_GenericViewSet", views.UserGenericViewSet, basename="user_GenericViewSet")
 # router.register("user_ModelViewSet", views.UserModelViewSet, basename="ModelViewSetReg")
 router.register("info", UserModelViewSet, basename="info")
-router.register("register",UserRegisterModelViewSet,basename='register')
+router.register("register", UserRegisterModelViewSet, basename='register')
 router.register("history", WSHModelViewSet, basename="history")
 router.register("star", WordStarModelViewSet, basename="star")
 

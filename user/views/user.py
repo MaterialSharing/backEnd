@@ -17,8 +17,8 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from cxxulib.querysetDispatcher import QuerysetDispatcher
-from cxxulib.static_values import uob, Res, neep_study_ob
-from scoreImprover.serializer import NeepStudyModelSerializer
+from cxxulib.static_values import uob, Res, neep_study_ob, study_ob
+from scoreImprover.serializer import NeepStudyModelSerializer, StudyModelSerializer
 from user.models import User
 from user.serializer import UserModelSerializer, UserRegisterModelSerializer
 
@@ -62,7 +62,7 @@ class UserModelViewSet(ModelViewSet):
     # }
     # 在urls.py中,本函数被指定为put操作
     # @property
-
+    @deprecated("use study model instead")
     def recently_unitable(self, req, pk):
         # unit = 'days', value = 8, examtype = 'neep'
         # print("@@hhh!")
@@ -133,6 +133,57 @@ class UserModelViewSet(ModelViewSet):
         queryset = queryset.filter(last_see_datetime__gte=timezone.now() - delta)
 
         return Res(NeepStudyModelSerializer(instance=queryset, many=True).data)
+
+    def recently(self, req):
+        # sess = req.session
+        user = req.session.get("cxxu")
+        pk = user.get("uid")
+        print("@user:", user)
+        # unit = 'days', value = 8, examtype = 'neep'
+        # print("@@hhh!")
+        """正在开发query参数"""
+        # 指定考试类型
+        params_d = req.query_params
+        print("@params:", params_d)
+        examtype = params_d.get("examtype")
+        # timedelta的指定元素
+        # 指定默认值
+        # unit = "days"
+        # value = 8
+        # examtype = "neep"
+        # 尝试获取用户传入的参数
+        # unit_tmp = params_d.get("unit")
+        # value_tmp = params_d.get("value")
+        # examtype_tmp = params_d.get("examtype")
+        # 各个变量的取值以用户传入的参数为主
+        # 即,如果用户传入值非空,则用用户传入的值覆盖默认值
+        # if (unit_tmp):
+        #     unit = unit_tmp
+        # if (value_tmp):
+        #     value = float(value_tmp)
+        # if (examtype_tmp):
+        #     examtype = examtype_tmp
+        unit = params_d.get("unit")
+        value = params_d.get("value")
+        examtype = params_d.get("examtype")
+
+        # unit = params_d.get("unit", "days")
+        # value = params_d.get("value", 8)
+
+        print("@params:", unit, value, examtype)
+        queryset = study_ob.filter(user=pk)
+        print("@queryset:", queryset)
+        if (unit and value):
+            # 两个参数要么同时有效,要么同时无效(只有一方的时候,另一方的值会被忽略,同时无效)
+            # 只需要使用字典打包以下关键字参数
+            value=float(value)
+            d = {unit: value}
+            delta = timedelta(**d)
+            queryset = queryset.filter(last_see_datetime__gte=timezone.now() - delta)
+        if (examtype):
+            queryset = queryset.filter(examtype=examtype)
+        print("@queryset:", queryset)
+        return Res(StudyModelSerializer(instance=queryset, many=True).data)
 
     def progress(self, req, pk, examtype):
         progress = 0
@@ -271,13 +322,13 @@ class UserModelViewSet(ModelViewSet):
         sess = req.session
         user = sess.get('cxxu')
         examdate = user.get('examdate')
-        print("@examdate,type",type(examdate))
-        date_obj=date.fromisoformat(examdate)
-        today_date=date.today()
-        delta_time=date_obj-today_date
-        days =delta_time.days
+        print("@examdate,type", type(examdate))
+        date_obj = date.fromisoformat(examdate)
+        today_date = date.today()
+        delta_time = date_obj - today_date
+        days = delta_time.days
 
-        return Response({"days":days})
+        return Response({"days": days})
         return Response(examdate)
 
 

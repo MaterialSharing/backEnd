@@ -88,6 +88,9 @@ urlpatterns = [
             }),
             name="review-list"
             ),
+    re_path('^info/review/global/$',UserModelViewSet.as_view({
+        "get": "review_global"
+    }),name="review-global"),
     # 小心不要被前面的类似路由所覆盖,这样是没有机会访问到为与后面的路由.
     path('info/<int:pk>/review/recently/',
          UserModelViewSet.as_view({'get': 'recently_unitable'}),

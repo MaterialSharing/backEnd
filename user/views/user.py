@@ -17,7 +17,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from cxxulib.querysetDispatcher import QuerysetDispatcher
-from cxxulib.static_values import uob, Res, neep_study_ob, study_ob
+from cxxulib.static_values import uob, Res, neep_study_ob, study_ob, examtype_tuple
 from scoreImprover.serializer import NeepStudyModelSerializer, StudyModelSerializer
 from user.models import User
 from user.serializer import UserModelSerializer, UserRegisterModelSerializer
@@ -176,7 +176,7 @@ class UserModelViewSet(ModelViewSet):
         if (unit and value):
             # 两个参数要么同时有效,要么同时无效(只有一方的时候,另一方的值会被忽略,同时无效)
             # 只需要使用字典打包以下关键字参数
-            value=float(value)
+            value = float(value)
             d = {unit: value}
             delta = timedelta(**d)
             queryset = queryset.filter(last_see_datetime__gte=timezone.now() - delta)
@@ -251,6 +251,21 @@ class UserModelViewSet(ModelViewSet):
             ser = NeepStudyModelSerializer(instance=queryset, many=True)
             return Response(ser.data)
         return Response("empty...")
+
+    def review_global(self, req):
+        """ 获取全局复习列表 """
+        params = req.query_params
+        print("@params:", params)
+        examtype = params.get("examtype")
+        user = req.session.get("cxxu").get("uid")
+        queryset = study_ob.filter(familiarity__lte=4)
+        queryset= queryset.filter(user=user)
+        if examtype:
+            queryset = queryset.filter(examtype=examtype)
+        if examtype not in examtype_tuple:
+            print("@examtype:", examtype)
+            return Response("examtype error")
+        return Res(StudyModelSerializer(instance=queryset, many=True).data)
 
     @deprecated
     def review(self, req, pk):

@@ -4,7 +4,8 @@ from scoreImprover.models import Cet4Study, Cet6Study, NeepStudy, Study
 from user.models import User, WordSearchHistory, WordStar
 from word.models import Cet4WordsReq, Cet6WordsReq, NeepWordsReq
 
-Res=Response
+examtype_tuple = ("4", "6", "8")
+Res = Response
 uob = User.objects
 wob = User.objects
 c4ob = Cet4WordsReq.objects  # type: Cet4WordsReq
@@ -16,4 +17,3 @@ cet4_study_ob = Cet4Study.objects
 cet6_study_ob = Cet6Study.objects
 neep_study_ob = NeepStudy.objects
 study_ob = Study.objects
-

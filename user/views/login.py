@@ -30,6 +30,8 @@ class Login(ModelViewSet):
         # 改用户状态合法!,则允许其尝试登录
         print("@user:", user)
         # return Res("debgin!")
+        if (not user):
+            return  Res({"login_status": "account does not exist"}, status.HTTP_404_NOT_FOUND)
         if user.status == 0:
             md5 = hashlib.md5()
             # 获取用户输入的密码以及用户的干扰盐(得到salt_password)
@@ -71,7 +73,7 @@ class Login(ModelViewSet):
         # pass
         key = 'cxxu'
         del request.session[key]
-        return Res({"msg":"logout!"},status.HTTP_204_NO_CONTENT)
+        return Res({"msg": "logout!"}, status.HTTP_204_NO_CONTENT)
 
     def fetch_user(self, req):
         sess = req.session

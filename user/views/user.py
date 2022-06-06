@@ -3,7 +3,7 @@
 # uob=User.objects
 import hashlib
 import random
-from datetime import timedelta
+from datetime import timedelta, date
 
 from deprecated.classic import deprecated
 from django.contrib.auth.hashers import make_password
@@ -267,6 +267,18 @@ class UserModelViewSet(ModelViewSet):
         # return Response({"msg": "schedault"})
         return Response({"user": pk, "schedule": schedule})
 
+    def timer_days(self, req):
+        sess = req.session
+        user = sess.get('cxxu')
+        examdate = user.get('examdate')
+        print("@examdate,type",type(examdate))
+        date_obj=date.fromisoformat(examdate)
+        today_date=date.today()
+        delta_time=date_obj-today_date
+        days =delta_time.days
+
+        return Response({"days":days})
+        return Response(examdate)
 
 
 class UserRegisterModelViewSet(ModelViewSet):
@@ -287,9 +299,9 @@ class UserRegisterModelViewSet(ModelViewSet):
         md5 = hashlib.md5()
         password_salt = random.randint(1000, 9999)
         print("@salt=", password_salt)
-        password=request.data.get("password")
+        password = request.data.get("password")
         password_salted_str = str(password_salt) + password
-        print("@password",password)
+        print("@password", password)
         print("@password_salted_str=", password_salted_str)
         password_salted_bytes = password_salted_str.encode("utf-8")
         md5.update(password_salted_bytes)

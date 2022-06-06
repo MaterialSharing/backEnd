@@ -120,6 +120,8 @@ urlpatterns = [
     path('fetch-user/', Login.as_view({
         "get": "fetch_user"
     }), name="fetch_user"),
+    path('user/timer-days/', UserModelViewSet.as_view({"get": "timer_days"}))
+
     # path('info/<int:pk>/review/<str:examtype>/recently/<str:unit>/<str:value>',
     #      views.UserModelViewSet.as_view({'get': 'recently_unitable'})),
     # path('info/<int:pk>/history/', views.WSHModelViewSet.as_view())

@@ -2,6 +2,7 @@ from deprecated.classic import deprecated
 from django.urls import path, re_path
 from rest_framework.routers import SimpleRouter, DefaultRouter
 
+from user.views.user import UserModelViewSet
 from . import views
 from .views import study, study_separate
 
@@ -59,6 +60,7 @@ urlpatterns = [
             "get": "get_words_random"
         }
     ), name='sized_review'),
+    # 获取用户考试日期
 ]
 
 router = DefaultRouter()

@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
+import datetime
 import os
 import sys
 from pathlib import Path
@@ -43,6 +44,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.BasicAuthentication',  # 使用基本认证
         'rest_framework.authentication.SessionAuthentication',  # session认证
+        # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication',  # 该jwt已经被废弃,无法在django版本中使用
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+
     ),
     # 'DEFAULT_PERMISSON_CLASSES': (
     #     'rest_framework.permissions.AllowAny',
@@ -54,6 +58,7 @@ REST_FRAMEWORK = {
         'rest_framework.filters.SearchFilter',
         'rest_framework.filters.OrderingFilter',
     ],
+
 
     # 测试连接
     # 分页参数
@@ -76,6 +81,13 @@ REST_FRAMEWORK = {
     # 注意还需要在urls.py中配置相应的url,否则无法访问!
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema',
 
+}
+JWT_AUTH = {
+    'JWT_SECRET_KEY': SECRET_KEY,
+    'JWT_ALGORITHM': 'HS256',
+    'JWT_ALLOW_REFRESH': True,
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=28),
 }
 
 # Application definition
@@ -120,7 +132,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     #     注册自定义的中间件
-    'user.loginMiddleware.LoginMiddleware',
+    # 'user.loginMiddleware.LoginMiddleware',
 ]
 
 # 当有请求到达,root_urlconf将会率先根据以下配置载入网站(backEnd)下的urls配置

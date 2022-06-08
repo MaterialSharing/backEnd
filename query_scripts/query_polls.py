@@ -24,7 +24,7 @@ Question.objects.filter(id=1)
 Question.objects.filter(question_text__startswith='what')
 
 # creat choice object(by question object)
-c = q.choice_set.create(choice_text='Just hacking again', votes=0)
+c = q.choice_set.create(,
 c.question
 
 # And vice versa: Question objects get access to Choice objects.

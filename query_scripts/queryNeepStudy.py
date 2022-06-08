@@ -31,7 +31,7 @@ class UpdateWordMatcher:
             # return chars_str
             print(chars_str)
             d = {"spelling": item.spelling, "char_set": chars_str}
-            wmob.create(**d)
+            wmob.create(,
             # chars=list(char_set).sort()
             # print(chars)
 #

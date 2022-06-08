@@ -17,15 +17,7 @@ class ImproverViewTestCase(TestCase):
         self.neep_detail1_url = reverse('improver:neep-detail', args=["1"])
         # 由于NeepStudy中的user&wid字段是外键字段,所以需要传递实例
         # 如果使用DRF序列化器,不一定
-        self.study_neep1 = NeepStudy.objects.create(
-            familiarity=4,
-            user=User.objects.create(
-                name="test"
-            ),
-            wid=NeepWordsReq.objects.create(
-                spelling="test"
-            )
-        )
+        self.study_neep1 = NeepStudy.objects.create(,
 
         # self.study_neep1 = NeepStudy.objects.create(
         #     familiarity=4, user=1, wid=1
@@ -66,9 +58,9 @@ class ImproverViewTestCase(TestCase):
         word_d = {
             "spelling": "test",
         }
-        w = neepob.create(**word_d)
+        w = neepob.create(,
         print("@w", w)
-        u = uob.create(**user_d)
+        u = uob.create(,
         print("@u", u)
 
         response = self.client.post(url, study_neep0)

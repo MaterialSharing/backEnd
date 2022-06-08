@@ -1,19 +1,18 @@
 from django.urls import path, re_path
 from rest_framework.routers import DefaultRouter
 
-# 由于我中途将这个模块拆分出来，所以这里的view要小心导入
-# import user.views.User
-# from . import views
-
 # from .views import WSHModelViewSet
-import user
-from user import views
-from user.views import star
+# from rest_framework_jwt.views import verify_jwt_token, refresh_jwt_token, obtain_jwt_token
+
 from user.views.history import WSHModelViewSet
 from user.views.login import Login
 from user.views.star import WordStarModelViewSet
 from user.views.user import UserModelViewSet, UserRegisterModelViewSet
 from user.views.user_basic import UserView
+
+# 由于我中途将这个模块拆分出来，所以这里的view要小心导入
+# import user.views.User
+# from . import views
 
 '''
 低级错误检测
@@ -31,37 +30,37 @@ urlpatterns=[
  
 '''
 # 原生开发api(基于通用视图集)所配置的路由:
-urlpatterns = [
-    path('', UserView.as_view(), name='userPost'),
-    # regex array without regexp
-    # re_path(r'^(?P<pk>)$',views.UserApiView.as_view(),name='userCheck'),
-    re_path(r'^user/$', UserView.as_view(), name='userCheck'),
-    re_path(r'^(?P<pk>\d+)/$', UserView.as_view(), name='userCheck'),
-]
-
-# 废弃原生开发
-urlpatterns = []
+# urlpatterns = [
+#     path('', UserView.as_view(), name='userPost'),
+#     # regex array without regexp
+#     # re_path(r'^(?P<pk>)$',views.UserApiView.as_view(),name='userCheck'),
+#     re_path(r'^user/$', UserView.as_view(), name='userCheck'),
+#     re_path(r'^(?P<pk>\d+)/$', UserView.as_view(), name='userCheck'),
+# ]
+#
+# # 废弃原生开发
+# urlpatterns = []
 
 # 采用drf方式配置路由
 # urlpatterns = [
 #     re_path(r'^user/$',views.ListView.as_view()),
 # ]
 
-router = DefaultRouter()
-# router.register("user", views.UserApiViewSet, basename="user"),
-'''
-def register(self,
-
-             prefix: Any,
-             viewset: Any,
-             basename: Any = None
-             ) -> None
- '''
-# 最终版本路由(预览)
-# router.register("user_d", views.UserApiViewSet, basename="user_drf"),
-urlpatterns = [] + router.urls
-# 暂时关闭
-urlpatterns = []
+# router = DefaultRouter()
+# # router.register("user", views.UserApiViewSet, basename="user"),
+# '''
+# def register(self,
+#
+#              prefix: Any,
+#              viewset: Any,
+#              basename: Any = None
+#              ) -> None
+#  '''
+# # 最终版本路由(预览)
+# # router.register("user_d", views.UserApiViewSet, basename="user_drf"),
+# urlpatterns = [] + router.urls
+# # 暂时关闭
+# urlpatterns = []
 # 使用drf逐级改造
 urlpatterns = [
     # user应用内的子路由配置
@@ -88,9 +87,9 @@ urlpatterns = [
             }),
             name="review-list"
             ),
-    re_path('^info/review/global/$',UserModelViewSet.as_view({
+    re_path('^info/review/global/$', UserModelViewSet.as_view({
         "get": "review_global"
-    }),name="review-global"),
+    }), name="review-global"),
     # 小心不要被前面的类似路由所覆盖,这样是没有机会访问到为与后面的路由.
     path('info/<int:pk>/review/recently/',
          UserModelViewSet.as_view({'get': 'recently_unitable'}),
@@ -110,6 +109,14 @@ urlpatterns = [
              "get": "progress"
          }),
          name="progress"),
+    path('info/progress/<str:examtype>/',
+         UserModelViewSet.as_view({
+             "get": "progress_logged"
+         }),
+         name="progress-logged"),
+    path('info/examtype/', UserModelViewSet.as_view({
+        "put": "examtype_change"
+    }), name="examtype-change"),
     path('info/<int:pk>/schedule/', UserModelViewSet.as_view({
         "get": "schedule"
     }), name="schedule"),
@@ -125,7 +132,11 @@ urlpatterns = [
     path('fetch-user/', Login.as_view({
         "get": "fetch_user"
     }), name="fetch_user"),
-    path('user/timer-days/', UserModelViewSet.as_view({"get": "timer_days"}))
+    path('user/timer-days/', UserModelViewSet.as_view({"get": "timer_days"})),
+    path('star-logged/', WordStarModelViewSet.as_view({
+        # "post": "create",
+        "delete": "destroy",
+    })),
 
     # path('info/<int:pk>/review/<str:examtype>/recently/<str:unit>/<str:value>',
     #      views.UserModelViewSet.as_view({'get': 'recently_unitable'})),
@@ -213,6 +224,7 @@ router.register("info", UserModelViewSet, basename="info")
 router.register("register", UserRegisterModelViewSet, basename='register')
 router.register("history", WSHModelViewSet, basename="history")
 router.register("star", WordStarModelViewSet, basename="star")
+router.register("star-logged", WordStarModelViewSet, basename="star-logged")
 
 # print(f"@router.urls={router.urls}")
 urlpatterns += router.urls

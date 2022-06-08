@@ -1,5 +1,5 @@
 # from django.shortcuts import render
-
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
@@ -8,8 +8,6 @@ from user.serializer import WordStarModelSerializer
 
 uob = User.objects
 Res = Response
-
-
 
 # ModelViewSet:将继承关系进一步简写.
 """
@@ -47,16 +45,28 @@ action装饰器可以接收两个参数:
 #         return self.list(request)
 
 
-
 wsob = WordStar.objects
+
 
 class WordStarModelViewSet(ModelViewSet):
     queryset = wsob.all()
     serializer_class = WordStarModelSerializer
     filter_fields = ["spelling", "user"]
 
-    def star_word(self, req):
-        """收藏一个单词"""
+    def list(self, req, **kwargs):
+        user_d = req.session.get("cxxu")
+        uid = user_d["uid"]
+        queryset = wsob.filter(user=uid)
+        ser = self.get_serializer_class()(queryset, many=True)
+        return Res(ser.data)
+
+    def create(self, req, **kwargs):
+        """收藏一个单词
+        :param **kwargs:
+        这里重写了create方法,使得通过registoer注册的路由能够将posti请求引导到这里来
+        注意,这里已经不是DRF自带的默认行为,默认行为不要求登录,但是需要将再请求体中指明
+        而重写的以下逻辑不需要前端手动的将用户id写入请求体,但是却要求用户登录,而且这里采用的是session机制来获取用户信息信息
+        """
         # 调用CreateModelMixin提供的create()方法,帮助我们自动完成validate等操作
         # rest_framework.mixins.CreateModelMixin def create(self,
         #            request: {data},
@@ -68,10 +78,33 @@ class WordStarModelViewSet(ModelViewSet):
         # 检查序列化器行为
         # data = {"user": 22, "spelling": "apply"}
         # serializer = self.get_serializer(data=req.data)
-
-        return self.create(req)
+        user_d = req.session.get("cxxu")
+        uid = user_d["uid"]
+        req.data["user"] = uid
+        print("@req.data:", req.data)
+        print("@uid", uid)
+        # wsob.create(**req.data)
+        ser = WordStarModelSerializer(data=req.data)
+        ser.is_valid(raise_exception=True)
+        ser.save()
+        return Res(ser.data, status=status.HTTP_201_CREATED)
+        # return self.create(req)
         # return Res({"msg": "testing.. "})
 
+    def destroy(self, req, *args):
+        user_d = req.session.get("cxxu")
+        uid = user_d["uid"]
+        req.data["user"] = uid
+        data = req.data
+        queryset = self.get_queryset().filter(user=uid)
+        queryset = queryset.filter(spelling=data["spelling"])
+        # queryset = queryset.filter(spelling=data["spelling"])
+        print("@req.data:", req.data)
+        print("@queryset:", queryset)
+        res = queryset.delete()
+        # 注意,该操作将删除整个匹配的结果记录集合
+        print("@res:", res)
+
+        return Res({"msg": "delete success"}, status=status.HTTP_204_NO_CONTENT)
 
 # wshob = WordSearchHistory.objects
-

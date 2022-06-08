@@ -24,6 +24,11 @@ from rest_framework.documentation import include_docs_urls
 from rest_framework.permissions import IsAuthenticated
 
 # schema_view = get_schema_view(title='backEnd API')
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
 schema_view = get_schema_view(
     openapi.Info(
         title="backEnd API",
@@ -52,4 +57,7 @@ urlpatterns = [
     # path('blog/',include('blog.urls')),
     #     采用DRF风格的路由
     # path('api/', include("user_raw.urls")),
+
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]

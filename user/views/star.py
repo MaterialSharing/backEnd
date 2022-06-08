@@ -47,18 +47,31 @@ action装饰器可以接收两个参数:
 
 wsob = WordStar.objects
 
-
 class WordStarModelViewSet(ModelViewSet):
     queryset = wsob.all()
     serializer_class = WordStarModelSerializer
     filter_fields = ["spelling", "user"]
+class WordStarLoggedModelViewSet(ModelViewSet):
+    queryset = wsob.all()
+    serializer_class = WordStarModelSerializer
+    filter_fields = ["spelling", "user"]
 
-    def list(self, req, **kwargs):
+    def list(self, req, *args, **kwargs):
         user_d = req.session.get("cxxu")
         uid = user_d["uid"]
         queryset = wsob.filter(user=uid)
-        ser = self.get_serializer_class()(queryset, many=True)
-        return Res(ser.data)
+        # ser = self.get_serializer_class()(queryset, many=True)
+        # return Res(ser.data)
+
+        # queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def create(self, req, **kwargs):
         """收藏一个单词

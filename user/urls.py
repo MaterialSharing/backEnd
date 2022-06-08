@@ -6,7 +6,7 @@ from rest_framework.routers import DefaultRouter
 
 from user.views.history import WSHModelViewSet
 from user.views.login import Login
-from user.views.star import WordStarModelViewSet
+from user.views.star import WordStarModelViewSet, WordStarLoggedModelViewSet
 from user.views.user import UserModelViewSet, UserRegisterModelViewSet
 from user.views.user_basic import UserView
 
@@ -133,8 +133,9 @@ urlpatterns = [
         "get": "fetch_user"
     }), name="fetch_user"),
     path('user/timer-days/', UserModelViewSet.as_view({"get": "timer_days"})),
-    path('star-logged/', WordStarModelViewSet.as_view({
-        # "post": "create",
+    path('star-logged/', WordStarLoggedModelViewSet.as_view({
+        "get":"list",
+        "post": "create",
         "delete": "destroy",
     })),
 
@@ -224,7 +225,7 @@ router.register("info", UserModelViewSet, basename="info")
 router.register("register", UserRegisterModelViewSet, basename='register')
 router.register("history", WSHModelViewSet, basename="history")
 router.register("star", WordStarModelViewSet, basename="star")
-router.register("star-logged", WordStarModelViewSet, basename="star-logged")
+# router.register("star-logged", WordStarLoggedModelViewSet, basename="star-logged")
 
 # print(f"@router.urls={router.urls}")
 urlpatterns += router.urls

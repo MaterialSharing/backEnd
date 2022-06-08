@@ -257,9 +257,13 @@ class UserModelViewSet(ModelViewSet):
         params = req.query_params
         print("@params:", params)
         examtype = params.get("examtype")
-        user = req.session.get("cxxu").get("uid")
+        user_d = req.session.get("cxxu")
+        uid = req.session.get("cxxu").get("uid")
+        # return Res(uid)
+        # return Res(user_d)
+        # return Res("debuging...")
         queryset = study_ob.filter(familiarity__lte=4)
-        queryset= queryset.filter(user=user)
+        queryset = queryset.filter(user=uid)
         if examtype:
             queryset = queryset.filter(examtype=examtype)
         if examtype not in examtype_tuple:

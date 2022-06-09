@@ -11,6 +11,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 # from user.views import Res
+from cxxulib.static_values import study_ob
 from scoreImprover.models import NeepStudy, Cet4Study, Cet6Study
 from word.models import WordNotes, Cet4WordsReq, Cet6WordsReq, NeepWordsReq, WordMatcher
 from word.serializer import NeepWordsReqModelSerializer, WordNotesModelSerializer, Cet4WordsReqModelSerializer, \
@@ -270,7 +271,6 @@ class WordNotesModelViewSet(ModelViewSet):
     filter_fields = ["spelling", "difficulty_rate", "user"]
     ordering_fields = ['spelling', 'user']
 
-
     def get_avg_difficulty(self, req, spelling):
         # 使用spelling参数,可以更加通用
         # 获取关于spelling的批注记录
@@ -289,11 +289,28 @@ class WordNotesModelViewSet(ModelViewSet):
 
     def get_avg_familiarity(self, req, spelling):
         # queryset = self.get_queryset().filter(spelling=spelling)
-        queryset = NeepStudy.objects.filter(wid__spelling=spelling)
-        queryset = Cet4Study.objects.filter(wid__spelling=spelling)
-        queryset = Cet6Study.objects.filter(wid__spelling=spelling)
+        # queryset = NeepStudy.objects.filter(wid__spelling=spelling)
+        # queryset = Cet4Study.objects.filter(wid__spelling=spelling)
+        # queryset = Cet6Study.objects.filter(wid__spelling=spelling)
+        queryset = study_ob.filter(wid__spelling=spelling)
+        print("@queryset:", queryset)
+
+        # print("@length:", len(queryset))#or use .count method of queryset!
+        # print("@queryset.count():", queryset.count())
+        if (queryset.count() == 0):
+            return Res(data={
+                "spelling": spelling,
+                "avg_familiarity": 3,
+                "validity:": False,
+                "msg": "没有找到相关记录,默认使用中间值3"
+            })
         avg_familiarity_queryset = queryset.aggregate(Avg('familiarity'))
-        data = {"spelling": spelling, "avg_familiarity": avg_familiarity_queryset.get('familiarity__avg')}
+        avg_familiarity = avg_familiarity_queryset.get('familiarity__avg')
+        data = {"spelling": spelling,
+                "avg_familiarity": avg_familiarity,
+                "validity:": True,
+                "msg": "查询成功"
+                }
         return Res(data=data)
 
 

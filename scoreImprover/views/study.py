@@ -30,7 +30,7 @@ class StudyModelViewSet(ModelViewSet):
         wid = data.get("wid")
         # user = req.data.get("user")
         user_d = req.session.get("cxxu")
-        # print("@@refresh:user_d:", user_d)
+        print("@@refresh:user_d:", user_d)
         # return Res("testing...")
         uid = user_d.get("uid")
         # 根据参数examtype计算出需要使用的模型Manager
@@ -68,10 +68,10 @@ class StudyModelViewSet(ModelViewSet):
             print("下一行执行self.create(req)")
             print("@req.data:", req.data, type(req.data))
             # return Res("pass..dubuging...")
-            req.data["user"] = user_d
+            req.data["user"] = user_d.get("uid")
             ser = ser(data=req.data)
-            # print("@req.data:", req.data)
-
+            print("@req.data:", req.data)
+            # return Res("debuging...")
             ser.is_valid()
             errors = ser.errors
             print("@errors:", errors)

@@ -19,7 +19,7 @@ class Login(ModelViewSet):
     serializer_class = UserModelSerializer
 
     def login(self, request):
-        return Res("welcome!please login!")
+        return Res({"login_status": "welcome!please login!"})
         pass
 
     def dologin(self, request):
@@ -31,7 +31,7 @@ class Login(ModelViewSet):
         print("@user:", user)
         # return Res("debgin!")
         if (not user):
-            return  Res({"login_status": "account does not exist"}, status.HTTP_404_NOT_FOUND)
+            return Res({"login_status": "account does not exist"}, status.HTTP_404_NOT_FOUND)
         if user.status == 0:
             md5 = hashlib.md5()
             # 获取用户输入的密码以及用户的干扰盐(得到salt_password)

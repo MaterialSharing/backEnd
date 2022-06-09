@@ -1,16 +1,7 @@
-from rest_framework.response import Response
-
 from cxxulib.static_values import neep_study_ob, cet6_study_ob, cet4_study_ob
-from scoreImprover.models import Cet4Study, Cet6Study, NeepStudy
 from scoreImprover.serializer import Cet4StudyModelSerializer, Cet6StudyModelSerializer, NeepStudyModelSerializer
 from word.serializer import Cet4WordsReqModelSerializer, Cet6WordsReqModelSerializer, NeepWordsReqModelSerializer
 from word.views import c4ob, c6ob, neepob
-
-
-# Res = Response
-# cet4_study_ob = Cet4Study.objects
-# cet6_study_ob = Cet6Study.objects
-# neep_study_ob = NeepStudy.objects
 
 
 class QuerysetDispatcher:
@@ -22,21 +13,35 @@ class QuerysetDispatcher:
     req_qs_d = {
         'cet4': c4ob,
         'cet6': c6ob,
-        'neep': neepob
+        'neep': neepob,
+        '4': c4ob,
+        '6': c6ob,
+        '8': neepob
     }
     req_ser_d = {
         'cet4': Cet4WordsReqModelSerializer,
         'cet6': Cet6WordsReqModelSerializer,
-        'neep': NeepWordsReqModelSerializer
+        'neep': NeepWordsReqModelSerializer,
+        '4': Cet4WordsReqModelSerializer,
+        '6': Cet6WordsReqModelSerializer,
+        '8': NeepWordsReqModelSerializer
     }
     study_qs_d = {
         "cet4": cet4_study_ob,
         "cet6": cet6_study_ob,
         "neep": neep_study_ob,
+        "4": cet4_study_ob,
+        "6": cet6_study_ob,
+        "8": neep_study_ob,
     }
-    study_ser_d = {"cet4": Cet4StudyModelSerializer,
-                   "cet6": Cet6StudyModelSerializer,
-                   "neep": NeepStudyModelSerializer}
+    study_ser_d = {
+        "cet4": Cet4StudyModelSerializer,
+        "cet6": Cet6StudyModelSerializer,
+        "neep": NeepStudyModelSerializer,
+        "4": Cet4StudyModelSerializer,
+        "6": Cet6StudyModelSerializer,
+        "8": NeepStudyModelSerializer
+    }
 
     # 用户传入的url中examtype可能是cet4,cet6,neep,之外的值,如果不处理,会导致报错
     # 您可以编写相关的类来处理这个问题,或者在这里做一个判断设置一个默认值(提醒调用者)
@@ -46,18 +51,17 @@ class QuerysetDispatcher:
     def get_queryset_study(self, examtype="4"):
         """使用的时候注意examtype 关键字参数不要以位置参数的形式传递!!!"""
 
-        queryset=self.study_qs_d[examtype]
+        queryset = self.study_qs_d[examtype]
         return queryset
 
     @classmethod
     def get_queryset_req(self, examtype="4"):
-
-        queryset=self.req_qs_d[examtype]
+        queryset = self.req_qs_d[examtype]
         return queryset
 
     @classmethod
     def get_serializer_class_req(self, examtype="4"):
-        ser=self.req_ser_d[examtype]
+        ser = self.req_ser_d[examtype]
         # ser = Cet4WordsReqModelSerializer
         # if (examtype == "cet6"):
         #     ser = Cet6WordsReqModelSerializer
@@ -68,7 +72,6 @@ class QuerysetDispatcher:
 
     @classmethod
     def get_serializer_class_study(self, examtype="4"):
-
         # 建立字典,提高复用性和简化代码!
         # ser = Cet4StudyModelSerializer
         # if (examtype == "cet6"):

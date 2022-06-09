@@ -132,7 +132,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     #     注册自定义的中间件
-    # 'user.loginMiddleware.LoginMiddleware',
+    'user.loginMiddleware.LoginMiddleware',
 ]
 
 # 当有请求到达,root_urlconf将会率先根据以下配置载入网站(backEnd)下的urls配置

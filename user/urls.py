@@ -132,7 +132,7 @@ urlpatterns = [
     path('fetch-user/', Login.as_view({
         "get": "fetch_user"
     }), name="fetch_user"),
-    path('user/timer-days/', UserModelViewSet.as_view({"get": "timer_days"})),
+    path('timer-days/', UserModelViewSet.as_view({"get": "timer_days"})),
     path('star-logged/', WordStarLoggedModelViewSet.as_view({
         "get":"list",
         "post": "create",

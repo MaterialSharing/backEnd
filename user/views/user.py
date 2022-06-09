@@ -195,6 +195,15 @@ class UserModelViewSet(ModelViewSet):
         # & neep_study_ob.filter(examtype=neep)
         return Res({"user": pk, "examtype": examtype, "progress": progress})
 
+    def progress_logged(self, req, examtype):
+        progress = 0
+        # if (examtype == "neep"):
+        uid = req.session.get("cxxu").get("uid")
+        progress = study_ob.filter(user=uid).count()
+
+        # & neep_study_ob.filter(examtype=neep)
+        return Res({"user": uid, "examtype": examtype, "progress": progress})
+
     def rank(self, req, pk):
         signin_pk: int = self.queryset.get(pk=pk).signin
         rank = self.queryset.filter(signin__gt=signin_pk).count() + 1
@@ -268,8 +277,24 @@ class UserModelViewSet(ModelViewSet):
             queryset = queryset.filter(examtype=examtype)
         if examtype not in examtype_tuple:
             print("@examtype:", examtype)
-            return Response("examtype error")
+            return Response({"msg": "examtype error"})
         return Res(StudyModelSerializer(instance=queryset, many=True).data)
+
+    def examtype_change(self, req):
+        """ 更改考试类型 """
+        pk = req.session.get("cxxu").get("uid")
+        user = self.queryset.get(pk=pk)
+        print("@req.data:", req.data)
+        examtype = req.data.get("examtype")
+        # params_d = req.query_params
+        # examtype = params_d.get("examtype")
+        # print("@params:", params_d)
+        print("@examtype:", examtype)
+        if examtype not in examtype_tuple:
+            return Response({"msg": "examtype error"})
+        user.save()
+        msg_d={"msg": "ok"}
+        return Res(msg_d, status=status.HTTP_201_CREATED)
 
     @deprecated
     def review(self, req, pk):
@@ -347,7 +372,7 @@ class UserModelViewSet(ModelViewSet):
         delta_time = date_obj - today_date
         days = delta_time.days
 
-        return Response({"days": days})
+        return Response({"days_remain": days})
         return Response(examdate)
 
 

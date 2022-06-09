@@ -19,22 +19,25 @@ class StudyModelViewSet(ModelViewSet):
     def refresh(self, req):
         # examtype 这里采用query_parameters
         # params = req.query_params #for post/put it is wrong,it just for get!
-        params = req.data
-        print(params)
+        data = req.data
+        print(data)
         # return Res(params)
-        examtype = params.get("examtype", None)
+        examtype = data.get("examtype", None)
         # print(examtype)
         if not examtype:
             return Res({"msg": "examtype required!"})
         print("@@refresh:刚刚捕获到请求...by:", self.__class__.__name__)
-        wid = req.data.get("wid")
+        wid = data.get("wid")
         # user = req.data.get("user")
-        user = req.session.get("cxxu").get("uid")
+        user_d = req.session.get("cxxu")
+        # print("@@refresh:user_d:", user_d)
+        # return Res("testing...")
+        uid = user_d.get("uid")
         # 根据参数examtype计算出需要使用的模型Manager
         queryset = self.get_queryset()
 
         queryset = queryset.filter(wid=wid)
-        queryset = queryset.filter(user=user)
+        queryset = queryset.filter(user=uid)
         queryset = queryset.filter(examtype=examtype)
         # queryset=queryset.first()
         print("@@refresh:queryset:", queryset)
@@ -63,9 +66,9 @@ class StudyModelViewSet(ModelViewSet):
             # ser = self.serializer_class(data=req.data)
             print("@self.serializer_class:", self.serializer_class)
             print("下一行执行self.create(req)")
-            print("@req.data:", req.data,type(req.data))
+            print("@req.data:", req.data, type(req.data))
             # return Res("pass..dubuging...")
-            req.data["user"]=user
+            req.data["user"] = user_d
             ser = ser(data=req.data)
             # print("@req.data:", req.data)
 

@@ -1,6 +1,7 @@
 cd /home/cxxu/backEnd/
 # ls
 # git checkout main
+git fetch --all
 git reset --hard origin/main
 git log|head -n 10
 # git pull origin main

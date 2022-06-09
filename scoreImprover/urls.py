@@ -42,17 +42,22 @@ urlpatterns = [
     path('study/refresh/', StudyModelViewSet.as_view({
         'put': "refresh"
     })),
+    # 对于已登录用户:
     re_path('^study/familiarity/(?P<change>add|sub)/$', StudyModelViewSet.as_view({
         "put": "familiarity_change1"
     }), name="familiarity_change1"),
     # 注意,下方的路由pattern中,如果使用转换器(str:examtype)会匹配到本意的4/6/8,因此,需要解决冲突,使用更加今昔的匹配规则,防止某些不恰当的匹配造成多余的困扰
     # path('study/<str:examtype>/',
+    # 更改熟练度(deprecated)
+    # 采用re_path一定要使用`^$`来包裹,否则会无法生效!!!(或者和其他路由冲突)
+    #并且再次强调,re_path不要使用转换器!!!!eg.<str:change>
+    re_path('^study/(?P<examtype>cet[46]|neep)/familiarity/(?P<change>add|sub)/$', study_separate.RefresherModelViewSet.as_view({
+        "put": "familiarity_change1"
+    }), name="familiarity_change1"),
+    # 刷新一条学习记录(deprecated)
     re_path('^study/(?P<examtype>cet[46]|neep)/$', study_separate.RefresherModelViewSet.as_view({
         "put": "refresh"
     }), name="refresh"),
-    re_path('study/(?P<examtype>cet[46]|neep)/familiarity/<str:change>/', study_separate.RefresherModelViewSet.as_view({
-        "put": "familiarity_change1"
-    }), name="familiarity_change1"),
     #复习
     # 从考纲词库中抽查一组单词
     path('review/<str:examtype>/<int:size>/', study_separate.RandomInspectionModelViewSet.as_view(

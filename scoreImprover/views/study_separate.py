@@ -219,7 +219,7 @@ class RefresherModelViewSet(ModelViewSet):
     # def get_serializer_class(self):
     #     get
     def refresh(self, req, examtype):
-        print("@@refresh:刚刚捕获到请求...")
+        print("@@refresh:刚刚捕获到请求...😂",self.__class__.__name__)
         wid = req.data.get("wid")
         user = req.data.get("user")
         # 根据参数examtype计算出需要使用的模型Manager

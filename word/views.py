@@ -133,7 +133,7 @@ class WordMatcherViewSet(ReadOnlyModelViewSet):
     filter_fields = ['spelling', 'char_set_str']
     search_fields = ['$spelling', 'char_set_str']
 
-    def fuzzy_match(self, req, spelling, start_with=0, contain=0):
+    def fuzzy_match(self, req, spelling, start_with=-1, contain=0):
         """
         :param req:
         :type req:
@@ -158,13 +158,15 @@ class WordMatcherViewSet(ReadOnlyModelViewSet):
         # print("@contain:", contain)
         spelling_len = len(spelling)
         # 根据模糊拼写的长度,选择一个较为合适的start_with
-        if (start_with == 0):
-            # 没有被强制设值
-            # 启用内部判断取值
-            if (spelling_len > 4):
-                start_with = 2
-            else:
-                start_with = 1
+        # if (start_with == 0):
+        #     # 启用内部判断取值
+        #     if (spelling_len > 4):
+        #         start_with = 1
+        #     else:
+        #         start_with = 1
+        default_start_with=1
+        if (start_with==-1): 
+            start_with=default_start_with
         # 获得模糊拼写的字母集合
         spelling_char_set = set(spelling)
         # 获取模糊拼写的字母集列表(字母集合去重后转换为列表)

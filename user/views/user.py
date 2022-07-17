@@ -34,6 +34,8 @@ class UserModelViewSet(ModelViewSet):
     serializer_class = UserModelSerializer
     # 过滤/分页
     filter_fields = ('name', 'signupdate', 'signin')
+    search_fields = ['$name']
+    # 正则搜索支持:'$name'
     # filter_backends = [OrderingFilter]
     # http://127.0.0.1:8000/user/?ordering=uid
     # http://127.0.0.1:8000/user/?ordering=-signin
